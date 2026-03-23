@@ -1,0 +1,7 @@
+{
+  "enabledPlugins": {
+    "oh-my-claudecode@omc": true,
+    "code-simplifier@claude-plugins-official": true,
+    "superpowers@claude-plugins-official": true
+  }
+}
