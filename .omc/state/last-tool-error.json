@@ -1,7 +1,0 @@
-{
-  "tool_name": "Read",
-  "tool_input_preview": "{\"file_path\":\"C:\\\\Users\\\\kimyechan\\\\.claude\\\\projects\\\\C--Users-kimyechan-PycharmProjects-my-app\\\\memory\\\\MEMORY.md\"}",
-  "error": "File does not exist. Note: your current working directory is C:\\Users\\kimyechan\\PycharmProjects\\my-app.",
-  "timestamp": "2026-03-23T08:28:30.017Z",
-  "retry_count": 1
-}
