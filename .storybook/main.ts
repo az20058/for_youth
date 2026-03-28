@@ -6,7 +6,6 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const config: StorybookConfig = {
   "stories": [
-    "../stories/**/*.mdx",
     "../stories/**/*.stories.@(js|jsx|mjs|ts|tsx)"
   ],
   "addons": [
@@ -16,7 +15,7 @@ const config: StorybookConfig = {
   ],
   "framework": "@storybook/nextjs-vite",
   "staticDirs": [
-    "..\\public"
+    "../public"
   ],
   async viteFinal(config) {
     config.resolve = config.resolve ?? {};
