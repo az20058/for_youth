@@ -26,7 +26,7 @@ describe('countCharacters', () => {
   });
 
   it('혼합 텍스트의 글자 수를 반환한다', () => {
-    expect(countCharacters('안녕 hello')).toBe(9);
+    expect(countCharacters('안녕 hello')).toBe(8);
   });
 });
 

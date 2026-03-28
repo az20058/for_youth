@@ -151,7 +151,7 @@ describe('getCoverLetterTypeCount', () => {
 
   it('빈 배열이면 모든 타입의 수가 0이다', () => {
     const result = getCoverLetterTypeCount([]);
-    [...COVER_LETTER_TYPES, '미지정'].forEach((type) => {
+    ([...COVER_LETTER_TYPES, '미지정'] as (CoverLetterType | '미지정')[]).forEach((type) => {
       expect(result[type]).toBe(0);
     });
   });
