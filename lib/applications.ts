@@ -13,7 +13,20 @@ export const applications: Application[] = [
     careerLevel: '신입',
     deadline: daysFromNow(19),
     companySize: '대기업',
-    coverLetters: [],
+    coverLetters: [
+      {
+        id: 'cl-1',
+        question: '지원 동기를 작성해주세요.',
+        answer: '저는 귀사의 기술력과 서비스 철학에 깊은 인상을 받아 지원하게 되었습니다.',
+        type: '지원 동기',
+      },
+      {
+        id: 'cl-2',
+        question: '본인의 강점과 약점을 서술해주세요.',
+        answer: '',
+        type: '성격 장단점',
+      },
+    ],
     status: '지원 예정',
   },
   {
