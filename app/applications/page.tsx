@@ -47,7 +47,7 @@ export default function ApplicationsPage() {
   const apps = getApplications();
 
   return (
-    <main className="min-h-screen px-6 py-8 md:px-10">
+    <main className="py-8">
       {/* 헤더 */}
       <div className="flex items-start justify-between">
         <div>

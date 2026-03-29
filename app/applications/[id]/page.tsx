@@ -34,21 +34,16 @@ export default async function ApplicationDetailPage({
   const dday = calculateDDay(application.deadline);
 
   return (
-    <main className="min-h-screen">
-      {/* 상단 헤더 영역 */}
-      <div className="border-b border-foreground/10 px-4 py-4 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-4xl">
-          <Link
-            href="/applications"
-            className="inline-flex items-center gap-1 text-sm text-muted-foreground transition-colors hover:text-foreground"
-          >
-            <ArrowLeftIcon className="size-4" />
-            지원 현황으로
-          </Link>
-        </div>
-      </div>
+    <main className="py-6">
+      <Link
+        href="/applications"
+        className="mb-6 inline-flex items-center gap-1 text-sm text-muted-foreground transition-colors hover:text-foreground"
+      >
+        <ArrowLeftIcon className="size-4" />
+        지원 현황으로
+      </Link>
 
-      <div className="mx-auto max-w-4xl px-4 py-6 sm:px-6 lg:px-8">
+      <div>
         {/* 기업 정보 카드 */}
         <div className="mb-8 rounded-2xl bg-card ring-1 ring-foreground/10 p-5 sm:p-6">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
