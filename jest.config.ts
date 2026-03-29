@@ -4,7 +4,7 @@ import nextJest from 'next/jest.js';
 const createJestConfig = nextJest({ dir: './' });
 
 const config: Config = {
-  testEnvironment: 'node',
+  testEnvironment: '<rootDir>/jest.environment.ts',
   setupFilesAfterEnv: ['<rootDir>/jest.setup.ts'],
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/$1',
