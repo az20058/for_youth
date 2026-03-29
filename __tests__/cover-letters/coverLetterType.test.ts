@@ -64,8 +64,8 @@ describe('COVER_LETTER_TYPES', () => {
     });
   });
 
-  it('6개의 타입을 가진다', () => {
-    expect(COVER_LETTER_TYPES).toHaveLength(6);
+  it('9개의 타입을 가진다', () => {
+    expect(COVER_LETTER_TYPES).toHaveLength(9);
   });
 });
 
