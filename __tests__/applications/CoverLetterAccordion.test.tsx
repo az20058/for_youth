@@ -5,8 +5,10 @@ const defaultProps = {
   id: 'cl-1',
   question: '지원 동기를 작성해주세요.',
   answer: '저는 귀사의 기술력에 매력을 느껴 지원하게 되었습니다.',
+  type: null as null,
   onQuestionChange: jest.fn(),
   onAnswerChange: jest.fn(),
+  onTypeChange: jest.fn(),
 };
 
 describe('CoverLetterAccordion', () => {
@@ -64,5 +66,25 @@ describe('CoverLetterAccordion', () => {
     fireEvent.click(screen.getByText(defaultProps.question));
     const charCount = defaultProps.answer.length;
     expect(screen.getByText(new RegExp(`${charCount}`))).toBeInTheDocument();
+  });
+
+  describe('타입 선택', () => {
+    it('열린 상태에서 타입 선택 드롭다운이 표시된다', () => {
+      render(<CoverLetterAccordion {...defaultProps} />);
+      fireEvent.click(screen.getByText(defaultProps.question));
+      expect(screen.getByRole('combobox')).toBeInTheDocument();
+    });
+
+    it('type이 null이면 드롭다운에 "미지정"이 표시된다', () => {
+      render(<CoverLetterAccordion {...defaultProps} type={null} />);
+      fireEvent.click(screen.getByText(defaultProps.question));
+      expect(screen.getByText('미지정')).toBeInTheDocument();
+    });
+
+    it('type이 설정되어 있으면 해당 타입이 드롭다운에 표시된다', () => {
+      render(<CoverLetterAccordion {...defaultProps} type="성공 경험" />);
+      fireEvent.click(screen.getByText(defaultProps.question));
+      expect(screen.getByText('성공 경험')).toBeInTheDocument();
+    });
   });
 });
