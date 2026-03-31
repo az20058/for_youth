@@ -1,9 +1,11 @@
 'use client';
 
 import { useState } from 'react';
+import { format } from 'date-fns';
 import { useRouter } from 'next/navigation';
 import { PlusIcon, Trash2Icon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { DatePicker } from '@/components/ui/date-picker';
 import {
   Select,
   SelectContent,
@@ -24,7 +26,7 @@ import {
 interface FormState {
   companyName: string;
   careerLevel: string;
-  deadline: string;
+  deadline: Date | undefined;
   companySize: string;
   status: string;
   coverLetters: CoverLetterDraft[];
@@ -33,7 +35,7 @@ interface FormState {
 const INITIAL_FORM: FormState = {
   companyName: '',
   careerLevel: '',
-  deadline: '',
+  deadline: undefined,
   companySize: '',
   status: '지원 예정',
   coverLetters: [],
@@ -50,14 +52,18 @@ export function NewApplicationForm() {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    const validationErrors = validateApplication(form as NewApplicationData);
+    const data: NewApplicationData = {
+      ...form,
+      deadline: form.deadline ? format(form.deadline, 'yyyy-MM-dd') : '',
+    };
+    const validationErrors = validateApplication(data);
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
       return;
     }
     setIsSubmitting(true);
     try {
-      await createApplication(form as NewApplicationData);
+      await createApplication(data);
       router.push('/applications');
     } finally {
       setIsSubmitting(false);
@@ -129,15 +135,12 @@ export function NewApplicationForm() {
 
         {/* 마감일 */}
         <div className="flex flex-col gap-1.5">
-          <label htmlFor="deadline" className="text-xs text-muted-foreground">
-            마감일
-          </label>
-          <input
-            id="deadline"
-            type="date"
-            className={inputClass}
+          <label className="text-xs text-muted-foreground">마감일</label>
+          <DatePicker
             value={form.deadline}
-            onChange={(e) => setForm((prev) => ({ ...prev, deadline: e.target.value }))}
+            onChange={(date) => setForm((prev) => ({ ...prev, deadline: date }))}
+            placeholder="마감일 선택"
+            disablePast
           />
           {errors.deadline && (
             <p className="text-xs text-destructive">{errors.deadline}</p>

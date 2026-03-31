@@ -1,4 +1,4 @@
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor, within } from '@testing-library/react';
 import { NewApplicationForm } from '@/components/NewApplicationForm';
 import * as actions from '@/app/applications/actions';
 
@@ -12,18 +12,19 @@ jest.mock('next/navigation', () => ({
   useRouter: () => ({ push: mockPush }),
 }));
 
-const futureDateStr = () => {
-  const d = new Date();
-  d.setDate(d.getDate() + 7);
-  return d.toISOString().split('T')[0];
-};
-
+// DatePicker: 트리거 버튼 클릭 → 달력 팝오버 열림 → 활성화된 첫 날짜 클릭
 // shadcn Select(Radix)는 combobox role로 렌더링됨
 // label htmlFor 연결 대신 aria-label로 쿼리
 function fillRequiredFields() {
   fireEvent.change(screen.getByLabelText('회사명'), { target: { value: '네이버' } });
   fireEvent.change(screen.getByLabelText('경력'), { target: { value: '신입' } });
-  fireEvent.change(screen.getByLabelText('마감일'), { target: { value: futureDateStr() } });
+
+  // DatePicker: 트리거 클릭 → grid에서 비활성화되지 않은 첫 날 클릭
+  fireEvent.click(screen.getByRole('button', { name: '마감일 선택' }));
+  const grid = screen.getByRole('grid');
+  const dayButtons = within(grid).getAllByRole('button');
+  const enabledDayButtons = dayButtons.filter((btn) => !btn.hasAttribute('disabled'));
+  fireEvent.click(enabledDayButtons[0]);
 
   // 기업 규모 Select: 트리거 클릭 → 옵션 즉시 렌더링 확인 후 클릭
   fireEvent.click(screen.getByRole('combobox', { name: '기업 규모 선택' }));
@@ -40,7 +41,7 @@ describe('NewApplicationForm', () => {
     render(<NewApplicationForm />);
     expect(screen.getByLabelText('회사명')).toBeInTheDocument();
     expect(screen.getByLabelText('경력')).toBeInTheDocument();
-    expect(screen.getByLabelText('마감일')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '마감일 선택' })).toBeInTheDocument();
     expect(screen.getByRole('combobox', { name: '기업 규모 선택' })).toBeInTheDocument();
     expect(screen.getByRole('combobox', { name: '지원 상태 선택' })).toBeInTheDocument();
   });
