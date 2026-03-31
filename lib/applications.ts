@@ -1,4 +1,4 @@
-import type { Application } from './types';
+import type { Application, ApplicationStatus, CompanySize, CoverLetterQA } from './types';
 
 function daysFromNow(days: number): Date {
   const date = new Date();
@@ -82,4 +82,20 @@ export function getApplications(): Application[] {
 
 export function getApplicationById(id: string): Application | undefined {
   return applications.find((app) => app.id === id);
+}
+
+export function addApplication(data: {
+  companyName: string;
+  careerLevel: string;
+  deadline: Date;
+  companySize: CompanySize;
+  status: ApplicationStatus;
+  coverLetters: CoverLetterQA[];
+}): Application {
+  const newApp: Application = {
+    id: String(Date.now()),
+    ...data,
+  };
+  applications.push(newApp);
+  return newApp;
 }
