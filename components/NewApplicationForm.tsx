@@ -4,6 +4,13 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { PlusIcon, Trash2Icon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { createApplication } from '@/app/applications/actions';
 import {
   validateApplication,
@@ -31,6 +38,9 @@ const INITIAL_FORM: FormState = {
   status: '지원 예정',
   coverLetters: [],
 };
+
+const inputClass =
+  'w-full rounded-lg bg-muted/50 px-3 py-2 text-sm ring-1 ring-foreground/10 focus:outline-none focus:ring-primary';
 
 export function NewApplicationForm() {
   const router = useRouter();
@@ -80,15 +90,11 @@ export function NewApplicationForm() {
     }));
   }
 
-  const inputClass =
-    'rounded-lg bg-muted/50 px-3 py-2 text-sm ring-1 ring-foreground/10 focus:outline-none focus:ring-primary';
-
   return (
-    <form onSubmit={handleSubmit} className="mb-8 rounded-2xl bg-card p-5 ring-1 ring-foreground/10">
-      <h2 className="mb-4 text-sm font-medium text-muted-foreground">새 지원서 추가</h2>
-
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-        <div className="flex flex-col gap-1">
+    <form onSubmit={handleSubmit} className="mb-8 rounded-2xl bg-card p-5 ring-1 ring-foreground/10 sm:p-6">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        {/* 회사명 */}
+        <div className="flex flex-col gap-1.5">
           <label htmlFor="companyName" className="text-xs text-muted-foreground">
             회사명
           </label>
@@ -99,10 +105,13 @@ export function NewApplicationForm() {
             onChange={(e) => setForm((prev) => ({ ...prev, companyName: e.target.value }))}
             placeholder="회사명"
           />
-          <p className="min-h-4 text-xs text-destructive">{errors.companyName}</p>
+          {errors.companyName && (
+            <p className="text-xs text-destructive">{errors.companyName}</p>
+          )}
         </div>
 
-        <div className="flex flex-col gap-1">
+        {/* 경력 */}
+        <div className="flex flex-col gap-1.5">
           <label htmlFor="careerLevel" className="text-xs text-muted-foreground">
             경력
           </label>
@@ -113,10 +122,13 @@ export function NewApplicationForm() {
             onChange={(e) => setForm((prev) => ({ ...prev, careerLevel: e.target.value }))}
             placeholder="신입 / 경력 N년"
           />
-          <p className="min-h-4 text-xs text-destructive">{errors.careerLevel}</p>
+          {errors.careerLevel && (
+            <p className="text-xs text-destructive">{errors.careerLevel}</p>
+          )}
         </div>
 
-        <div className="flex flex-col gap-1">
+        {/* 마감일 */}
+        <div className="flex flex-col gap-1.5">
           <label htmlFor="deadline" className="text-xs text-muted-foreground">
             마감일
           </label>
@@ -127,52 +139,64 @@ export function NewApplicationForm() {
             value={form.deadline}
             onChange={(e) => setForm((prev) => ({ ...prev, deadline: e.target.value }))}
           />
-          <p className="min-h-4 text-xs text-destructive">{errors.deadline}</p>
+          {errors.deadline && (
+            <p className="text-xs text-destructive">{errors.deadline}</p>
+          )}
         </div>
 
-        <div className="flex flex-col gap-1">
-          <label htmlFor="companySize" className="text-xs text-muted-foreground">
-            기업 규모
-          </label>
-          <select
-            id="companySize"
-            className={inputClass}
+        {/* 기업 규모 */}
+        <div className="flex flex-col gap-1.5">
+          <label className="text-xs text-muted-foreground">기업 규모</label>
+          <Select
             value={form.companySize}
-            onChange={(e) => setForm((prev) => ({ ...prev, companySize: e.target.value }))}
+            onValueChange={(value) => setForm((prev) => ({ ...prev, companySize: value }))}
           >
-            <option value="">선택</option>
-            {COMPANY_SIZES.map((s) => (
-              <option key={s} value={s}>
-                {s}
-              </option>
-            ))}
-          </select>
-          <p className="min-h-4 text-xs text-destructive">{errors.companySize}</p>
+            <SelectTrigger className="w-full h-9" aria-label="기업 규모 선택">
+              <SelectValue placeholder="선택" />
+            </SelectTrigger>
+            <SelectContent>
+              {COMPANY_SIZES.map((s) => (
+                <SelectItem key={s} value={s}>
+                  {s}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          {errors.companySize && (
+            <p className="text-xs text-destructive">{errors.companySize}</p>
+          )}
         </div>
 
-        <div className="flex flex-col gap-1">
-          <label htmlFor="status" className="text-xs text-muted-foreground">
-            상태
-          </label>
-          <select
-            id="status"
-            className={inputClass}
+        {/* 지원 상태 */}
+        <div className="flex flex-col gap-1.5">
+          <label className="text-xs text-muted-foreground">지원 상태</label>
+          <Select
             value={form.status}
-            onChange={(e) => setForm((prev) => ({ ...prev, status: e.target.value }))}
+            onValueChange={(value) => setForm((prev) => ({ ...prev, status: value }))}
           >
-            {APPLICATION_STATUSES.map((s) => (
-              <option key={s} value={s}>
-                {s}
-              </option>
-            ))}
-          </select>
-          <p className="min-h-4 text-xs text-destructive">{errors.status}</p>
+            <SelectTrigger className="w-full h-9" aria-label="지원 상태 선택">
+              <SelectValue placeholder="선택" />
+            </SelectTrigger>
+            <SelectContent>
+              {APPLICATION_STATUSES.map((s) => (
+                <SelectItem key={s} value={s}>
+                  {s}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          {errors.status && (
+            <p className="text-xs text-destructive">{errors.status}</p>
+          )}
         </div>
       </div>
 
+      {/* 자기소개서 항목 */}
       {form.coverLetters.length > 0 && (
-        <div className="mt-4 flex flex-col gap-3">
-          <p className="min-h-4 text-xs text-destructive">{errors.coverLetters}</p>
+        <div className="mt-5 flex flex-col gap-3">
+          {errors.coverLetters && (
+            <p className="text-xs text-destructive">{errors.coverLetters}</p>
+          )}
           {form.coverLetters.map((cl, idx) => (
             <div key={cl.id} className="flex flex-col gap-2 rounded-xl bg-muted/30 p-4">
               <div className="flex items-center justify-between">
@@ -206,7 +230,7 @@ export function NewApplicationForm() {
         </div>
       )}
 
-      <div className="mt-4 flex gap-2">
+      <div className="mt-5 flex gap-2">
         <Button type="button" variant="outline" className="gap-1.5" onClick={addCoverLetter}>
           <PlusIcon />
           질문 추가

@@ -18,11 +18,16 @@ const futureDateStr = () => {
   return d.toISOString().split('T')[0];
 };
 
+// shadcn Select(Radix)는 combobox role로 렌더링됨
+// label htmlFor 연결 대신 aria-label로 쿼리
 function fillRequiredFields() {
   fireEvent.change(screen.getByLabelText('회사명'), { target: { value: '네이버' } });
   fireEvent.change(screen.getByLabelText('경력'), { target: { value: '신입' } });
   fireEvent.change(screen.getByLabelText('마감일'), { target: { value: futureDateStr() } });
-  fireEvent.change(screen.getByLabelText('기업 규모'), { target: { value: '대기업' } });
+
+  // 기업 규모 Select: 트리거 클릭 → 옵션 즉시 렌더링 확인 후 클릭
+  fireEvent.click(screen.getByRole('combobox', { name: '기업 규모 선택' }));
+  fireEvent.click(screen.getByRole('option', { name: '대기업' }));
 }
 
 describe('NewApplicationForm', () => {
@@ -36,8 +41,8 @@ describe('NewApplicationForm', () => {
     expect(screen.getByLabelText('회사명')).toBeInTheDocument();
     expect(screen.getByLabelText('경력')).toBeInTheDocument();
     expect(screen.getByLabelText('마감일')).toBeInTheDocument();
-    expect(screen.getByLabelText('기업 규모')).toBeInTheDocument();
-    expect(screen.getByLabelText('상태')).toBeInTheDocument();
+    expect(screen.getByRole('combobox', { name: '기업 규모 선택' })).toBeInTheDocument();
+    expect(screen.getByRole('combobox', { name: '지원 상태 선택' })).toBeInTheDocument();
   });
 
   it('필수 필드 비우고 제출 → 에러 메시지 표시', async () => {
