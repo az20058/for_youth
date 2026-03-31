@@ -56,7 +56,7 @@ export default async function ApplicationDetailPage({
                   variant={statusBadgeVariant(application.status)}
                   className={
                     application.status === '지원 완료'
-                      ? 'bg-teal-500 text-white hover:bg-teal-500/80'
+                      ? 'bg-teal-500 text-white'
                       : ''
                   }
                 >
