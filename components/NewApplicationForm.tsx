@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { PlusIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { createApplication } from '@/app/applications/actions';
@@ -32,6 +33,7 @@ const INITIAL_FORM: FormState = {
 };
 
 export function NewApplicationForm() {
+  const router = useRouter();
   const [form, setForm] = useState<FormState>(INITIAL_FORM);
   const [errors, setErrors] = useState<FormErrors>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -46,8 +48,7 @@ export function NewApplicationForm() {
     setIsSubmitting(true);
     try {
       await createApplication(form as NewApplicationData);
-      setForm(INITIAL_FORM);
-      setErrors({});
+      router.push('/applications');
     } finally {
       setIsSubmitting(false);
     }

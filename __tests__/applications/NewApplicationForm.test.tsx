@@ -2,8 +2,14 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { NewApplicationForm } from '@/components/NewApplicationForm';
 import * as actions from '@/app/applications/actions';
 
+const mockPush = jest.fn();
+
 jest.mock('@/app/applications/actions', () => ({
   createApplication: jest.fn().mockResolvedValue({}),
+}));
+
+jest.mock('next/navigation', () => ({
+  useRouter: () => ({ push: mockPush }),
 }));
 
 const futureDateStr = () => {
@@ -22,6 +28,7 @@ function fillRequiredFields() {
 describe('NewApplicationForm', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    mockPush.mockClear();
   });
 
   it('폼이 렌더링된다', () => {
@@ -64,12 +71,12 @@ describe('NewApplicationForm', () => {
     );
   });
 
-  it('제출 성공 후 폼 초기화', async () => {
+  it('제출 성공 후 /applications로 이동', async () => {
     render(<NewApplicationForm />);
     fillRequiredFields();
     fireEvent.click(screen.getByRole('button', { name: '저장' }));
     await waitFor(() => {
-      expect((screen.getByLabelText('회사명') as HTMLInputElement).value).toBe('');
+      expect(mockPush).toHaveBeenCalledWith('/applications');
     });
   });
 
