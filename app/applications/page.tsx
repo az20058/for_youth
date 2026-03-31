@@ -1,11 +1,11 @@
 import Link from "next/link";
 import {
-  PlusIcon,
   BriefcaseIcon,
   CalendarIcon,
   CircleDotIcon,
   BuildingIcon,
 } from "lucide-react";
+import { NewApplicationForm } from "@/components/NewApplicationForm";
 
 import {
   Card,
@@ -48,6 +48,8 @@ export default function ApplicationsPage() {
 
   return (
     <main className="py-8">
+      <NewApplicationForm />
+
       {/* 헤더 */}
       <div className="flex items-start justify-between">
         <div>
@@ -56,12 +58,6 @@ export default function ApplicationsPage() {
             총 {apps.length}개의 지원서
           </p>
         </div>
-        <Link
-          href="/applications/new"
-          className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 h-9 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/80"
-        >
-          <PlusIcon className="size-4" />새 지원서 추가
-        </Link>
       </div>
 
       {/* 지원서 목록 */}
