@@ -99,9 +99,7 @@ export function NewApplicationForm() {
             onChange={(e) => setForm((prev) => ({ ...prev, companyName: e.target.value }))}
             placeholder="회사명"
           />
-          {errors.companyName && (
-            <p className="text-xs text-destructive">{errors.companyName}</p>
-          )}
+          <p className="min-h-4 text-xs text-destructive">{errors.companyName}</p>
         </div>
 
         <div className="flex flex-col gap-1">
@@ -115,9 +113,7 @@ export function NewApplicationForm() {
             onChange={(e) => setForm((prev) => ({ ...prev, careerLevel: e.target.value }))}
             placeholder="신입 / 경력 N년"
           />
-          {errors.careerLevel && (
-            <p className="text-xs text-destructive">{errors.careerLevel}</p>
-          )}
+          <p className="min-h-4 text-xs text-destructive">{errors.careerLevel}</p>
         </div>
 
         <div className="flex flex-col gap-1">
@@ -131,9 +127,7 @@ export function NewApplicationForm() {
             value={form.deadline}
             onChange={(e) => setForm((prev) => ({ ...prev, deadline: e.target.value }))}
           />
-          {errors.deadline && (
-            <p className="text-xs text-destructive">{errors.deadline}</p>
-          )}
+          <p className="min-h-4 text-xs text-destructive">{errors.deadline}</p>
         </div>
 
         <div className="flex flex-col gap-1">
@@ -153,9 +147,7 @@ export function NewApplicationForm() {
               </option>
             ))}
           </select>
-          {errors.companySize && (
-            <p className="text-xs text-destructive">{errors.companySize}</p>
-          )}
+          <p className="min-h-4 text-xs text-destructive">{errors.companySize}</p>
         </div>
 
         <div className="flex flex-col gap-1">
@@ -174,17 +166,13 @@ export function NewApplicationForm() {
               </option>
             ))}
           </select>
-          {errors.status && (
-            <p className="text-xs text-destructive">{errors.status}</p>
-          )}
+          <p className="min-h-4 text-xs text-destructive">{errors.status}</p>
         </div>
       </div>
 
       {form.coverLetters.length > 0 && (
         <div className="mt-4 flex flex-col gap-3">
-          {errors.coverLetters && (
-            <p className="text-xs text-destructive">{errors.coverLetters}</p>
-          )}
+          <p className="min-h-4 text-xs text-destructive">{errors.coverLetters}</p>
           {form.coverLetters.map((cl, idx) => (
             <div key={cl.id} className="flex flex-col gap-2 rounded-xl bg-muted/30 p-4">
               <div className="flex items-center justify-between">
