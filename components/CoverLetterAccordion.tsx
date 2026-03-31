@@ -4,10 +4,10 @@ import { countCharacters } from '@/lib/coverLetter';
 import { COVER_LETTER_TYPES } from '@/lib/coverLetterType';
 import type { CoverLetterType } from '@/lib/types';
 import {
-  AccordionRoot,
+  Accordion,
   AccordionItem,
   AccordionTrigger,
-  AccordionPanel,
+  AccordionContent,
 } from '@/components/ui/accordion';
 import {
   Select,
@@ -37,29 +37,27 @@ export function CoverLetterAccordion({
   onTypeChange,
 }: CoverLetterAccordionProps) {
   return (
-    <AccordionRoot>
+    <Accordion type="single" collapsible>
       <AccordionItem value={id}>
         <AccordionTrigger>
           <span className="flex-1 truncate">{question || '새 질문'}</span>
         </AccordionTrigger>
-        <AccordionPanel>
+        <AccordionContent>
           <div className="flex flex-col gap-4">
             {/* 타입 선택 */}
             <div className="flex flex-col gap-1.5">
               <label className="text-xs text-muted-foreground">유형</label>
               <Select
-                value={type ?? ''}
+                value={type ?? '__none__'}
                 onValueChange={(value) =>
-                  onTypeChange(id, (value as CoverLetterType) || null)
+                  onTypeChange(id, value === '__none__' ? null : (value as CoverLetterType))
                 }
               >
                 <SelectTrigger className="w-full" aria-label="유형 선택">
-                  <SelectValue placeholder="미지정">
-                    {type ?? '미지정'}
-                  </SelectValue>
+                  <SelectValue placeholder="미지정" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">미지정</SelectItem>
+                  <SelectItem value="__none__">미지정</SelectItem>
                   {COVER_LETTER_TYPES.map((t) => (
                     <SelectItem key={t} value={t}>
                       {t}
@@ -96,8 +94,8 @@ export function CoverLetterAccordion({
               />
             </div>
           </div>
-        </AccordionPanel>
+        </AccordionContent>
       </AccordionItem>
-    </AccordionRoot>
+    </Accordion>
   );
 }
