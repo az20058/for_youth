@@ -86,6 +86,14 @@ describe('NewApplicationForm', () => {
     expect(screen.getByLabelText('자기소개서 1 질문')).toBeInTheDocument();
   });
 
+  it('삭제 버튼 클릭 → 자기소개서 항목 제거', () => {
+    render(<NewApplicationForm />);
+    fireEvent.click(screen.getByRole('button', { name: /질문 추가/ }));
+    expect(screen.getByLabelText('자기소개서 1 질문')).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: '자기소개서 1 삭제' }));
+    expect(screen.queryByLabelText('자기소개서 1 질문')).not.toBeInTheDocument();
+  });
+
   it('coverLetter 추가 후 question 비우고 제출 → 에러 메시지', async () => {
     render(<NewApplicationForm />);
     fillRequiredFields();

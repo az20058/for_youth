@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { PlusIcon } from 'lucide-react';
+import { PlusIcon, Trash2Icon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { createApplication } from '@/app/applications/actions';
 import {
@@ -70,6 +70,13 @@ export function NewApplicationForm() {
       coverLetters: prev.coverLetters.map((cl) =>
         cl.id === id ? { ...cl, [field]: value } : cl,
       ),
+    }));
+  }
+
+  function removeCoverLetter(id: string) {
+    setForm((prev) => ({
+      ...prev,
+      coverLetters: prev.coverLetters.filter((cl) => cl.id !== id),
     }));
   }
 
@@ -180,7 +187,18 @@ export function NewApplicationForm() {
           )}
           {form.coverLetters.map((cl, idx) => (
             <div key={cl.id} className="flex flex-col gap-2 rounded-xl bg-muted/30 p-4">
-              <span className="text-xs text-muted-foreground">자기소개서 {idx + 1}</span>
+              <div className="flex items-center justify-between">
+                <span className="text-xs text-muted-foreground">자기소개서 {idx + 1}</span>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  aria-label={`자기소개서 ${idx + 1} 삭제`}
+                  onClick={() => removeCoverLetter(cl.id)}
+                >
+                  <Trash2Icon className="size-4 text-muted-foreground" />
+                </Button>
+              </div>
               <input
                 aria-label={`자기소개서 ${idx + 1} 질문`}
                 className={inputClass}
