@@ -1,0 +1,25 @@
+import type { Application } from './types';
+import type { NewApplicationData } from './applicationValidation';
+
+type ApplicationDTO = Omit<Application, 'deadline'> & { deadline: string };
+
+export async function fetchApplications(): Promise<Application[]> {
+  const res = await fetch('/api/applications');
+  if (!res.ok) throw new Error('지원서 목록을 불러오지 못했습니다.');
+  const data: ApplicationDTO[] = await res.json();
+  return data.map((app) => ({ ...app, deadline: new Date(app.deadline) }));
+}
+
+export async function postApplication(data: NewApplicationData): Promise<Application> {
+  const res = await fetch('/api/applications', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data),
+  });
+  if (!res.ok) {
+    const body = await res.json();
+    throw body;
+  }
+  const result: ApplicationDTO = await res.json();
+  return { ...result, deadline: new Date(result.deadline) };
+}
