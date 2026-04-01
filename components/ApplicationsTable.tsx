@@ -226,7 +226,7 @@ export function ApplicationsTable() {
           </TableHeader>
           <TableBody>
             {isAddingRow && (
-              <TableRow className="bg-muted/20 hover:bg-muted/20">
+              <TableRow className="hidden md:table-row bg-muted/20 hover:bg-muted/20">
                 <TableCell>
                   <input
                     ref={firstInputRef}
@@ -350,7 +350,7 @@ export function ApplicationsTable() {
           <button
             type="button"
             onClick={startAdding}
-            className="w-full py-2 px-4 flex items-center gap-1 text-muted-foreground text-sm hover:bg-muted/30 transition-colors border-t border-foreground/5"
+            className="hidden md:flex w-full py-2 px-4 items-center gap-1 text-muted-foreground text-sm hover:bg-muted/30 transition-colors border-t border-foreground/5"
           >
             <PlusIcon className="size-3.5" />
             <span>새 행</span>
