@@ -19,6 +19,7 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import { calculateDDay, formatDDay } from '@/lib/dday';
+import { statusBadgeClass } from '@/lib/statusBadge';
 import type { Application, ApplicationStatus } from '@/lib/types';
 
 const STATUS_ORDER: Record<ApplicationStatus, number> = {
@@ -32,19 +33,6 @@ const STATUS_ORDER: Record<ApplicationStatus, number> = {
   '면접 탈락': 7,
 };
 
-function statusClass(status: ApplicationStatus): string {
-  switch (status) {
-    case '지원 완료':
-    case '최종 합격':
-      return 'bg-teal-500 text-white border-transparent';
-    case '서류 탈락':
-    case '코테 탈락':
-    case '면접 탈락':
-      return 'opacity-50';
-    default:
-      return '';
-  }
-}
 
 const columns: ColumnDef<Application, unknown>[] = [
   {
@@ -77,7 +65,7 @@ const columns: ColumnDef<Application, unknown>[] = [
     cell: ({ getValue }) => {
       const status = getValue<ApplicationStatus>();
       return (
-        <Badge className={cn('whitespace-nowrap text-xs', statusClass(status))}>{status}</Badge>
+        <Badge className={cn('whitespace-nowrap text-xs', statusBadgeClass(status))}>{status}</Badge>
       );
     },
     meta: { className: 'text-right' },

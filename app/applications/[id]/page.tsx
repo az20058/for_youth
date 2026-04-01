@@ -6,18 +6,7 @@ import { formatDeadline } from '@/lib/deadline';
 import { calculateDDay, formatDDay } from '@/lib/dday';
 import { Badge } from '@/components/ui/badge';
 import { CoverLetterList } from './CoverLetterList';
-import type { ApplicationStatus } from '@/lib/types';
-
-function statusBadgeVariant(status: ApplicationStatus): 'default' | 'secondary' {
-  switch (status) {
-    case '서류 탈락':
-    case '코테 탈락':
-    case '면접 탈락':
-      return 'secondary';
-    default:
-      return 'default';
-  }
-}
+import { statusBadgeClass } from '@/lib/statusBadge';
 
 export default async function ApplicationDetailPage({
   params,
@@ -52,14 +41,7 @@ export default async function ApplicationDetailPage({
                 {application.companyName}
               </h1>
               <div className="flex flex-wrap gap-2">
-                <Badge
-                  variant={statusBadgeVariant(application.status)}
-                  className={
-                    application.status === '지원 완료'
-                      ? 'bg-teal-500 text-white'
-                      : ''
-                  }
-                >
+                <Badge className={statusBadgeClass(application.status)}>
                   <CircleDotIcon />
                   {application.status}
                 </Badge>
