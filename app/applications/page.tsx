@@ -2,6 +2,7 @@ import Link from "next/link";
 import { PlusIcon } from "lucide-react";
 
 import { ApplicationsTable } from "@/components/ApplicationsTable";
+import { NavTabs } from "@/components/NavTabs";
 
 export default function ApplicationsPage() {
   return (
@@ -16,9 +17,9 @@ export default function ApplicationsPage() {
         </Link>
       </div>
 
-      <div className="mt-6">
-        <ApplicationsTable />
-      </div>
+      <NavTabs />
+
+      <ApplicationsTable />
     </main>
   );
 }
