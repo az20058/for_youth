@@ -30,6 +30,7 @@ interface FormState {
   companySize: string;
   status: string;
   coverLetters: CoverLetterDraft[];
+  url: string;
 }
 
 const INITIAL_FORM: FormState = {
@@ -39,6 +40,7 @@ const INITIAL_FORM: FormState = {
   companySize: '',
   status: '지원 예정',
   coverLetters: [],
+  url: '',
 };
 
 const inputClass =
@@ -55,6 +57,7 @@ export function NewApplicationForm() {
     const data: NewApplicationData = {
       ...form,
       deadline: form.deadline ? format(form.deadline, 'yyyy-MM-dd') : '',
+      url: form.url || undefined,
     };
     const validationErrors = validateApplication(data);
     if (Object.keys(validationErrors).length > 0) {
@@ -191,6 +194,21 @@ export function NewApplicationForm() {
           {errors.status && (
             <p className="text-xs text-destructive">{errors.status}</p>
           )}
+        </div>
+
+        {/* 채용 공고 URL */}
+        <div className="flex flex-col gap-1.5 sm:col-span-2">
+          <label htmlFor="url" className="text-xs text-muted-foreground">
+            채용 공고 URL <span className="text-muted-foreground/50">(선택)</span>
+          </label>
+          <input
+            id="url"
+            type="url"
+            className={inputClass}
+            value={form.url}
+            onChange={(e) => setForm((prev) => ({ ...prev, url: e.target.value }))}
+            placeholder="https://..."
+          />
         </div>
       </div>
 

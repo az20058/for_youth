@@ -1,6 +1,6 @@
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
-import { ArrowLeftIcon, BriefcaseIcon, BuildingIcon, CalendarIcon, CircleDotIcon } from 'lucide-react';
+import { ArrowLeftIcon, BriefcaseIcon, BuildingIcon, CalendarIcon, CircleDotIcon, ExternalLinkIcon } from 'lucide-react';
 import { getApplicationById } from '@/lib/applications';
 import { formatDeadline } from '@/lib/deadline';
 import { calculateDDay, formatDDay } from '@/lib/dday';
@@ -74,6 +74,18 @@ export default async function ApplicationDetailPage({
               <CalendarIcon className="size-3" />
               {formatDeadline(application.deadline)}
             </Badge>
+            {application.url && (
+              <a
+                href={application.url}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <Badge variant="outline" className="gap-1">
+                  <ExternalLinkIcon className="size-3" />
+                  채용 공고
+                </Badge>
+              </a>
+            )}
           </div>
         </div>
 

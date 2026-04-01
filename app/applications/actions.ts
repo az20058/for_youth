@@ -29,6 +29,7 @@ export async function createApplication(
       answer: cl.answer,
       type: cl.type,
     })),
+    url: data.url || undefined,
   });
 
   revalidatePath('/applications');

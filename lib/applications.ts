@@ -91,6 +91,7 @@ export function addApplication(data: {
   companySize: CompanySize;
   status: ApplicationStatus;
   coverLetters: CoverLetterQA[];
+  url?: string;
 }): Application {
   const newApp: Application = {
     id: String(Date.now()),

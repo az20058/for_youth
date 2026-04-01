@@ -36,6 +36,7 @@ export interface Application {
   companySize: CompanySize;
   coverLetters: CoverLetterQA[];
   status: ApplicationStatus;
+  url?: string;
 }
 
 export interface CoverLetterWithApplication {

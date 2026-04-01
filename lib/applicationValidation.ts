@@ -26,6 +26,7 @@ export interface NewApplicationData {
   companySize: string;
   status: string;
   coverLetters: CoverLetterDraft[];
+  url?: string;
 }
 
 export interface FormErrors {
