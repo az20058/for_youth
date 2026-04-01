@@ -2,12 +2,11 @@ import Link from "next/link";
 import { PlusIcon } from "lucide-react";
 
 import { ApplicationsTable } from "@/components/ApplicationsTable";
-import { NavTabs } from "@/components/NavTabs";
 
 export default function ApplicationsPage() {
   return (
     <main className="py-8">
-      <div className="flex items-start justify-between">
+      <div className="flex items-start justify-between mb-6">
         <h1 className="text-2xl font-bold tracking-tight">입사 지원 현황</h1>
         <Link
           href="/applications/new"
@@ -16,9 +15,6 @@ export default function ApplicationsPage() {
           <PlusIcon className="size-4" />새 지원서 추가
         </Link>
       </div>
-
-      <NavTabs />
-
       <ApplicationsTable />
     </main>
   );
