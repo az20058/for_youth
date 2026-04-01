@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { PlusIcon } from "lucide-react";
 
-import { ApplicationsTable } from "@/components/ApplicationsTable";
+import { ApplicationsTable } from "./components/ApplicationsTable";
 
 export default function ApplicationsPage() {
   return (

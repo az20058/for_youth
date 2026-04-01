@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { ArrowLeftIcon } from 'lucide-react';
-import { NewApplicationForm } from '@/components/NewApplicationForm';
+import { NewApplicationForm } from './components/NewApplicationForm';
 
 export default function NewApplicationPage() {
   return (

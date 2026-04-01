@@ -5,7 +5,7 @@ import { getApplicationById } from '@/lib/applications';
 import { formatDeadline } from '@/lib/deadline';
 import { calculateDDay, formatDDay } from '@/lib/dday';
 import { Badge } from '@/components/ui/badge';
-import { CoverLetterList } from './CoverLetterList';
+import { CoverLetterList } from './components/CoverLetterList';
 import { statusBadgeClass } from '@/lib/statusBadge';
 
 export default async function ApplicationDetailPage({

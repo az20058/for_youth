@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { PlusIcon } from 'lucide-react';
 import type { CoverLetterQA, CoverLetterType } from '@/lib/types';
-import { CoverLetterAccordion } from '@/components/CoverLetterAccordion';
+import { CoverLetterAccordion } from './CoverLetterAccordion';
 import { Button } from '@/components/ui/button';
 
 interface CoverLetterListProps {
