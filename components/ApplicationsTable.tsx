@@ -1,12 +1,12 @@
 'use client';
 
+import Link from 'next/link';
 import {
   useReactTable,
   getCoreRowModel,
   flexRender,
   type ColumnDef,
 } from '@tanstack/react-table';
-import { useRouter } from 'next/navigation';
 
 import {
   Table,
@@ -38,8 +38,13 @@ const columns: ColumnDef<Application, unknown>[] = [
   {
     accessorKey: 'companyName',
     header: '회사명',
-    cell: ({ getValue }) => (
-      <span className="font-medium">{getValue<string>()}</span>
+    cell: ({ getValue, row }) => (
+      <Link
+        href={`/applications/${row.original.id}`}
+        className="font-medium after:absolute after:inset-0"
+      >
+        {getValue<string>()}
+      </Link>
     ),
   },
   {
@@ -77,7 +82,6 @@ interface Props {
 }
 
 export function ApplicationsTable({ applications }: Props) {
-  const router = useRouter();
   const sorted = [...applications].sort((a, b) => {
     const statusDiff = STATUS_ORDER[a.status] - STATUS_ORDER[b.status];
     if (statusDiff !== 0) return statusDiff;
@@ -115,11 +119,7 @@ export function ApplicationsTable({ applications }: Props) {
             </TableRow>
           ) : (
             table.getRowModel().rows.map((row) => (
-              <TableRow
-                key={row.id}
-                className="cursor-pointer"
-                onClick={() => router.push(`/applications/${row.original.id}`)}
-              >
+              <TableRow key={row.id} className="relative">
                 {row.getVisibleCells().map((cell) => {
                   const meta = cell.column.columnDef.meta as { className?: string } | undefined;
                   return (

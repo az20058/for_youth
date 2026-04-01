@@ -46,10 +46,10 @@ describe('ApplicationsTable', () => {
     expect(screen.getByRole('cell', { name: '토스' })).toBeInTheDocument();
   });
 
-  it('행 클릭 시 해당 상세 페이지로 이동한다', () => {
+  it('회사명에 상세 페이지 링크가 있다', () => {
     render(<ApplicationsTable applications={mockApps} />);
-    fireEvent.click(screen.getByRole('cell', { name: '네이버' }));
-    expect(mockPush).toHaveBeenCalledWith('/applications/1');
+    const link = screen.getByRole('link', { name: '네이버' });
+    expect(link).toHaveAttribute('href', '/applications/1');
   });
 
   it('데이터가 없으면 빈 상태 메시지를 표시한다', () => {
