@@ -1,0 +1,60 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../lib/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Application {
+  id           String            @id @default(cuid())
+  companyName  String
+  careerLevel  String
+  deadline     DateTime
+  companySize  CompanySize
+  status       ApplicationStatus @default(PENDING)
+  url          String?
+  coverLetters CoverLetter[]
+  createdAt    DateTime          @default(now())
+  updatedAt    DateTime          @updatedAt
+}
+
+model CoverLetter {
+  id            String           @id @default(cuid())
+  question      String
+  answer        String           @default("")
+  type          CoverLetterType?
+  application   Application      @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  applicationId String
+}
+
+enum ApplicationStatus {
+  PENDING            // 지원 예정
+  CODING_TEST        // 코테 기간
+  INTERVIEW          // 면접 기간
+  APPLIED            // 지원 완료
+  ACCEPTED           // 최종 합격
+  REJECTED_DOCS      // 서류 탈락
+  REJECTED_CODING    // 코테 탈락
+  REJECTED_INTERVIEW // 면접 탈락
+}
+
+enum CompanySize {
+  LARGE     // 대기업
+  MID_LARGE // 중견기업
+  MID       // 중소기업
+  STARTUP   // 스타트업
+}
+
+enum CoverLetterType {
+  MOTIVATION   // 지원 동기
+  GROWTH       // 성장 과정
+  JOB_SKILLS   // 직무 역량
+  PERSONALITY  // 성격 장단점
+  SUCCESS      // 성공 경험
+  FAILURE      // 실패 경험
+  TEAMWORK     // 팀워크 경험
+  FUTURE_GOALS // 입사 후 포부
+  OTHER        // 기타
+}
