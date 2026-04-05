@@ -1,36 +1,85 @@
-import { getApplications, addApplication } from '@/lib/applications';
+import { prisma } from '@/lib/db';
 import { validateApplication, type NewApplicationData } from '@/lib/applicationValidation';
-import type { ApplicationStatus, CompanySize } from '@/lib/types';
+import {
+  STATUS_FROM_DB,
+  STATUS_TO_DB,
+  SIZE_FROM_DB,
+  SIZE_TO_DB,
+  COVER_LETTER_TYPE_FROM_DB,
+  COVER_LETTER_TYPE_TO_DB,
+} from '@/lib/enumMaps';
+import type { CoverLetterType } from '@/lib/types';
 
-export function GET() {
-  const apps = getApplications();
+export async function GET() {
+  const apps = await prisma.application.findMany({
+    include: { coverLetters: true },
+    orderBy: { createdAt: 'desc' },
+  });
+
   return Response.json(
-    apps.map((app) => ({ ...app, deadline: app.deadline.toISOString() })),
+    apps.map((app) => ({
+      id: app.id,
+      companyName: app.companyName,
+      careerLevel: app.careerLevel,
+      deadline: app.deadline.toISOString(),
+      companySize: SIZE_FROM_DB[app.companySize],
+      status: STATUS_FROM_DB[app.status],
+      url: app.url ?? undefined,
+      coverLetters: app.coverLetters.map((cl) => ({
+        id: cl.id,
+        question: cl.question,
+        answer: cl.answer,
+        type: cl.type ? COVER_LETTER_TYPE_FROM_DB[cl.type] : null,
+      })),
+    })),
   );
 }
 
 export async function POST(request: Request) {
   const data: NewApplicationData = await request.json();
+
   const errors = validateApplication(data);
   if (Object.keys(errors).length > 0) {
     return Response.json({ errors }, { status: 400 });
   }
-  const newApp = addApplication({
-    companyName: data.companyName,
-    careerLevel: data.careerLevel,
-    deadline: new Date(data.deadline),
-    companySize: data.companySize as CompanySize,
-    status: data.status as ApplicationStatus,
-    coverLetters: data.coverLetters.map((cl, i) => ({
-      id: cl.id || `cl-${Date.now()}-${i}`,
-      question: cl.question,
-      answer: cl.answer,
-      type: cl.type,
-    })),
-    url: data.url || undefined,
+
+  const app = await prisma.application.create({
+    data: {
+      companyName: data.companyName,
+      careerLevel: data.careerLevel,
+      deadline: new Date(data.deadline),
+      companySize: SIZE_TO_DB[data.companySize as keyof typeof SIZE_TO_DB],
+      status: STATUS_TO_DB[data.status as keyof typeof STATUS_TO_DB],
+      url: data.url || null,
+      coverLetters: {
+        createMany: {
+          data: data.coverLetters.map((cl) => ({
+            question: cl.question,
+            answer: cl.answer,
+            type: cl.type ? COVER_LETTER_TYPE_TO_DB[cl.type as CoverLetterType] : null,
+          })),
+        },
+      },
+    },
+    include: { coverLetters: true },
   });
+
   return Response.json(
-    { ...newApp, deadline: newApp.deadline.toISOString() },
+    {
+      id: app.id,
+      companyName: app.companyName,
+      careerLevel: app.careerLevel,
+      deadline: app.deadline.toISOString(),
+      companySize: SIZE_FROM_DB[app.companySize],
+      status: STATUS_FROM_DB[app.status],
+      url: app.url ?? undefined,
+      coverLetters: app.coverLetters.map((cl) => ({
+        id: cl.id,
+        question: cl.question,
+        answer: cl.answer,
+        type: cl.type ? COVER_LETTER_TYPE_FROM_DB[cl.type] : null,
+      })),
+    },
     { status: 201 },
   );
 }
