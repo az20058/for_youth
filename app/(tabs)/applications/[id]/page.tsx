@@ -1,7 +1,8 @@
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowLeftIcon, BriefcaseIcon, BuildingIcon, CalendarIcon, CircleDotIcon, ExternalLinkIcon } from 'lucide-react';
-import { getApplicationById } from '@/lib/applications';
+import { prisma } from '@/lib/db';
+import { STATUS_FROM_DB, SIZE_FROM_DB, COVER_LETTER_TYPE_FROM_DB } from '@/lib/enumMaps';
 import { formatDeadline } from '@/lib/deadline';
 import { calculateDDay, formatDDay } from '@/lib/dday';
 import { Badge } from '@/components/ui/badge';
@@ -14,11 +15,25 @@ export default async function ApplicationDetailPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const application = getApplicationById(id);
+  const raw = await prisma.application.findUnique({
+    where: { id },
+    include: { coverLetters: true },
+  });
 
-  if (!application) {
-    notFound();
-  }
+  if (!raw) notFound();
+
+  const application = {
+    ...raw,
+    companySize: SIZE_FROM_DB[raw.companySize],
+    status: STATUS_FROM_DB[raw.status],
+    url: raw.url ?? undefined,
+    coverLetters: raw.coverLetters.map((cl) => ({
+      id: cl.id,
+      question: cl.question,
+      answer: cl.answer,
+      type: cl.type ? COVER_LETTER_TYPE_FROM_DB[cl.type] : null,
+    })),
+  };
 
   const dday = calculateDDay(application.deadline);
 
@@ -99,7 +114,7 @@ export default async function ApplicationDetailPage({
               {application.coverLetters.length}개 항목
             </span>
           </div>
-          <CoverLetterList initialCoverLetters={application.coverLetters} />
+          <CoverLetterList applicationId={id} initialCoverLetters={application.coverLetters} />
         </section>
       </div>
     </main>
