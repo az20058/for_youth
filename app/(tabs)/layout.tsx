@@ -1,5 +1,6 @@
 import { AppSidebar } from '@/components/AppSidebar';
 import { MobileHeader } from '@/components/MobileHeader';
+import { Toaster } from '@/components/ui/sonner';
 
 export default function TabsLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -11,6 +12,7 @@ export default function TabsLayout({ children }: { children: React.ReactNode }) 
           {children}
         </div>
       </div>
+      <Toaster position="top-right" />
     </div>
   );
 }
