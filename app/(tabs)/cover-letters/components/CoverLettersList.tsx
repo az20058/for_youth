@@ -6,6 +6,12 @@ import { useQuery } from '@tanstack/react-query';
 import { cn } from '@/lib/utils';
 import { fetchApplications } from '@/lib/api';
 import type { CoverLetterType, CoverLetterWithApplication } from '@/lib/types';
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from '@/components/ui/accordion';
 
 const ALL_TYPES: (CoverLetterType | '전체')[] = [
   '전체',
@@ -79,32 +85,40 @@ export function CoverLettersList() {
       {filtered.length === 0 ? (
         <p className="text-sm text-muted-foreground py-12 text-center">자기소개서가 없습니다.</p>
       ) : (
-        <div className="flex flex-col gap-3">
+        <Accordion type="multiple" className="flex flex-col gap-2">
           {filtered.map((cl) => (
-            <div
+            <AccordionItem
               key={cl.coverLetterId}
-              className="rounded-xl border border-foreground/10 p-4 flex flex-col gap-2"
+              value={cl.coverLetterId}
+              className="border rounded-xl px-1 overflow-hidden"
             >
-              <div className="flex items-center gap-2">
-                {cl.type && (
-                  <span className="text-xs font-medium bg-muted px-2 py-0.5 rounded-full">
-                    {cl.type}
+              <AccordionTrigger className="px-3 hover:no-underline gap-3">
+                <div className="flex flex-1 items-center gap-2 min-w-0">
+                  {cl.type && (
+                    <span className="text-xs text-muted-foreground bg-muted px-2 py-0.5 rounded-full shrink-0">
+                      {cl.type}
+                    </span>
+                  )}
+                  <Link
+                    href={`/applications/${cl.applicationId}`}
+                    onClick={(e) => e.stopPropagation()}
+                    className="text-xs text-muted-foreground hover:text-foreground transition-colors shrink-0"
+                  >
+                    {cl.companyName}
+                  </Link>
+                  <span className="flex-1 truncate text-sm text-left font-medium">
+                    {cl.question || '제목 없음'}
                   </span>
-                )}
-                <Link
-                  href={`/applications/${cl.applicationId}`}
-                  className="text-xs text-muted-foreground hover:text-foreground transition-colors"
-                >
-                  {cl.companyName}
-                </Link>
-              </div>
-              <p className="text-sm font-medium">{cl.question}</p>
-              <p className="text-sm text-muted-foreground whitespace-pre-line line-clamp-3">
-                {cl.answer}
-              </p>
-            </div>
+                </div>
+              </AccordionTrigger>
+              <AccordionContent className="px-3 pb-4">
+                <p className="text-sm text-muted-foreground whitespace-pre-line">
+                  {cl.answer || '내용 없음'}
+                </p>
+              </AccordionContent>
+            </AccordionItem>
           ))}
-        </div>
+        </Accordion>
       )}
     </div>
   );
