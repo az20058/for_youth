@@ -6,7 +6,7 @@ import { STATUS_FROM_DB, SIZE_FROM_DB, COVER_LETTER_TYPE_FROM_DB } from '@/lib/e
 import { formatDeadline } from '@/lib/deadline';
 import { calculateDDay, formatDDay } from '@/lib/dday';
 import { Badge } from '@/components/ui/badge';
-import { CoverLetterList } from './components/CoverLetterList';
+import { CoverLetterList } from './_components/CoverLetterList';
 import { statusBadgeClass } from '@/lib/statusBadge';
 
 export default async function ApplicationDetailPage({

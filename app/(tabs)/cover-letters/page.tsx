@@ -1,4 +1,4 @@
-import { CoverLettersList } from './components/CoverLettersList';
+import { CoverLettersList } from './_components/CoverLettersList';
 
 export default function CoverLettersPage() {
   return (
