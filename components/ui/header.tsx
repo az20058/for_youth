@@ -1,5 +1,5 @@
 import { CircleUserRound } from "lucide-react";
-import { FlameIcon } from "@/components/quiz/FlameIcon";
+import { FlameIcon } from "@/app/quiz/_components/FlameIcon";
 import { Button } from "@/components/ui/button";
 
 interface HeaderProps {

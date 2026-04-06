@@ -159,8 +159,8 @@ export function QuizFlow() {
   const answer = answers[currentQuestion.id];
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="mx-auto w-full max-w-3xl px-4 sm:px-6 flex min-h-screen flex-col py-8">
+    <div className="h-dvh bg-background overflow-hidden">
+      <div className="mx-auto w-full max-w-3xl px-4 sm:px-6 flex h-full flex-col py-8">
         {/* Header */}
         <div className="flex items-center justify-between">
           <Button
@@ -202,7 +202,7 @@ export function QuizFlow() {
         </div>
 
         {/* Answer area */}
-        <div className="flex-1 flex flex-col gap-3">
+        <div className="flex-1 min-h-0 overflow-y-auto flex flex-col gap-3 p-0.5">
           {currentQuestion.type === "multi-choice" &&
             currentQuestion.options?.map((opt) => {
               const selected = (answer as string[] | undefined)?.includes(
@@ -274,7 +274,7 @@ export function QuizFlow() {
                 )
               }
               placeholder={currentQuestion.placeholder}
-              className="w-full h-14 rounded-xl bg-muted px-4 text-sm focus:outline-none focus:ring-1 focus:ring-primary"
+              className="w-full h-14 rounded-xl bg-muted px-4 text-sm focus:outline-none focus:ring-1 focus:ring-primary [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
             />
           )}
 
