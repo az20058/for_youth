@@ -30,10 +30,7 @@ export function MobileHeader() {
 
   return (
     <header className="md:hidden sticky top-0 z-40 bg-background/80 backdrop-blur-md border-b border-foreground/10">
-      <div className="px-4 h-12 flex items-center">
-        <span className="text-base font-bold tracking-tight">취업 관리</span>
-      </div>
-      <div className="relative flex border-t border-foreground/10">
+      <div className="relative flex">
         {indicator && (
           <span
             className={cn(
