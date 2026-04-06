@@ -2,17 +2,17 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, ExternalLink } from 'lucide-react';
 import { Header } from '@/components/ui/header';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import type { Recommendation } from '@/lib/quiz';
 
 const DEFAULT_HOT_PROGRAMS: Recommendation[] = [
-  { name: '청년내일채움공제', agency: '고용노동부', mainCategory: '취업·창업', category: '취업지원', description: '', matchReason: '', viewCount: 58420 },
-  { name: '청년도약계좌', agency: '금융위원회', mainCategory: '금융·자산형성', category: '금융지원', description: '', matchReason: '', viewCount: 41200 },
-  { name: '청년마음건강지원사업', agency: '보건복지부', mainCategory: '정신건강', category: '심리지원', description: '', matchReason: '', viewCount: 18900 },
-  { name: '청년월세 특별지원', agency: '국토교통부', mainCategory: '주거', category: '주거지원', description: '', matchReason: '', viewCount: 35800 },
+  { name: '청년내일채움공제', agency: '고용노동부', mainCategory: '취업·창업', category: '취업지원', description: '', matchReason: '', viewCount: 58420, applicationUrl: 'https://www.work.go.kr' },
+  { name: '청년도약계좌', agency: '금융위원회', mainCategory: '금융·자산형성', category: '금융지원', description: '', matchReason: '', viewCount: 41200, applicationUrl: 'https://www.kinfa.or.kr' },
+  { name: '청년마음건강지원사업', agency: '보건복지부', mainCategory: '정신건강', category: '심리지원', description: '', matchReason: '', viewCount: 18900, applicationUrl: 'https://www.mohw.go.kr' },
+  { name: '청년월세 특별지원', agency: '국토교통부', mainCategory: '주거', category: '주거지원', description: '', matchReason: '', viewCount: 35800, applicationUrl: 'https://www.myhome.go.kr' },
 ];
 
 export default function Home() {
@@ -72,12 +72,25 @@ export default function Home() {
             {hotPrograms.map((program) => (
               <Card key={program.name} className="bg-[#2D2D2D] border-0 ring-0">
                 <CardContent className="py-4 flex flex-col gap-2">
-                  <p className="text-white font-bold text-sm">{program.name}</p>
+                  <div className="flex items-center justify-between gap-2">
+                    <p className="text-white font-bold text-sm">{program.name}</p>
+                    {program.applicationUrl && (
+                      <a
+                        href={program.applicationUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="shrink-0 flex items-center gap-0.5 text-xs text-[#FE6E6E] hover:opacity-80 transition-opacity"
+                      >
+                        바로가기
+                        <ExternalLink className="size-3" />
+                      </a>
+                    )}
+                  </div>
                   <div className="flex flex-wrap gap-1.5">
-                    <Badge variant="outline" className="text-[#9B9B9B] border-[#3A3A3A] text-xs">
+                    <Badge variant="outline" className="text-yellow-300 border-[#3A3A3A] text-xs">
                       #{program.mainCategory}
                     </Badge>
-                    <Badge variant="outline" className="text-[#9B9B9B] border-[#3A3A3A] text-xs">
+                    <Badge variant="outline" className="text-yellow-300 border-[#3A3A3A] text-xs">
                       #{program.category}
                     </Badge>
                   </div>
