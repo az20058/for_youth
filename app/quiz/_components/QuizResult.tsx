@@ -1,7 +1,7 @@
 "use client";
 
 import { ExternalLink, RotateCcw } from "lucide-react";
-import { FlameIcon } from "./FlameIcon";
+import { FlameIcon } from "../../../components/icons/FlameIcon";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -18,7 +18,7 @@ export function QuizResult({ recommendations, onReset }: QuizResultProps) {
       <div className="mx-auto w-full max-w-3xl px-4 sm:px-6 py-10 flex flex-col flex-1">
         {/* Header */}
         <div className="flex flex-col items-center gap-3 mb-8 text-center">
-          <FlameIcon className="size-50" />
+          <FlameIcon className="size-20" glow />
           <h1 className="text-2xl font-bold">맞춤 프로그램 추천 결과</h1>
           <p className="text-sm text-muted-foreground">
             AI가 분석한 나에게 딱 맞는 청년 지원 프로그램이에요.

@@ -1,18 +1,8 @@
-<svg width="257" height="270" viewBox="0 0 257 270" fill="none" xmlns="http://www.w3.org/2000/svg">
-<g filter="url(#filter0_d_67_1229)">
-<path fill-rule="evenodd" clip-rule="evenodd" d="M102.521 133.836C107.547 121.851 127.368 99.1259 129.196 100.026L136.843 118.371L142.404 112.256C143.28 113.725 144.1 115.088 144.868 116.368C148.84 122.98 151.457 127.335 153.63 132.319C155.78 135.855 157 139.896 157 144.189C157 158.073 144.24 169.328 128.5 169.328C112.76 169.328 100 158.073 100 144.189C100 140.498 100.902 136.993 102.521 133.836Z" fill="#FE6E6E"/>
-<path fill-rule="evenodd" clip-rule="evenodd" d="M118.683 147.803C120.909 142.355 127.078 133.513 129.364 133.429C131.519 133.35 136.519 141.815 138.907 147.266C139.819 148.868 140.338 150.713 140.338 152.676C140.338 158.83 135.234 163.819 128.938 163.819C122.642 163.819 117.538 158.83 117.538 152.676C117.538 150.928 117.95 149.275 118.683 147.803Z" fill="#FFF5A0"/>
-</g>
-<defs>
-<filter id="filter0_d_67_1229" x="0" y="0" width="257" height="269.328" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
-<feFlood flood-opacity="0" result="BackgroundImageFix"/>
-<feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
-<feOffset/>
-<feGaussianBlur stdDeviation="50"/>
-<feComposite in2="hardAlpha" operator="out"/>
-<feColorMatrix type="matrix" values="0 0 0 0 0.996078 0 0 0 0 0.431373 0 0 0 0 0.431373 0 0 0 1 0"/>
-<feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_67_1229"/>
-<feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_67_1229" result="shape"/>
-</filter>
-</defs>
+<svg width="28" height="40" viewBox="0 0 28 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path fill-rule="evenodd" clip-rule="evenodd" d="M1.23855 16.6211C3.70705 10.734 13.4437 -0.429404 14.3421 0.0127534L18.0982 9.02431L20.8299 6.02045C21.2605 6.74203 21.6629 7.41186 22.0404 8.0402C23.9918 11.2884 25.2771 13.4278 26.3443 15.8761C27.4008 17.6127 28 19.598 28 21.7068C28 28.5271 21.732 34.056 14 34.056C6.26801 34.056 0 28.5271 0 21.7068C0 19.8938 0.44293 18.172 1.23855 16.6211Z" fill="#FE6E6E"/>
+<path fill-rule="evenodd" clip-rule="evenodd" d="M9.17783 23.4821C10.2714 20.8058 13.3015 16.4624 14.4244 16.4213C15.4833 16.3825 17.9393 20.5409 19.1125 23.2186C19.5603 24.0054 19.8154 24.9115 19.8154 25.8758C19.8154 28.8988 17.3082 31.3494 14.2154 31.3494C11.1226 31.3494 8.61539 28.8988 8.61539 25.8758C8.61539 25.0174 8.81753 24.2052 9.17783 23.4821Z" fill="#FFF5A0"/>
+<rect x="24.1231" y="34.9474" width="5.05263" height="20.6769" transform="rotate(90 24.1231 34.9474)" fill="#D9875A"/>
+<rect x="26.7077" y="34.9474" width="5.05263" height="5.16923" rx="2.52632" transform="rotate(90 26.7077 34.9474)" fill="#FBAD83"/>
+<rect x="6.03076" y="34.9474" width="5.05263" height="5.16923" rx="2.52632" transform="rotate(90 6.03076 34.9474)" fill="#FBAD83"/>
+<rect x="16.3692" y="34.9474" width="5.05263" height="5.16923" rx="2.52632" transform="rotate(90 16.3692 34.9474)" fill="#FBAD83"/>
 </svg>

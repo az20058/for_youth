@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { ChevronLeft } from "lucide-react";
-import { FlameIcon } from "./FlameIcon";
+import { FlameIcon } from "../../../components/icons/FlameIcon";
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -82,7 +82,10 @@ export function QuizFlow() {
       if (!res.ok) throw new Error("추천 실패");
       const data = await res.json();
       setResult(data.recommendations);
-      localStorage.setItem('ember_recommendations', JSON.stringify(data.recommendations));
+      localStorage.setItem(
+        "ember_recommendations",
+        JSON.stringify(data.recommendations),
+      );
       setStep("result");
     } catch {
       setStep("result");
@@ -105,7 +108,7 @@ export function QuizFlow() {
       <div className="min-h-screen bg-background">
         <div className="mx-auto w-full max-w-3xl px-4 sm:px-6 flex min-h-screen flex-col items-center justify-between py-12">
           <div className="flex flex-1 flex-col items-center justify-center gap-6 text-center max-w-sm w-full">
-            <FlameIcon className="size-50" />
+            <FlameIcon className="size-20" glow />
             <div className="flex flex-col gap-3">
               <h1 className="text-3xl font-bold leading-tight tracking-tight">
                 나의 열정에 <span className="text-primary">불</span>을 불여줄
@@ -137,7 +140,7 @@ export function QuizFlow() {
     return (
       <div className="min-h-screen bg-background">
         <div className="mx-auto w-full max-w-3xl px-4 sm:px-6 flex min-h-screen flex-col items-center justify-center gap-6">
-          <FlameIcon className="size-50 animate-pulse" />
+          <FlameIcon className="size-20 animate-pulse" glow />
           <p className="text-base font-medium text-foreground">
             딱 맞는 프로그램을 찾는 중…
           </p>
@@ -194,8 +197,8 @@ export function QuizFlow() {
         </div>
 
         {/* Question */}
-        <div className="flex flex-col items-center gap-4 mb-8">
-          <FlameIcon className="size-30" />
+        <div className="flex flex-col items-center gap-4 my-6">
+          <FlameIcon className="size-20" glow />
           <h2 className="text-xl font-bold text-center leading-snug">
             {currentQuestion.question}
           </h2>
@@ -217,7 +220,8 @@ export function QuizFlow() {
                   }
                   className={cn(
                     "w-full justify-start h-auto px-4 py-4 text-sm rounded-xl",
-                    selected && "bg-primary/20 border-primary ring-1 ring-primary",
+                    selected &&
+                      "bg-primary/20 border-primary ring-1 ring-primary",
                   )}
                 >
                   {opt.label}
@@ -235,7 +239,8 @@ export function QuizFlow() {
                   onClick={() => setAnswer(currentQuestion.id, opt.value)}
                   className={cn(
                     "w-full justify-start h-auto px-4 py-4 text-sm rounded-xl",
-                    selected && "bg-primary/20 border-primary ring-1 ring-primary",
+                    selected &&
+                      "bg-primary/20 border-primary ring-1 ring-primary",
                   )}
                 >
                   {opt.label}
