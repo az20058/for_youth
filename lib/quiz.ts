@@ -46,20 +46,6 @@ export const QUIZ_QUESTIONS: QuizQuestion[] = [
     ],
   },
   {
-    id: 'region',
-    question: '나의 거주 지역은',
-    type: 'select',
-    options: REGIONS.map((r) => ({ label: r, value: r })),
-    skippable: true,
-  },
-  {
-    id: 'age',
-    question: '나이가 어떻게 되시나요?',
-    type: 'number',
-    placeholder: '나이를 입력하세요 (예: 25)',
-    skippable: true,
-  },
-  {
     id: 'status',
     question: '현재 어떤 상황인가요?',
     type: 'single-choice',
@@ -70,7 +56,18 @@ export const QUIZ_QUESTIONS: QuizQuestion[] = [
       { label: '창업을 준비 중이에요', value: 'startup' },
       { label: '딱히 해당되는 게 없어요', value: 'none' },
     ],
-    skippable: true,
+  },
+  {
+    id: 'region',
+    question: '나의 거주 지역은',
+    type: 'select',
+    options: REGIONS.map((r) => ({ label: r, value: r })),
+  },
+  {
+    id: 'age',
+    question: '나이가 어떻게 되시나요?',
+    type: 'number',
+    placeholder: '나이를 입력하세요 (예: 25)',
   },
   {
     id: 'income',
