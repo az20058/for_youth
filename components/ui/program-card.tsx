@@ -50,11 +50,12 @@ export function ProgramCard({ program, badgeClassName }: ProgramCardProps) {
                 <Badge variant="outline" className={`text-xs ${badgeClassName ?? ''}`}>
                   #{program.category}
                 </Badge>
-                {program.region && (
-                  <Badge variant="outline" className={`text-xs ${badgeClassName ?? ''}`}>
-                    #{program.region}
-                  </Badge>
-                )}
+                {program.region &&
+                  program.region.split(', ').map((r) => (
+                    <Badge key={r} variant="outline" className={`text-xs ${badgeClassName ?? ''}`}>
+                      #{r}
+                    </Badge>
+                  ))}
               </div>
             </div>
             {program.applicationUrl && (
