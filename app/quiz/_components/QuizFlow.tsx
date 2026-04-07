@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { ChevronLeft } from "lucide-react";
 import { FlameIcon } from "../../../components/icons/FlameIcon";
+import { FlameLoading } from "@/components/ui/flame-loading";
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -138,17 +139,11 @@ export function QuizFlow() {
   /* ── Loading ── */
   if (step === "loading") {
     return (
-      <div className="min-h-screen bg-background">
-        <div className="mx-auto w-full max-w-3xl px-4 sm:px-6 flex min-h-screen flex-col items-center justify-center gap-6">
-          <FlameIcon className="size-20 animate-pulse" glow />
-          <p className="text-base font-medium text-foreground">
-            딱 맞는 프로그램을 찾는 중…
-          </p>
-          <p className="text-sm text-muted-foreground">
-            AI가 분석하고 있어요. 잠시만 기다려주세요.
-          </p>
-        </div>
-      </div>
+      <FlameLoading
+        fullscreen
+        message="딱 맞는 프로그램을 찾는 중…"
+        subMessage="AI가 분석하고 있어요. 잠시만 기다려주세요."
+      />
     );
   }
 

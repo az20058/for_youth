@@ -20,6 +20,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import { FlameLoading } from '@/components/ui/flame-loading';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -314,8 +315,8 @@ export function ApplicationsTable() {
             )}
             {isLoading ? (
               <TableRow>
-                <TableCell colSpan={columns.length} className="text-center text-muted-foreground py-12">
-                  불러오는 중…
+                <TableCell colSpan={columns.length}>
+                  <FlameLoading />
                 </TableCell>
               </TableRow>
             ) : isError ? (

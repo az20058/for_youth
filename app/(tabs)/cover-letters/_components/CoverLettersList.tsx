@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useQuery } from '@tanstack/react-query';
 import { cn } from '@/lib/utils';
 import { fetchApplications } from '@/lib/api';
+import { FlameLoading } from '@/components/ui/flame-loading';
 import type { CoverLetterType, CoverLetterWithApplication } from '@/lib/types';
 import {
   Accordion,
@@ -53,7 +54,7 @@ export function CoverLettersList() {
   }, [coverLetters, activeType]);
 
   if (isLoading) {
-    return <p className="text-sm text-muted-foreground">불러오는 중…</p>;
+    return <FlameLoading />;
   }
 
   if (isError) {
