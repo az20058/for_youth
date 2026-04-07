@@ -14,6 +14,7 @@ interface YouthPolicy {
   inqCnt?: string;
   bizPrdEndYmd?: string;
   bizPrdSeCd?: string;
+  zipCd?: string;
 }
 
 const TODAY = new Date().toISOString().slice(0, 10).replace(/-/g, '');
@@ -85,6 +86,7 @@ async function fetchAllFromYouthCenter(): Promise<Recommendation[]> {
       supportContent: p.plcySprtCn || '',
       applicationUrl: p.aplyUrlAddr || p.refUrlAddr1 || '',
       viewCount: p.inqCnt ? Number(p.inqCnt) : 0,
+      region: p.zipCd || '',
     }));
   } catch {
     return ALL_PROGRAMS;

@@ -27,6 +27,7 @@ export interface Recommendation {
   supportContent?: string;
   applicationUrl?: string;
   viewCount?: number;
+  region?: string;
 }
 
 export const REGIONS = [
