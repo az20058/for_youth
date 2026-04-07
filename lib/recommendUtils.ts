@@ -77,6 +77,27 @@ const PROGRAM_VIEW_COUNTS: Record<string, number> = {
   '희망두배 청년통장': 9800,
 };
 
+/** 전체 프로그램 목록 (조회수 포함) */
+const ALL_PROGRAMS: Recommendation[] = [
+  { name: '청년내일채움공제', agency: '고용노동부', mainCategory: '취업·창업', category: '취업지원', description: '', matchReason: '', viewCount: 58420, applicationUrl: 'https://www.work.go.kr' },
+  { name: '국민취업지원제도', agency: '고용노동부', mainCategory: '취업·창업', category: '취업지원', description: '', matchReason: '', viewCount: 47300, applicationUrl: 'https://www.work24.go.kr' },
+  { name: '청년도약계좌', agency: '금융위원회', mainCategory: '금융·자산형성', category: '금융지원', description: '', matchReason: '', viewCount: 41200, applicationUrl: 'https://www.kinfa.or.kr' },
+  { name: '청년월세 특별지원', agency: '국토교통부', mainCategory: '주거', category: '주거지원', description: '', matchReason: '', viewCount: 35800, applicationUrl: 'https://www.myhome.go.kr' },
+  { name: '대학생 학자금대출', agency: '한국장학재단', mainCategory: '교육', category: '교육지원', description: '', matchReason: '', viewCount: 31500, applicationUrl: 'https://www.kosaf.go.kr' },
+  { name: '청년 고용장려금', agency: '고용노동부', mainCategory: '취업·창업', category: '취업지원', description: '', matchReason: '', viewCount: 28700, applicationUrl: 'https://www.work.go.kr' },
+  { name: '청년창업사관학교', agency: '중소벤처기업부', mainCategory: '취업·창업', category: '창업지원', description: '', matchReason: '', viewCount: 23150, applicationUrl: 'https://www.k-startup.go.kr' },
+  { name: '청년 주거급여 분리지급', agency: '국토교통부', mainCategory: '주거', category: '주거지원', description: '', matchReason: '', viewCount: 22400, applicationUrl: 'https://www.myhome.go.kr' },
+  { name: '청년마음건강지원사업', agency: '보건복지부', mainCategory: '정신건강', category: '심리지원', description: '', matchReason: '', viewCount: 18900, applicationUrl: 'https://www.mohw.go.kr' },
+  { name: '청년 정신건강 복지서비스', agency: '보건복지부', mainCategory: '정신건강', category: '심리지원', description: '', matchReason: '', viewCount: 15600, applicationUrl: 'https://www.mohw.go.kr' },
+  { name: '청년문화예술패스', agency: '문화체육관광부', mainCategory: '문화', category: '문화지원', description: '', matchReason: '', viewCount: 12300, applicationUrl: 'https://www.mcst.go.kr' },
+  { name: '희망두배 청년통장', agency: '서울시', mainCategory: '금융·자산형성', category: '금융지원', description: '', matchReason: '', viewCount: 9800, applicationUrl: 'https://www.seoul.go.kr' },
+];
+
+/** 전체 프로그램 중 조회수 상위 N개 반환 */
+export function getTopPrograms(count: number): Recommendation[] {
+  return [...ALL_PROGRAMS].sort((a, b) => (b.viewCount ?? 0) - (a.viewCount ?? 0)).slice(0, count);
+}
+
 /** AI 추천 결과에 조회수를 enrichment */
 export function enrichWithViewCount(recommendations: Recommendation[]): Recommendation[] {
   return recommendations.map((rec) => {
