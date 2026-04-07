@@ -8,6 +8,7 @@ import {
   COVER_LETTER_TYPE_TO_DB,
 } from '@/lib/enumMaps';
 import type { ApplicationStatus, CompanySize, CoverLetterType } from '@/lib/types';
+import { getAuthenticatedUserId } from '@/lib/auth';
 
 function serializeApp(app: Awaited<ReturnType<typeof findApp>>) {
   if (!app) return null;
@@ -28,21 +29,27 @@ function serializeApp(app: Awaited<ReturnType<typeof findApp>>) {
   };
 }
 
-function findApp(id: string) {
-  return prisma.application.findUnique({
-    where: { id },
+function findApp(id: string, userId: string) {
+  return prisma.application.findFirst({
+    where: { id, userId },
     include: { coverLetters: true },
   });
 }
 
 export async function GET(_req: Request, { params }: { params: Promise<{ id: string }> }) {
+  const userId = await getAuthenticatedUserId();
+  if (!userId) return Response.json({ message: '인증이 필요합니다.' }, { status: 401 });
+
   const { id } = await params;
-  const app = await findApp(id);
+  const app = await findApp(id, userId);
   if (!app) return Response.json({ message: '지원서를 찾을 수 없습니다.' }, { status: 404 });
   return Response.json(serializeApp(app));
 }
 
 export async function PATCH(request: Request, { params }: { params: Promise<{ id: string }> }) {
+  const userId = await getAuthenticatedUserId();
+  if (!userId) return Response.json({ message: '인증이 필요합니다.' }, { status: 401 });
+
   const { id } = await params;
   const body = await request.json() as {
     status?: ApplicationStatus;
@@ -54,7 +61,7 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
     coverLetters?: Array<{ id?: string; question: string; answer: string; type: CoverLetterType | null }>;
   };
 
-  const app = await findApp(id);
+  const app = await findApp(id, userId);
   if (!app) return Response.json({ message: '지원서를 찾을 수 없습니다.' }, { status: 404 });
 
   const updated = await prisma.application.update({
@@ -86,8 +93,11 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
 }
 
 export async function DELETE(_req: Request, { params }: { params: Promise<{ id: string }> }) {
+  const userId = await getAuthenticatedUserId();
+  if (!userId) return Response.json({ message: '인증이 필요합니다.' }, { status: 401 });
+
   const { id } = await params;
-  const app = await findApp(id);
+  const app = await findApp(id, userId);
   if (!app) return Response.json({ message: '지원서를 찾을 수 없습니다.' }, { status: 404 });
   await prisma.application.delete({ where: { id } });
   return new Response(null, { status: 204 });

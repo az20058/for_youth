@@ -9,9 +9,16 @@ import {
   COVER_LETTER_TYPE_TO_DB,
 } from '@/lib/enumMaps';
 import type { CoverLetterType } from '@/lib/types';
+import { getAuthenticatedUserId } from '@/lib/auth';
 
 export async function GET() {
+  const userId = await getAuthenticatedUserId();
+  if (!userId) {
+    return Response.json({ message: '인증이 필요합니다.' }, { status: 401 });
+  }
+
   const apps = await prisma.application.findMany({
+    where: { userId },
     include: { coverLetters: true },
     orderBy: { createdAt: 'desc' },
   });
@@ -36,6 +43,11 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
+  const userId = await getAuthenticatedUserId();
+  if (!userId) {
+    return Response.json({ message: '인증이 필요합니다.' }, { status: 401 });
+  }
+
   const data: NewApplicationData = await request.json();
 
   const errors = validateApplication(data);
@@ -51,6 +63,7 @@ export async function POST(request: Request) {
       companySize: SIZE_TO_DB[data.companySize as keyof typeof SIZE_TO_DB],
       status: STATUS_TO_DB[data.status as keyof typeof STATUS_TO_DB],
       url: data.url || null,
+      userId,
       coverLetters: {
         createMany: {
           data: data.coverLetters.map((cl) => ({
