@@ -76,18 +76,10 @@ export const applications: Application[] = [
   },
 ];
 
-export function getApplications(): Application[] {
-  return applications;
-}
-
-export function getApplicationById(id: string): Application | undefined {
-  return applications.find((app) => app.id === id);
-}
-
 export function addApplication(data: {
   companyName: string;
   careerLevel: string;
-  deadline: Date;
+  deadline: Date | null;
   companySize: CompanySize;
   status: ApplicationStatus;
   coverLetters: CoverLetterQA[];

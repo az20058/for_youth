@@ -32,7 +32,7 @@ export const handlers = [
 
   http.get('/api/applications', () => {
     return HttpResponse.json(
-      applications.map((app) => ({ ...app, deadline: app.deadline.toISOString() })),
+      applications.map((app) => ({ ...app, deadline: app.deadline?.toISOString() ?? null })),
     );
   }),
 
@@ -41,7 +41,7 @@ export const handlers = [
     if (!app) {
       return HttpResponse.json({ message: '지원서를 찾을 수 없습니다.' }, { status: 404 });
     }
-    return HttpResponse.json({ ...app, deadline: app.deadline.toISOString() });
+    return HttpResponse.json({ ...app, deadline: app.deadline?.toISOString() ?? null });
   }),
 
   http.post('/api/applications', async ({ request }) => {
@@ -49,7 +49,7 @@ export const handlers = [
     const newApp = addApplication({
       companyName: data.companyName,
       careerLevel: data.careerLevel,
-      deadline: new Date(data.deadline),
+      deadline: data.deadline ? new Date(data.deadline) : null,
       companySize: data.companySize as CompanySize,
       status: data.status as ApplicationStatus,
       coverLetters: data.coverLetters.map((cl, i) => ({
@@ -61,7 +61,7 @@ export const handlers = [
       url: data.url || undefined,
     });
     return HttpResponse.json(
-      { ...newApp, deadline: newApp.deadline.toISOString() },
+      { ...newApp, deadline: newApp.deadline?.toISOString() ?? null },
       { status: 201 },
     );
   }),

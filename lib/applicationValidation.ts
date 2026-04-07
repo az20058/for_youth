@@ -49,9 +49,7 @@ export function validateApplication(data: NewApplicationData): FormErrors {
     errors.careerLevel = '경력을 입력해주세요.';
   }
 
-  if (!data.deadline) {
-    errors.deadline = '마감일을 입력해주세요.';
-  } else {
+  if (data.deadline) {
     const deadlineDate = new Date(data.deadline);
     const today = new Date();
     today.setHours(0, 0, 0, 0);

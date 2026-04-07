@@ -11,7 +11,7 @@ model Application {
   id           String            @id @default(cuid())
   companyName  String
   careerLevel  String
-  deadline     DateTime
+  deadline     DateTime?
   companySize  CompanySize
   status       ApplicationStatus @default(PENDING)
   url          String?

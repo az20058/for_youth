@@ -88,7 +88,9 @@ const columns: ColumnDef<Application, unknown>[] = [
     accessorKey: 'deadline',
     header: '마감일',
     cell: ({ getValue }) => {
-      const dday = calculateDDay(getValue<Date>());
+      const deadline = getValue<Date | null>();
+      if (!deadline) return <span className="text-muted-foreground">-</span>;
+      const dday = calculateDDay(deadline);
       return <span className="whitespace-nowrap">{formatDDay(dday)}</span>;
     },
   },
@@ -160,7 +162,7 @@ export function ApplicationsTable() {
       [...applications].sort((a, b) => {
         const statusDiff = STATUS_ORDER[a.status] - STATUS_ORDER[b.status];
         if (statusDiff !== 0) return statusDiff;
-        return a.deadline.getTime() - b.deadline.getTime();
+        return (a.deadline?.getTime() ?? Infinity) - (b.deadline?.getTime() ?? Infinity);
       }),
     [applications],
   );

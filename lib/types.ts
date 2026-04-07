@@ -32,7 +32,7 @@ export interface Application {
   id: string;
   companyName: string;
   careerLevel: string;
-  deadline: Date;
+  deadline: Date | null;
   companySize: CompanySize;
   coverLetters: CoverLetterQA[];
   status: ApplicationStatus;

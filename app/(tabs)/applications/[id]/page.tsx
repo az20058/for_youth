@@ -35,7 +35,7 @@ export default async function ApplicationDetailPage({
     })),
   };
 
-  const dday = calculateDDay(application.deadline);
+  const dday = application.deadline ? calculateDDay(application.deadline) : null;
 
   return (
     <main className="py-6">
@@ -67,10 +67,10 @@ export default async function ApplicationDetailPage({
             <div className="flex flex-col items-start gap-1 rounded-xl bg-muted/50 px-4 py-3 sm:items-end">
               <span className="text-xs text-muted-foreground">마감일</span>
               <span className="text-base font-semibold">
-                {formatDeadline(application.deadline)}
+                {application.deadline ? formatDeadline(application.deadline) : '-'}
               </span>
               <span className="text-sm font-medium text-primary">
-                {formatDDay(dday)}
+                {dday !== null ? formatDDay(dday) : ''}
               </span>
             </div>
           </div>
@@ -85,10 +85,12 @@ export default async function ApplicationDetailPage({
               <BuildingIcon className="size-3" />
               {application.companySize}
             </Badge>
-            <Badge variant="outline" className="gap-1">
-              <CalendarIcon className="size-3" />
-              {formatDeadline(application.deadline)}
-            </Badge>
+            {application.deadline && (
+              <Badge variant="outline" className="gap-1">
+                <CalendarIcon className="size-3" />
+                {formatDeadline(application.deadline)}
+              </Badge>
+            )}
             {application.url && (
               <a
                 href={application.url}

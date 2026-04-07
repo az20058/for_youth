@@ -16,7 +16,7 @@ function serializeApp(app: Awaited<ReturnType<typeof findApp>>) {
     id: app.id,
     companyName: app.companyName,
     careerLevel: app.careerLevel,
-    deadline: app.deadline.toISOString(),
+    deadline: app.deadline?.toISOString() ?? null,
     companySize: SIZE_FROM_DB[app.companySize],
     status: STATUS_FROM_DB[app.status],
     url: app.url ?? undefined,
