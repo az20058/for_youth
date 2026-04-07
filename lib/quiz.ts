@@ -17,12 +17,14 @@ export interface QuizQuestion {
 export type QuizAnswers = Record<string, string | string[] | number | null>;
 
 export interface Recommendation {
+  id?: string;
   name: string;
   agency: string;
   mainCategory: string;
   category: string;
   description: string;
   matchReason: string;
+  supportContent?: string;
   applicationUrl?: string;
   viewCount?: number;
 }

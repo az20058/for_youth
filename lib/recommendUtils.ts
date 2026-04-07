@@ -78,25 +78,80 @@ const PROGRAM_VIEW_COUNTS: Record<string, number> = {
 };
 
 /** 전체 프로그램 목록 (조회수 포함) */
-const ALL_PROGRAMS: Recommendation[] = [
-  { name: '청년내일채움공제', agency: '고용노동부', mainCategory: '취업·창업', category: '취업지원', description: '', matchReason: '', viewCount: 58420, applicationUrl: 'https://www.work.go.kr' },
-  { name: '국민취업지원제도', agency: '고용노동부', mainCategory: '취업·창업', category: '취업지원', description: '', matchReason: '', viewCount: 47300, applicationUrl: 'https://www.work24.go.kr' },
-  { name: '청년도약계좌', agency: '금융위원회', mainCategory: '금융·자산형성', category: '금융지원', description: '', matchReason: '', viewCount: 41200, applicationUrl: 'https://www.kinfa.or.kr' },
-  { name: '청년월세 특별지원', agency: '국토교통부', mainCategory: '주거', category: '주거지원', description: '', matchReason: '', viewCount: 35800, applicationUrl: 'https://www.myhome.go.kr' },
-  { name: '대학생 학자금대출', agency: '한국장학재단', mainCategory: '교육', category: '교육지원', description: '', matchReason: '', viewCount: 31500, applicationUrl: 'https://www.kosaf.go.kr' },
-  { name: '청년 고용장려금', agency: '고용노동부', mainCategory: '취업·창업', category: '취업지원', description: '', matchReason: '', viewCount: 28700, applicationUrl: 'https://www.work.go.kr' },
-  { name: '청년창업사관학교', agency: '중소벤처기업부', mainCategory: '취업·창업', category: '창업지원', description: '', matchReason: '', viewCount: 23150, applicationUrl: 'https://www.k-startup.go.kr' },
-  { name: '청년 주거급여 분리지급', agency: '국토교통부', mainCategory: '주거', category: '주거지원', description: '', matchReason: '', viewCount: 22400, applicationUrl: 'https://www.myhome.go.kr' },
-  { name: '청년마음건강지원사업', agency: '보건복지부', mainCategory: '정신건강', category: '심리지원', description: '', matchReason: '', viewCount: 18900, applicationUrl: 'https://www.mohw.go.kr' },
-  { name: '청년 정신건강 복지서비스', agency: '보건복지부', mainCategory: '정신건강', category: '심리지원', description: '', matchReason: '', viewCount: 15600, applicationUrl: 'https://www.mohw.go.kr' },
-  { name: '청년문화예술패스', agency: '문화체육관광부', mainCategory: '문화', category: '문화지원', description: '', matchReason: '', viewCount: 12300, applicationUrl: 'https://www.mcst.go.kr' },
-  { name: '희망두배 청년통장', agency: '서울시', mainCategory: '금융·자산형성', category: '금융지원', description: '', matchReason: '', viewCount: 9800, applicationUrl: 'https://www.seoul.go.kr' },
+export const ALL_PROGRAMS: Recommendation[] = [
+  {
+    name: '청년내일채움공제', agency: '고용노동부', mainCategory: '취업·창업', category: '취업지원',
+    description: '중소기업에 취업한 청년이 2년 근속 시 본인 납입금 + 기업·정부 지원금 합산 최대 1,200만원을 적립받는 제도입니다.',
+    matchReason: '첫 직장 정착과 목돈 마련을 동시에 지원하는 청년 취업자 대표 프로그램입니다.',
+    viewCount: 58420, applicationUrl: 'https://www.work.go.kr',
+  },
+  {
+    name: '국민취업지원제도', agency: '고용노동부', mainCategory: '취업·창업', category: '취업지원',
+    description: '취업 취약계층 청년에게 맞춤형 취업지원서비스와 함께 최대 300만원의 구직촉진수당을 지원합니다.',
+    matchReason: '구직 활동 중 생활비 부담을 덜고 체계적인 취업 지원을 받을 수 있습니다.',
+    viewCount: 47300, applicationUrl: 'https://www.work24.go.kr',
+  },
+  {
+    name: '청년도약계좌', agency: '금융위원회', mainCategory: '금융·자산형성', category: '금융지원',
+    description: '매월 40~70만원 납입 시 정부 기여금 + 비과세 혜택으로 5년 만기 최대 5,000만원을 마련할 수 있는 적금입니다.',
+    matchReason: '경제적 자립을 원하는 청년의 장기 자산 형성에 최적화된 금융 지원 프로그램입니다.',
+    viewCount: 41200, applicationUrl: 'https://www.kinfa.or.kr',
+  },
+  {
+    name: '청년월세 특별지원', agency: '국토교통부', mainCategory: '주거', category: '주거지원',
+    description: '보증금 5천만원·월세 60만원 이하 주택에 거주하는 청년에게 월 최대 20만원씩 최대 12개월간 월세를 지원합니다.',
+    matchReason: '주거비 부담이 큰 청년 1인 가구에게 즉각적인 현금 지원을 제공합니다.',
+    viewCount: 35800, applicationUrl: 'https://www.myhome.go.kr',
+  },
+  {
+    name: '대학생 학자금대출', agency: '한국장학재단', mainCategory: '교육', category: '교육지원',
+    description: '재학 중 등록금과 생활비를 저금리로 대출받고, 졸업 후 소득이 생기면 상환하는 소득연계형 학자금 지원 제도입니다.',
+    matchReason: '경제적 부담 없이 학업에 집중할 수 있도록 돕는 대표적인 교육 금융 지원입니다.',
+    viewCount: 31500, applicationUrl: 'https://www.kosaf.go.kr',
+  },
+  {
+    name: '청년 고용장려금', agency: '고용노동부', mainCategory: '취업·창업', category: '취업지원',
+    description: '중소·중견기업에 취업한 청년에게 3년간 최대 720만원의 장려금을 지급해 청년 고용을 촉진하는 제도입니다.',
+    matchReason: '중소기업 취업을 고려하는 청년에게 추가적인 경제적 인센티브를 제공합니다.',
+    viewCount: 28700, applicationUrl: 'https://www.work.go.kr',
+  },
+  {
+    name: '청년창업사관학교', agency: '중소벤처기업부', mainCategory: '취업·창업', category: '창업지원',
+    description: '창업을 준비하는 청년에게 교육·멘토링·공간·사업화 자금 최대 1억원을 패키지로 지원하는 밀착형 창업 프로그램입니다.',
+    matchReason: '아이디어와 열정이 있는 청년 창업자에게 실질적인 자금과 전문가 네트워크를 연결해 드립니다.',
+    viewCount: 23150, applicationUrl: 'https://www.k-startup.go.kr',
+  },
+  {
+    name: '청년 주거급여 분리지급', agency: '국토교통부', mainCategory: '주거', category: '주거지원',
+    description: '주거급여 수급 가구의 청년이 부모와 별도로 거주할 경우, 독립한 청년에게 주거급여를 별도로 지급합니다.',
+    matchReason: '저소득 가구 청년의 독립 생활을 직접적으로 지원하는 주거 안전망 제도입니다.',
+    viewCount: 22400, applicationUrl: 'https://www.myhome.go.kr',
+  },
+  {
+    name: '청년마음건강지원사업', agency: '보건복지부', mainCategory: '정신건강', category: '심리지원',
+    description: '심리적 어려움을 겪는 청년에게 전문 심리상담 바우처를 최대 100만원 지원해 정신건강 회복을 돕습니다.',
+    matchReason: '취업 스트레스·사회적 고립 등으로 힘든 청년에게 전문 상담을 저렴하게 연결해 드립니다.',
+    viewCount: 18900, applicationUrl: 'https://www.mohw.go.kr',
+  },
+  {
+    name: '청년 정신건강 복지서비스', agency: '보건복지부', mainCategory: '정신건강', category: '심리지원',
+    description: '정신건강 위기 청년을 대상으로 정신건강 전문의 상담 및 치료 서비스를 무료로 지원합니다.',
+    matchReason: '전문적인 정신건강 치료가 필요하지만 비용이 부담스러운 청년을 위한 제도입니다.',
+    viewCount: 15600, applicationUrl: 'https://www.mohw.go.kr',
+  },
+  {
+    name: '청년문화예술패스', agency: '문화체육관광부', mainCategory: '문화', category: '문화지원',
+    description: '만 19세 청년에게 공연·전시·영화 등 문화예술 활동에 사용할 수 있는 15만원 바우처를 지급합니다.',
+    matchReason: '문화생활을 즐기고 싶지만 비용 부담이 있는 청년에게 다양한 문화 경험 기회를 제공합니다.',
+    viewCount: 12300, applicationUrl: 'https://www.mcst.go.kr',
+  },
+  {
+    name: '희망두배 청년통장', agency: '서울시', mainCategory: '금융·자산형성', category: '금융지원',
+    description: '서울 거주 저소득 청년이 2년간 매월 저축하면 서울시가 동일 금액을 매칭해 최대 2배 적립해 주는 자산형성 지원 사업입니다.',
+    matchReason: '소득이 적어 저축이 어려운 청년의 자산 형성 출발점을 만들어주는 서울시 대표 청년 사업입니다.',
+    viewCount: 9800, applicationUrl: 'https://www.seoul.go.kr',
+  },
 ];
-
-/** 전체 프로그램 중 조회수 상위 N개 반환 */
-export function getTopPrograms(count: number): Recommendation[] {
-  return [...ALL_PROGRAMS].sort((a, b) => (b.viewCount ?? 0) - (a.viewCount ?? 0)).slice(0, count);
-}
 
 /** AI 추천 결과에 조회수를 enrichment */
 export function enrichWithViewCount(recommendations: Recommendation[]): Recommendation[] {

@@ -93,12 +93,6 @@ export function QuizFlow() {
     }
   }
 
-  function handleReset() {
-    setAnswers({});
-    setResult([]);
-    setStep("landing");
-  }
-
   const canProceed = currentQuestion
     ? isAnswered(currentQuestion, answers[currentQuestion.id])
     : false;
@@ -149,7 +143,7 @@ export function QuizFlow() {
 
   /* ── Result ── */
   if (step === "result") {
-    return <QuizResult recommendations={result} onReset={handleReset} />;
+    return <QuizResult recommendations={result} />;
   }
 
   /* ── Questions ── */
