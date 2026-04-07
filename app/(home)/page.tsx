@@ -1,0 +1,94 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import Link from "next/link";
+import { ArrowRight } from "lucide-react";
+import { ProgramCard } from "@/components/ui/program-card";
+import type { Recommendation } from "@/lib/quiz";
+
+async function fetchPrograms(): Promise<Recommendation[]> {
+  const res = await fetch("/api/programs?page=1&limit=50");
+  if (!res.ok) throw new Error("정책 목록을 불러오지 못했습니다.");
+  const data = await res.json();
+  return data.items ?? [];
+}
+
+export default function Home() {
+  const [recommendations, setRecommendations] = useState<Recommendation[]>([]);
+
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem("ember_recommendations");
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      if (stored) setRecommendations(JSON.parse(stored) as Recommendation[]);
+    } catch {}
+  }, []);
+
+  const { data: allPrograms = [] } = useQuery({
+    queryKey: ["programs"],
+    queryFn: fetchPrograms,
+  });
+
+  const hasPersonalized = recommendations.length > 0;
+  const featured = hasPersonalized ? recommendations[0] : null;
+  const hotPrograms = hasPersonalized
+    ? [...recommendations].sort((a, b) => (b.viewCount ?? 0) - (a.viewCount ?? 0)).slice(0, 4)
+    : [...allPrograms].sort((a, b) => (b.viewCount ?? 0) - (a.viewCount ?? 0)).slice(0, 4);
+
+  return (
+    <div className="flex flex-col gap-8">
+      {/* 이번주 추천 섹션 */}
+      <section className="flex flex-col gap-3">
+        <h2 className="text-white font-bold text-base">
+          이번주 이런 도전은 어때요?
+        </h2>
+        {featured ? (
+          <div className="rounded-2xl bg-[#2D2D2D] p-5 flex flex-col gap-2">
+            <span className="text-xs text-[#FE6E6E] font-medium">
+              {featured.mainCategory}
+            </span>
+            <p className="text-white font-bold text-lg leading-snug">
+              {featured.name}
+            </p>
+            <p className="text-[#9B9B9B] text-xs">{featured.agency}</p>
+            <p className="text-[#9B9B9B] text-sm leading-relaxed mt-1">
+              {featured.description}
+            </p>
+          </div>
+        ) : (
+          <div className="rounded-2xl overflow-hidden bg-gradient-to-br from-purple-700 via-purple-500 to-blue-400 aspect-video flex items-end p-5">
+            <div className="flex flex-col gap-1">
+              <p className="text-white/80 text-xs">여러분을 초대합니다</p>
+              <p className="text-white font-bold text-2xl leading-tight">
+                별무리 활동
+              </p>
+              <p className="text-white/70 text-xs">독서&amp;취미모임: ZOOM</p>
+            </div>
+          </div>
+        )}
+        <Link
+          href="/quiz"
+          className="flex items-center justify-between bg-[#FE6E6E] text-white rounded-xl px-5 py-4 text-sm font-medium hover:bg-[#FE6E6E]/90 transition-colors"
+        >
+          새로운 도전을 추천받기
+          <ArrowRight className="size-5" />
+        </Link>
+      </section>
+
+      {/* HOT 프로그램 섹션 */}
+      <section className="flex flex-col gap-3">
+        <h2 className="text-white font-bold text-base">지금 HOT한 열정들</h2>
+        <div className="flex flex-col gap-3">
+          {hotPrograms.map((program) => (
+            <ProgramCard
+              key={program.id ?? program.name}
+              program={program}
+              badgeClassName="text-yellow-300 border-[#3A3A3A]"
+            />
+          ))}
+        </div>
+      </section>
+    </div>
+  );
+}
