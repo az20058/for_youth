@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { CircleUserRound } from "lucide-react";
 import { FlameIcon } from "@/components/icons/FlameIcon";
 import { Button } from "@/components/ui/button";
@@ -10,12 +11,12 @@ interface HeaderProps {
 export function Header({ title = "EMBER", onProfileClick }: HeaderProps) {
   return (
     <header className="flex items-center justify-between px-6 py-3 bg-[#1C1C1E]">
-      <div className="flex items-center gap-2">
+      <Link href="/" className="flex items-center gap-2">
         <FlameIcon className="size-10" />
         <span className="text-white text-lg font-bold tracking-wide">
           {title}
         </span>
-      </div>
+      </Link>
       <Button
         variant="ghost"
         size="icon"
