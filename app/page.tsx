@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import Link from 'next/link';
 import { ArrowRight, ExternalLink } from 'lucide-react';
 import { Header } from '@/components/ui/header';
@@ -16,14 +16,15 @@ const DEFAULT_HOT_PROGRAMS: Recommendation[] = [
 ];
 
 export default function Home() {
-  const [recommendations, setRecommendations] = useState<Recommendation[]>([]);
-
-  useEffect(() => {
+  const [recommendations] = useState<Recommendation[]>(() => {
+    if (typeof window === 'undefined') return [];
     try {
       const stored = localStorage.getItem('ember_recommendations');
-      if (stored) setRecommendations(JSON.parse(stored));
-    } catch {}
-  }, []);
+      return stored ? (JSON.parse(stored) as Recommendation[]) : [];
+    } catch {
+      return [];
+    }
+  });
 
   const hasPersonalized = recommendations.length > 0;
   const featured = hasPersonalized ? recommendations[0] : null;

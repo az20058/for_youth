@@ -29,19 +29,19 @@ describe('isAnswered', () => {
     });
   });
 
-  describe('select (skippable)', () => {
-    it('값이 없어도 skippable이면 true', () => {
-      expect(isAnswered(selectQ, undefined)).toBe(true);
+  describe('select (필수)', () => {
+    it('값이 없으면 false', () => {
+      expect(isAnswered(selectQ, undefined)).toBe(false);
     });
 
-    it('값이 있어도 true', () => {
+    it('값이 있으면 true', () => {
       expect(isAnswered(selectQ, '서울')).toBe(true);
     });
   });
 
-  describe('number (skippable)', () => {
-    it('값이 없어도 skippable이면 true', () => {
-      expect(isAnswered(numberQ, undefined)).toBe(true);
+  describe('number (필수)', () => {
+    it('값이 없으면 false', () => {
+      expect(isAnswered(numberQ, undefined)).toBe(false);
     });
 
     it('값이 있으면 true', () => {

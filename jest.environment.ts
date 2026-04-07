@@ -6,6 +6,7 @@
  * msw/node가 null(browser export)로 해석되는 문제가 있음
  * → customExportConditions를 빈 배열로 재정의하여 node 조건으로 해석되도록 함
  */
+import { TextDecoder, TextEncoder } from 'util';
 import JSDOMEnvironment from 'jest-environment-jsdom';
 import type { EnvironmentContext, JestEnvironmentConfig } from '@jest/environment';
 
@@ -30,7 +31,6 @@ export default class FixedJSDOMEnvironment extends JSDOMEnvironment {
     await super.setup();
     // jsdom은 fetch/encoding 관련 전역 변수를 구현하지 않음
     // Node 22 네이티브 globals를 jsdom window에 주입
-    const { TextDecoder, TextEncoder } = require('util') as typeof import('util');
     Object.assign(this.global, {
       TextDecoder,
       TextEncoder,

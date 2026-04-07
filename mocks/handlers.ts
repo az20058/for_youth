@@ -8,6 +8,7 @@ export const mockRecommendations: Recommendation[] = [
   {
     name: '청년내일채움공제',
     agency: '고용노동부',
+    mainCategory: '취업·창업',
     category: '취업지원',
     description: '중소기업에 취업한 청년이 2년 근속 시 최대 1,200만원을 적립받을 수 있는 제도입니다.',
     matchReason: '취업 준비 중인 청년에게 안정적인 첫 직장 정착을 도와주는 프로그램입니다.',
@@ -16,6 +17,7 @@ export const mockRecommendations: Recommendation[] = [
   {
     name: '국민취업지원제도',
     agency: '고용노동부',
+    mainCategory: '취업·창업',
     category: '취업지원',
     description: '취업지원서비스와 함께 최대 300만원의 구직촉진수당을 지원합니다.',
     matchReason: '구직 활동 중인 청년의 생활 안정과 취업 역량 강화를 돕습니다.',

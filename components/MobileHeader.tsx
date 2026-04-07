@@ -13,6 +13,7 @@ const tabs = [
 export function MobileHeader() {
   const pathname = usePathname();
   const tabRefs = useRef<(HTMLAnchorElement | null)[]>([]);
+  const initializedRef = useRef(false);
   const [indicator, setIndicator] = useState<{ left: number; width: number } | null>(null);
   const [animate, setAnimate] = useState(false);
 
@@ -22,11 +23,9 @@ export function MobileHeader() {
     const el = tabRefs.current[activeIndex];
     if (!el) return;
     setIndicator({ left: el.offsetLeft, width: el.offsetWidth });
+    if (initializedRef.current) setAnimate(true);
+    initializedRef.current = true;
   }, [pathname]);
-
-  useLayoutEffect(() => {
-    if (indicator) setAnimate(true);
-  }, [indicator]);
 
   return (
     <header className="md:hidden sticky top-0 z-40 bg-background/80 backdrop-blur-md border-b border-foreground/10">
