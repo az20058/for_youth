@@ -3,6 +3,7 @@ import { MobileHeader } from '@/components/MobileHeader';
 import { AuthGuard } from '@/components/AuthGuard';
 import { Header } from '@/components/ui/header';
 import { Toaster } from '@/components/ui/sonner';
+import { MobileFooterNav } from '@/components/MobileFooterNav';
 
 export default function TabsLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -15,13 +16,14 @@ export default function TabsLayout({ children }: { children: React.ReactNode }) 
           <AppSidebar />
           <div className="flex-1 min-w-0 flex flex-col">
             <MobileHeader />
-            <div className="mx-auto w-full max-w-3xl px-4 sm:px-6">
+            <div className="mx-auto w-full max-w-3xl px-4 sm:px-6 pb-24 md:pb-0">
               {children}
             </div>
           </div>
         </div>
         <Toaster position="top-right" />
       </div>
+      <MobileFooterNav />
     </AuthGuard>
   );
 }

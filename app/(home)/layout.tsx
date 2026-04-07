@@ -1,6 +1,7 @@
 import { HomeSidebar } from '@/components/HomeSidebar';
 import { HomeMobileHeader } from '@/components/HomeMobileHeader';
 import { Header } from '@/components/ui/header';
+import { MobileFooterNav } from '@/components/MobileFooterNav';
 
 export default function HomeLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -12,11 +13,12 @@ export default function HomeLayout({ children }: { children: React.ReactNode }) 
         <HomeSidebar />
         <div className="flex-1 min-w-0 flex flex-col">
           <HomeMobileHeader />
-          <div className="mx-auto w-full max-w-3xl px-4 py-6">
+          <div className="mx-auto w-full max-w-3xl px-4 py-6 pb-24 md:pb-6">
             {children}
           </div>
         </div>
       </div>
+      <MobileFooterNav />
     </div>
   );
 }

@@ -4,7 +4,6 @@ import { useEffect } from 'react';
 import { signIn, useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { FlameIcon } from '@/components/icons/FlameIcon';
-import { FlameLoading } from '@/components/ui/flame-loading';
 import { Button } from '@/components/ui/button';
 
 export default function LoginPage() {
@@ -16,10 +15,6 @@ export default function LoginPage() {
       router.replace('/');
     }
   }, [status, router]);
-
-  if (status === 'loading') {
-    return <FlameLoading fullscreen />;
-  }
 
   return (
     <div className="min-h-screen bg-[#1C1C1E] flex flex-col items-center justify-center px-4">
