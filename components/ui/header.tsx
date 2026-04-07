@@ -10,9 +10,9 @@ import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
 const navItems = [
-  { href: '/', label: '홈', icon: HomeIcon, exact: true },
-  { href: '/applications', label: '지원 현황', icon: BriefcaseIcon, exact: false },
-  { href: '/schedule', label: '일정', icon: CalendarIcon, exact: false },
+  { href: '/', label: '홈', icon: HomeIcon, activePaths: ['/', '/programs'] },
+  { href: '/applications', label: '지원 현황', icon: BriefcaseIcon, activePaths: ['/applications', '/cover-letters'] },
+  { href: '/schedule', label: '일정', icon: CalendarIcon, activePaths: ['/schedule'] },
 ];
 
 interface HeaderProps {
@@ -33,10 +33,10 @@ export function Header({ title = 'EMBER' }: HeaderProps) {
       </Link>
 
       <nav className="hidden md:flex items-center gap-1 flex-1">
-        {navItems.map(({ href, label, icon: Icon, exact }) => {
-          const isActive = exact
-            ? pathname === href
-            : pathname === href || pathname.startsWith(href + '/');
+        {navItems.map(({ href, label, icon: Icon, activePaths }) => {
+          const isActive = activePaths.some(
+            (p) => pathname === p || pathname.startsWith(p + '/'),
+          );
           return (
             <Link
               key={href}

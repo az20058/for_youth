@@ -6,9 +6,9 @@ import { HomeIcon, BriefcaseIcon, CalendarIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const navItems = [
-  { href: '/', label: '홈', icon: HomeIcon, exact: true },
-  { href: '/applications', label: '지원 현황', icon: BriefcaseIcon, exact: false },
-  { href: '/schedule', label: '일정', icon: CalendarIcon, exact: false },
+  { href: '/', label: '홈', icon: HomeIcon, activePaths: ['/', '/programs'] },
+  { href: '/applications', label: '지원 현황', icon: BriefcaseIcon, activePaths: ['/applications', '/cover-letters'] },
+  { href: '/schedule', label: '일정', icon: CalendarIcon, activePaths: ['/schedule'] },
 ];
 
 export function MobileFooterNav() {
@@ -17,10 +17,10 @@ export function MobileFooterNav() {
   return (
     <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-[#1C1C1E] border-t border-foreground/10">
       <div className="flex items-center justify-around px-2 py-2">
-        {navItems.map(({ href, label, icon: Icon, exact }) => {
-          const isActive = exact
-            ? pathname === href
-            : pathname === href || pathname.startsWith(href + '/');
+        {navItems.map(({ href, label, icon: Icon, activePaths }) => {
+          const isActive = activePaths.some(
+            (p) => pathname === p || pathname.startsWith(p + '/'),
+          );
           return (
             <Link
               key={href}
