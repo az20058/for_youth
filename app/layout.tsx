@@ -16,6 +16,9 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "취업 관리",
   description: "입사 지원 현황 및 자기소개서 관리",
+  icons: {
+    icon: "/icons/flame.svg",
+  },
 };
 
 export default function RootLayout({
