@@ -104,12 +104,12 @@ export function ProgramCard({ program, badgeClassName }: ProgramCardProps) {
           </DialogHeader>
           <div className="flex flex-wrap gap-1.5">
             {program.mainCategory && (
-              <Badge variant="outline" className="text-xs">#{program.mainCategory}</Badge>
+              <Badge variant="outline" className="text-xs text-yellow-300 border-[#3A3A3A]">#{program.mainCategory}</Badge>
             )}
-            <Badge variant="outline" className="text-xs">#{program.category}</Badge>
+            <Badge variant="outline" className="text-xs text-yellow-300 border-[#3A3A3A]">#{program.category}</Badge>
             {program.region &&
               program.region.split(', ').map((r) => (
-                <Badge key={r} variant="outline" className="text-xs">#{r}</Badge>
+                <Badge key={r} variant="outline" className="text-xs text-yellow-300 border-[#3A3A3A]">#{r}</Badge>
               ))}
           </div>
           <div className="overflow-y-auto flex-1 min-h-0">
