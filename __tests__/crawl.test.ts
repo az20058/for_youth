@@ -1,7 +1,7 @@
 /**
  * @jest-environment node
  */
-import { fetchNamuWiki, fetchGoogleNews } from '@/lib/crawl';
+import { fetchNamuWiki, fetchGoogleNews, crawlCompanyInfo } from '@/lib/crawl';
 
 const mockFetch = jest.fn();
 global.fetch = mockFetch;
@@ -57,5 +57,20 @@ describe('fetchGoogleNews', () => {
   it('네트워크 오류 시 빈 배열을 반환한다', async () => {
     mockFetch.mockRejectedValueOnce(new Error('Network error'));
     expect(await fetchGoogleNews('카카오')).toEqual([]);
+  });
+});
+
+describe('crawlCompanyInfo', () => {
+  it('두 소스를 병렬로 조회해 CrawlResult를 반환한다', async () => {
+    const xml = `<rss><channel>
+      <item><title><![CDATA[카카오 뉴스]]></title></item>
+    </channel></rss>`;
+    mockFetch
+      .mockResolvedValueOnce({ ok: true, text: async () => '카카오 위키 내용' })
+      .mockResolvedValueOnce({ ok: true, text: async () => xml });
+
+    const result = await crawlCompanyInfo('카카오');
+    expect(result.namuWiki).toBe('카카오 위키 내용');
+    expect(result.newsHeadlines).toEqual(['카카오 뉴스']);
   });
 });

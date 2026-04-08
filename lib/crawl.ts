@@ -29,7 +29,7 @@ export async function fetchGoogleNews(companyName: string): Promise<string[]> {
     );
     if (!res.ok) return [];
     const xml = await res.text();
-    return [...xml.matchAll(/<title><!\[CDATA\[(.*?)\]\]><\/title>/g)]
+    return [...xml.matchAll(/<title>\s*<!\[CDATA\[(.*?)\]\]>\s*<\/title>/g)]
       .map((m) => m[1])
       .filter((t) => !t.includes('Google 뉴스'))
       .slice(0, 10);
