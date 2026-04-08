@@ -44,12 +44,12 @@ export function CompanySummary({ applicationId }: { applicationId: string }) {
           <SparklesIcon className="size-4 text-primary" />
           기업 분석
         </h2>
-        {data && !loading && (
+        {data && (
           <div className="flex items-center gap-2">
             <span className="text-xs text-muted-foreground">
               {formatDistanceToNow(new Date(data.crawledAt), { addSuffix: true, locale: ko })}
             </span>
-            <Button variant="ghost" size="icon" className="size-7" onClick={analyze} aria-label="새로고침">
+            <Button variant="ghost" size="icon" className="size-7" onClick={analyze} disabled={loading} aria-label="새로고침">
               <RefreshCwIcon className="size-3.5" />
             </Button>
           </div>
@@ -81,24 +81,24 @@ export function CompanySummary({ applicationId }: { applicationId: string }) {
           <div>
             <p className="text-xs font-medium text-muted-foreground mb-2">🏢 핵심 사업</p>
             <div className="flex flex-wrap gap-1.5">
-              {data.mainBusiness.map((b) => (
-                <Badge key={b} variant="secondary">{b}</Badge>
+              {data.mainBusiness.map((b, i) => (
+                <Badge key={i} variant="secondary">{b}</Badge>
               ))}
             </div>
           </div>
           <div>
             <p className="text-xs font-medium text-muted-foreground mb-2">📰 최근 이슈</p>
             <ul className="flex flex-col gap-1.5">
-              {data.recentNews.map((n) => (
-                <li key={n} className="text-sm text-foreground/80 before:content-['•'] before:mr-2 before:text-muted-foreground">{n}</li>
+              {data.recentNews.map((n, i) => (
+                <li key={i} className="text-sm text-foreground/80 before:content-['•'] before:mr-2 before:text-muted-foreground">{n}</li>
               ))}
             </ul>
           </div>
           <div>
             <p className="text-xs font-medium text-muted-foreground mb-2">✏️ 지원 동기 포인트</p>
             <ul className="flex flex-col gap-1.5">
-              {data.motivationHints.map((h) => (
-                <li key={h} className="text-sm text-foreground/80 before:content-['•'] before:mr-2 before:text-muted-foreground">{h}</li>
+              {data.motivationHints.map((h, i) => (
+                <li key={i} className="text-sm text-foreground/80 before:content-['•'] before:mr-2 before:text-muted-foreground">{h}</li>
               ))}
             </ul>
           </div>
