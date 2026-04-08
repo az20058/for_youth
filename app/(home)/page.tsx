@@ -1,10 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { ProgramCard } from "@/components/ui/program-card";
+import { HeroCarousel } from "./_components/HeroCarousel";
 import type { Recommendation } from "@/lib/quiz";
 
 async function fetchPrograms(): Promise<Recommendation[]> {
@@ -30,43 +31,24 @@ export default function Home() {
     queryFn: fetchPrograms,
   });
 
+  const heroPrograms = useMemo(
+    () => [...allPrograms].sort((a, b) => (b.viewCount ?? 0) - (a.viewCount ?? 0)).slice(0, 4),
+    [allPrograms],
+  );
+
   const hasPersonalized = recommendations.length > 0;
-  const featured = hasPersonalized ? recommendations[0] : null;
   const hotPrograms = hasPersonalized
     ? [...recommendations].sort((a, b) => (b.viewCount ?? 0) - (a.viewCount ?? 0)).slice(0, 4)
-    : [...allPrograms].sort((a, b) => (b.viewCount ?? 0) - (a.viewCount ?? 0)).slice(0, 4);
+    : heroPrograms;
 
   return (
     <div className="flex flex-col gap-8">
-      {/* 이번주 추천 섹션 */}
+      {/* 히어로 슬라이드 섹션 */}
       <section className="flex flex-col gap-3">
         <h2 className="text-white font-bold text-base">
           이번주 이런 도전은 어때요?
         </h2>
-        {featured ? (
-          <div className="rounded-2xl bg-[#2D2D2D] p-5 flex flex-col gap-2">
-            <span className="text-xs text-[#FE6E6E] font-medium">
-              {featured.mainCategory}
-            </span>
-            <p className="text-white font-bold text-lg leading-snug">
-              {featured.name}
-            </p>
-            <p className="text-[#9B9B9B] text-xs">{featured.agency}</p>
-            <p className="text-[#9B9B9B] text-sm leading-relaxed mt-1">
-              {featured.description}
-            </p>
-          </div>
-        ) : (
-          <div className="rounded-2xl overflow-hidden bg-gradient-to-br from-purple-700 via-purple-500 to-blue-400 aspect-video flex items-end p-5">
-            <div className="flex flex-col gap-1">
-              <p className="text-white/80 text-xs">여러분을 초대합니다</p>
-              <p className="text-white font-bold text-2xl leading-tight">
-                별무리 활동
-              </p>
-              <p className="text-white/70 text-xs">독서&amp;취미모임: ZOOM</p>
-            </div>
-          </div>
-        )}
+        <HeroCarousel programs={heroPrograms} />
         <Link
           href="/quiz"
           className="flex items-center justify-between bg-[#FE6E6E] text-white rounded-xl px-5 py-4 text-sm font-medium hover:bg-[#FE6E6E]/90 transition-colors"
