@@ -1,81 +1,18 @@
-import { NextRequest, NextResponse } from "next/server";
-import OpenAI from "openai";
-import type { QuizAnswers, Recommendation } from "@/lib/quiz";
-import {
-  buildPrompt,
-  getSamplePrograms,
-  getMockRecommendations,
-  enrichWithViewCount,
-} from "@/lib/recommendUtils";
-
-const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
-
-// 온통청년 API 호출 (공공데이터포털 서비스키 필요)
-// https://www.youthcenter.go.kr 에서 API 신청
-async function fetchYouthPrograms(): Promise<string> {
-  const serviceKey = process.env.YOUTH_API_SERVICE_KEY;
-  if (!serviceKey) return getSamplePrograms();
-
-  try {
-    const params = new URLSearchParams({
-      apiKeyNm: serviceKey,
-      pageNum: "1",
-      pageSize: "50",
-      rtnType: "json",
-    });
-
-    const res = await fetch(
-      `https://www.youthcenter.go.kr/go/ythip/getPlcy?${params}`,
-      {
-        headers: { Accept: "application/json" },
-        next: { revalidate: 3600 },
-        signal: AbortSignal.timeout(8000),
-      },
-    );
-
-    if (!res.ok) return getSamplePrograms();
-
-    const data = await res.json();
-    const policies: Record<string, string>[] = data?.result?.youthPolicyList ?? [];
-
-    if (policies.length === 0) return getSamplePrograms();
-
-    return policies
-      .map(
-        (p) =>
-          `- ${p.plcyNm ?? ""} (${p.mclsfNm ?? ""}) | ${p.sprvsnInstCdNm ?? ""} | ${p.plcySprtCn ?? p.plcyExplnCn ?? ""} | ${p.lclsfNm ?? ""}`,
-      )
-      .join("\n");
-  } catch {
-    return getSamplePrograms();
-  }
-}
+import { NextRequest, NextResponse } from 'next/server';
+import type { QuizAnswers } from '@/lib/quiz';
+import { fetchAllYouthPolicies } from '@/lib/youthApi';
+import { scoreAndRankPrograms } from '@/lib/recommendUtils';
 
 export async function POST(req: NextRequest) {
   try {
     const { answers } = (await req.json()) as { answers: QuizAnswers };
 
-    const programs = await fetchYouthPrograms();
-    const prompt = buildPrompt(answers, programs);
-
-    const message = await client.chat.completions.create({
-      model: "gpt-4o-mini",
-      max_tokens: 2048,
-      messages: [{ role: "user", content: prompt }],
-    });
-
-    const text = message.choices[0]?.message?.content ?? "[]";
-    const jsonMatch = text.match(/\[[\s\S]*\]/);
-    const raw: Recommendation[] = jsonMatch ? JSON.parse(jsonMatch[0]) : [];
-    const recommendations = enrichWithViewCount(raw);
+    const all = await fetchAllYouthPolicies();
+    const recommendations = scoreAndRankPrograms(all, answers);
 
     return NextResponse.json({ recommendations });
   } catch (err) {
-    console.error("[recommend]", err);
-    // OpenAI 할당량 초과 또는 키 미설정 시 mock 데이터 반환 (개발용)
-    if (process.env.NODE_ENV === "development") {
-      return NextResponse.json({ recommendations: getMockRecommendations() });
-    }
+    console.error('[recommend]', err);
     return NextResponse.json({ recommendations: [] }, { status: 500 });
   }
 }
