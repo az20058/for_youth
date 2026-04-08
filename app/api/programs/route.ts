@@ -6,8 +6,14 @@ export async function GET(req: Request) {
   const limit = Math.min(50, Math.max(1, Number(searchParams.get('limit') ?? '20')));
   const category = searchParams.get('category') ?? '전체';
 
+  const region = searchParams.get('region') ?? '전체';
+
   const all = await fetchAllYouthPolicies();
-  const filtered = category === '전체' ? all : all.filter((p) => p.mainCategory === category);
+  const filtered = all.filter((p) => {
+    const categoryMatch = category === '전체' || p.mainCategory === category;
+    const regionMatch = region === '전체' || (p.region?.includes(region) ?? false);
+    return categoryMatch && regionMatch;
+  });
   const sorted = [...filtered].sort((a, b) => (b.viewCount ?? 0) - (a.viewCount ?? 0));
 
   const total = sorted.length;
