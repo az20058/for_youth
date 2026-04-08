@@ -27,7 +27,7 @@ export const SIDO_MAP: Record<string, string> = {
 };
 
 export function zipCdToRegions(zipCd: string): string {
-  const codes = zipCd.split(',').map((c) => c.trim()).filter(Boolean);
+  const codes = zipCd.split(',').map((c) => c.trim()).filter((c) => /^\d{5}$/.test(c));
   const regions = [...new Set(codes.map((c) => SIDO_MAP[c.slice(0, 2)] ?? '').filter(Boolean))];
   return regions.join(', ');
 }

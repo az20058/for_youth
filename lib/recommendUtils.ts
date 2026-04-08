@@ -47,7 +47,8 @@ function generateMatchReason(program: Recommendation, answers: QuizAnswers): str
   }
 
   const region = answers.region as string | undefined;
-  if (region && program.zipCodes?.split(',').some((c) => c.trim().startsWith(region))) {
+  const validRegionCodes = (program.zipCodes || '').split(',').map((c) => c.trim()).filter((c) => /^\d{5}$/.test(c));
+  if (region && validRegionCodes.some((c) => c.startsWith(region))) {
     const regionName = SIDO_CODE_TO_NAME[region] ?? region;
     reasons.push(`${regionName} 거주자를 대상으로 합니다.`);
   }
@@ -95,9 +96,13 @@ export function scoreAndRankPrograms(
 
     // 지역 매칭 (SIDO 코드 prefix 비교)
     if (userRegion) {
-      if (!p.zipCodes) {
+      const validCodes = (p.zipCodes || '')
+        .split(',')
+        .map((c) => c.trim())
+        .filter((c) => /^\d{5}$/.test(c));
+      if (validCodes.length === 0) {
         score += 1; // zipCd 없는 전국 정책
-      } else if (p.zipCodes.split(',').some((c) => c.trim().startsWith(userRegion))) {
+      } else if (validCodes.some((c) => c.startsWith(userRegion))) {
         score += 2;
       }
     }
