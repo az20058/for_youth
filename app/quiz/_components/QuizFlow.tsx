@@ -101,7 +101,7 @@ export function QuizFlow() {
   if (step === "landing") {
     return (
       <div className="min-h-screen bg-background">
-        <div className="mx-auto w-full max-w-3xl px-4 sm:px-6 flex min-h-screen flex-col items-center justify-between py-12">
+        <div className="mx-auto w-full max-w-3xl px-4 sm:px-6 flex min-h-screen flex-col items-center justify-between pb-12">
           <div className="flex flex-1 flex-col items-center justify-center gap-6 text-center max-w-sm w-full">
             <FlameIcon className="size-20" glow />
             <div className="flex flex-col gap-3">

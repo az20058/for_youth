@@ -1,0 +1,8 @@
+{
+  "crons": [
+    {
+      "path": "/api/batch/sync-policies",
+      "schedule": "0 2 * * *"
+    }
+  ]
+}

@@ -109,3 +109,20 @@ enum ScheduleEventType {
   DOCUMENT    // 서류 마감
   OTHER       // 기타
 }
+
+model YouthPolicy {
+  plcyNo        String   @id
+  name          String
+  agency        String
+  mainCategory  String
+  category      String
+  description   String   @db.Text
+  supportContent String? @db.Text
+  applicationUrl String?
+  viewCount     Int      @default(0)
+  region        String?
+  zipCodes      String?
+  bizPrdEndYmd  String?
+  syncedAt      DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
