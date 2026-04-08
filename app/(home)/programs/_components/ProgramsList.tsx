@@ -13,7 +13,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { REGIONS } from '@/lib/quiz';
+import { SIDO_REGIONS } from '@/lib/quiz';
 import type { Recommendation } from '@/lib/quiz';
 
 interface ProgramsResponse {
@@ -94,8 +94,8 @@ export function ProgramsList() {
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="전체">전체 지역</SelectItem>
-            {REGIONS.map((r) => (
-              <SelectItem key={r} value={r}>{r}</SelectItem>
+            {SIDO_REGIONS.map((r) => (
+              <SelectItem key={r.code} value={r.code}>{r.name}</SelectItem>
             ))}
           </SelectContent>
         </Select>

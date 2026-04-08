@@ -52,6 +52,7 @@ function mapPolicy(p: YouthPolicy): Recommendation {
     applicationUrl: p.aplyUrlAddr || p.refUrlAddr1 || '',
     viewCount: p.inqCnt ? Number(p.inqCnt) : 0,
     region: p.zipCd ? zipCdToRegions(p.zipCd) : '',
+    zipCodes: p.zipCd || '',
   };
 }
 

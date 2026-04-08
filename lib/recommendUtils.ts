@@ -1,5 +1,9 @@
-import type { QuizAnswers } from './quiz';
-import type { Recommendation } from './quiz';
+import type { QuizAnswers, Recommendation } from './quiz';
+import { SIDO_REGIONS } from './quiz';
+
+const SIDO_CODE_TO_NAME: Record<string, string> = Object.fromEntries(
+  SIDO_REGIONS.map((r) => [r.code, r.name]),
+);
 
 // need 값 → 대분류 키워드 매핑
 const NEED_TO_CATEGORIES: Record<string, string[]> = {
@@ -43,8 +47,9 @@ function generateMatchReason(program: Recommendation, answers: QuizAnswers): str
   }
 
   const region = answers.region as string | undefined;
-  if (region && program.region?.includes(region)) {
-    reasons.push(`${region} 거주자를 대상으로 합니다.`);
+  if (region && program.zipCodes?.split(',').some((c) => c.trim().startsWith(region))) {
+    const regionName = SIDO_CODE_TO_NAME[region] ?? region;
+    reasons.push(`${regionName} 거주자를 대상으로 합니다.`);
   }
 
   const status = answers.status as string | undefined;
@@ -88,10 +93,13 @@ export function scoreAndRankPrograms(
       }
     }
 
-    // 지역 매칭
+    // 지역 매칭 (SIDO 코드 prefix 비교)
     if (userRegion) {
-      if (p.region?.includes(userRegion)) score += 2;
-      else if (!p.region) score += 1; // 전국 정책
+      if (!p.zipCodes) {
+        score += 1; // zipCd 없는 전국 정책
+      } else if (p.zipCodes.split(',').some((c) => c.trim().startsWith(userRegion))) {
+        score += 2;
+      }
     }
 
     // 취업 상태 매칭

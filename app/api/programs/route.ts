@@ -11,7 +11,10 @@ export async function GET(req: Request) {
   const all = await fetchAllYouthPolicies();
   const filtered = all.filter((p) => {
     const categoryMatch = category === '전체' || p.mainCategory === category;
-    const regionMatch = region === '전체' || (p.region?.includes(region) ?? false);
+    const regionMatch =
+      region === '전체' ||
+      !p.zipCodes ||
+      p.zipCodes.split(',').some((c) => c.trim().startsWith(region));
     return categoryMatch && regionMatch;
   });
   const sorted = [...filtered].sort((a, b) => (b.viewCount ?? 0) - (a.viewCount ?? 0));

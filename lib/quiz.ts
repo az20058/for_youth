@@ -28,12 +28,21 @@ export interface Recommendation {
   applicationUrl?: string;
   viewCount?: number;
   region?: string;
+  zipCodes?: string;
 }
 
-export const REGIONS = [
-  '서울', '부산', '대구', '인천', '광주', '대전', '울산', '세종',
-  '경기', '강원', '충북', '충남', '전북', '전남', '경북', '경남', '제주',
+/** SIDO 코드 → 지역명 매핑 */
+export const SIDO_REGIONS = [
+  { code: '11', name: '서울' }, { code: '21', name: '부산' }, { code: '22', name: '대구' },
+  { code: '23', name: '인천' }, { code: '24', name: '광주' }, { code: '25', name: '대전' },
+  { code: '26', name: '울산' }, { code: '29', name: '세종' }, { code: '31', name: '경기' },
+  { code: '32', name: '강원' }, { code: '33', name: '충북' }, { code: '34', name: '충남' },
+  { code: '35', name: '전북' }, { code: '36', name: '전남' }, { code: '37', name: '경북' },
+  { code: '38', name: '경남' }, { code: '39', name: '제주' },
 ];
+
+/** @deprecated SIDO_REGIONS 사용 */
+export const REGIONS = SIDO_REGIONS.map((r) => r.name);
 
 export const QUIZ_QUESTIONS: QuizQuestion[] = [
   {
@@ -64,7 +73,7 @@ export const QUIZ_QUESTIONS: QuizQuestion[] = [
     id: 'region',
     question: '나의 거주 지역은',
     type: 'select',
-    options: REGIONS.map((r) => ({ label: r, value: r })),
+    options: SIDO_REGIONS.map((r) => ({ label: r.name, value: r.code })),
   },
   {
     id: 'age',
