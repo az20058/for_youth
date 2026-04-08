@@ -7,6 +7,7 @@ import { formatDeadline } from '@/lib/deadline';
 import { calculateDDay, formatDDay } from '@/lib/dday';
 import { Badge } from '@/components/ui/badge';
 import { CoverLetterList } from './_components/CoverLetterList';
+import { CompanySummary } from './_components/CompanySummary';
 import { statusBadgeClass } from '@/lib/statusBadge';
 
 export default async function ApplicationDetailPage({
@@ -104,6 +105,11 @@ export default async function ApplicationDetailPage({
               </a>
             )}
           </div>
+        </div>
+
+        {/* 기업 분석 섹션 */}
+        <div className="mb-8">
+          <CompanySummary applicationId={id} />
         </div>
 
         {/* 자기소개서 섹션 */}
