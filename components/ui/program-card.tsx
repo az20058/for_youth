@@ -50,12 +50,6 @@ export function ProgramCard({ program, badgeClassName }: ProgramCardProps) {
                 <Badge variant="outline" className={`text-xs ${badgeClassName ?? ''}`}>
                   #{program.category}
                 </Badge>
-                {program.region &&
-                  program.region.split(', ').map((r) => (
-                    <Badge key={r} variant="outline" className={`text-xs ${badgeClassName ?? ''}`}>
-                      #{r}
-                    </Badge>
-                  ))}
               </div>
             </div>
             {program.applicationUrl && (
@@ -113,6 +107,10 @@ export function ProgramCard({ program, badgeClassName }: ProgramCardProps) {
               <Badge variant="outline" className="text-xs">#{program.mainCategory}</Badge>
             )}
             <Badge variant="outline" className="text-xs">#{program.category}</Badge>
+            {program.region &&
+              program.region.split(', ').map((r) => (
+                <Badge key={r} variant="outline" className="text-xs">#{r}</Badge>
+              ))}
           </div>
           <div className="overflow-y-auto flex-1 min-h-0">
             {(program.supportContent || program.description) && (
