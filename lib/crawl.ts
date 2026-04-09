@@ -7,11 +7,13 @@ function timeoutSignal(ms: number): AbortSignal | undefined {
   return typeof AbortSignal?.timeout === 'function' ? AbortSignal.timeout(ms) : undefined;
 }
 
+const BROWSER_UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36';
+
 export async function fetchNamuWiki(companyName: string): Promise<string | null> {
   try {
     const res = await fetch(
       `https://namu.wiki/raw/${encodeURIComponent(companyName)}`,
-      { signal: timeoutSignal(8000) },
+      { headers: { 'User-Agent': BROWSER_UA }, signal: timeoutSignal(8000) },
     );
     if (!res.ok) return null;
     const text = await res.text();
@@ -25,7 +27,7 @@ export async function fetchGoogleNews(companyName: string): Promise<string[]> {
   try {
     const res = await fetch(
       `https://news.google.com/rss/search?q=${encodeURIComponent(companyName)}&hl=ko&gl=KR`,
-      { signal: timeoutSignal(8000) },
+      { headers: { 'User-Agent': BROWSER_UA }, signal: timeoutSignal(8000) },
     );
     if (!res.ok) return [];
     const xml = await res.text();
