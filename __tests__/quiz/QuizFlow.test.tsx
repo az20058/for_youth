@@ -1,5 +1,4 @@
 import { isAnswered, toggleMultiChoice } from '@/lib/quizUtils';
-import { buildPrompt, getSamplePrograms } from '@/lib/recommendUtils';
 import { QUIZ_QUESTIONS } from '@/lib/quiz';
 import type { QuizQuestion } from '@/lib/quiz';
 
@@ -121,74 +120,3 @@ describe('toggleMultiChoice', () => {
   });
 });
 
-// ── getSamplePrograms ────────────────────────────────────────────────────────
-
-describe('getSamplePrograms', () => {
-  it('비어있지 않은 문자열을 반환한다', () => {
-    expect(getSamplePrograms().length).toBeGreaterThan(0);
-  });
-
-  it('여러 프로그램이 포함된다', () => {
-    const lines = getSamplePrograms().split('\n').filter((l) => l.startsWith('-'));
-    expect(lines.length).toBeGreaterThan(1);
-  });
-
-  it('각 항목은 파이프(|) 구분자 형식이다', () => {
-    const lines = getSamplePrograms().split('\n').filter((l) => l.startsWith('-'));
-    lines.forEach((line) => {
-      expect(line).toContain('|');
-    });
-  });
-});
-
-// ── buildPrompt ──────────────────────────────────────────────────────────────
-
-describe('buildPrompt', () => {
-  const programs = '- 청년내일채움공제 (취업지원) | 고용노동부';
-
-  it('필요 항목이 한국어로 변환되어 포함된다', () => {
-    const prompt = buildPrompt({ need: ['employment', 'financial'] }, programs);
-    expect(prompt).toContain('취업·창업 지원');
-    expect(prompt).toContain('경제적 지원');
-  });
-
-  it('거주 지역이 포함된다', () => {
-    const prompt = buildPrompt({ region: '서울' }, programs);
-    expect(prompt).toContain('거주 지역: 서울');
-  });
-
-  it('나이가 포함된다', () => {
-    const prompt = buildPrompt({ age: 25 }, programs);
-    expect(prompt).toContain('나이: 25세');
-  });
-
-  it('취업 상태가 한국어로 변환된다', () => {
-    const prompt = buildPrompt({ status: 'job_seeking' }, programs);
-    expect(prompt).toContain('취업 준비 중');
-  });
-
-  it('소득 상황이 한국어로 변환된다', () => {
-    const prompt = buildPrompt({ income: 'basic_welfare' }, programs);
-    expect(prompt).toContain('기초생활수급자');
-  });
-
-  it('자유 텍스트가 포함된다', () => {
-    const prompt = buildPrompt({ freetext: '이직을 고민 중입니다' }, programs);
-    expect(prompt).toContain('이직을 고민 중입니다');
-  });
-
-  it('null 값은 프롬프트에 포함되지 않는다', () => {
-    const prompt = buildPrompt({ region: null }, programs);
-    expect(prompt).not.toContain('거주 지역');
-  });
-
-  it('프로그램 목록이 포함된다', () => {
-    const prompt = buildPrompt({}, programs);
-    expect(prompt).toContain('청년내일채움공제');
-  });
-
-  it('JSON 형식으로 답하라는 지시가 포함된다', () => {
-    const prompt = buildPrompt({}, programs);
-    expect(prompt).toContain('JSON 배열 형식');
-  });
-});

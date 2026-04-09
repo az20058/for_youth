@@ -35,9 +35,9 @@ describe('validateApplication', () => {
     expect(result.careerLevel).toBeDefined();
   });
 
-  it('deadline 빈 문자열 → deadline 에러', () => {
+  it('deadline 빈 문자열 → 에러 없음 (마감일 선택사항)', () => {
     const result = validateApplication({ ...validData, deadline: '' });
-    expect(result.deadline).toBeDefined();
+    expect(result.deadline).toBeUndefined();
   });
 
   it('과거 deadline → deadline 에러', () => {
