@@ -16,7 +16,6 @@ model Application {
   status       ApplicationStatus @default(PENDING)
   url          String?
   coverLetters   CoverLetter[]
-  companySummary CompanySummary?
   userId       String?
   user         User?             @relation(fields: [userId], references: [id])
   createdAt    DateTime          @default(now())
@@ -118,15 +117,14 @@ enum ScheduleEventType {
 }
 
 model CompanySummary {
-  id              String      @id @default(cuid())
-  applicationId   String      @unique
-  application     Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
-  overview        String      @db.Text
-  mainBusiness    String      @db.Text
-  recentNews      String      @db.Text
-  motivationHints String      @db.Text
-  crawledAt       DateTime    @default(now())
-  updatedAt       DateTime    @updatedAt
+  id              String   @id @default(cuid())
+  companyName     String   @unique
+  overview        String   @db.Text
+  mainBusiness    String   @db.Text
+  recentNews      String   @db.Text
+  motivationHints String   @db.Text
+  crawledAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
 }
 
 model YouthPolicy {
