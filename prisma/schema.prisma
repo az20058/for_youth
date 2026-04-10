@@ -21,6 +21,10 @@ model Application {
   user         User?             @relation(fields: [userId], references: [id])
   createdAt    DateTime          @default(now())
   updatedAt    DateTime          @updatedAt
+
+  @@index([userId])
+  @@index([userId, status])
+  @@index([deadline])
 }
 
 model User {
@@ -102,6 +106,8 @@ model ScheduleEvent {
   user      User              @relation(fields: [userId], references: [id], onDelete: Cascade)
   createdAt DateTime          @default(now())
   updatedAt DateTime          @updatedAt
+
+  @@index([userId])
 }
 
 enum ScheduleEventType {
@@ -138,4 +144,7 @@ model YouthPolicy {
   bizPrdEndYmd  String?
   syncedAt      DateTime @default(now())
   updatedAt     DateTime @updatedAt
+
+  @@index([region])
+  @@index([mainCategory])
 }
