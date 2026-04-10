@@ -18,6 +18,7 @@ model Application {
   coverLetters   CoverLetter[]
   userId       String?
   user         User?             @relation(fields: [userId], references: [id])
+  deletedAt    DateTime?
   createdAt    DateTime          @default(now())
   updatedAt    DateTime          @updatedAt
 

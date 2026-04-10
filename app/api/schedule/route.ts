@@ -26,6 +26,7 @@ export async function GET(request: NextRequest) {
     prisma.application.findMany({
       where: {
         userId,
+        deletedAt: null,
         deadline: { gte: startDate, lte: endDate },
       },
       select: {

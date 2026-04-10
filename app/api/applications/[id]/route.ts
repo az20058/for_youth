@@ -31,7 +31,7 @@ function serializeApp(app: Awaited<ReturnType<typeof findApp>>) {
 
 function findApp(id: string, userId: string) {
   return prisma.application.findFirst({
-    where: { id, userId },
+    where: { id, userId, deletedAt: null },
     include: { coverLetters: true },
   });
 }
@@ -99,6 +99,9 @@ export async function DELETE(_req: Request, { params }: { params: Promise<{ id: 
   const { id } = await params;
   const app = await findApp(id, userId);
   if (!app) return Response.json({ message: '지원서를 찾을 수 없습니다.' }, { status: 404 });
-  await prisma.application.delete({ where: { id } });
+  await prisma.application.update({
+    where: { id },
+    data: { deletedAt: new Date() },
+  });
   return new Response(null, { status: 204 });
 }

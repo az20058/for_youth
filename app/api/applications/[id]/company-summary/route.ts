@@ -19,7 +19,7 @@ export async function POST(
   const { id } = await params;
 
   const application = await prisma.application.findFirst({
-    where: { id, userId },
+    where: { id, userId, deletedAt: null },
     select: { companyName: true },
   });
   if (!application) return Response.json({ message: '지원서를 찾을 수 없습니다.' }, { status: 404 });

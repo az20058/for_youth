@@ -18,7 +18,7 @@ export async function GET() {
   }
 
   const apps = await prisma.application.findMany({
-    where: { userId },
+    where: { userId, deletedAt: null },
     include: { coverLetters: true },
     orderBy: { createdAt: 'desc' },
   });
