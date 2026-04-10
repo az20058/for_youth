@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useSession } from "next-auth/react";
 import { ChevronLeft } from "lucide-react";
 import { FlameIcon } from "../../../components/icons/FlameIcon";
 import { FlameLoading } from "@/components/ui/flame-loading";
@@ -24,6 +25,7 @@ import { QuizResult } from "./QuizResult";
 type Step = "landing" | number | "loading" | "result";
 
 export function QuizFlow() {
+  const { data: session } = useSession();
   const [step, setStep] = useState<Step>("landing");
   const [answers, setAnswers] = useState<QuizAnswers>({});
   const [result, setResult] = useState<Recommendation[]>([]);
@@ -87,6 +89,15 @@ export function QuizFlow() {
         "ember_recommendations",
         JSON.stringify(data.recommendations),
       );
+
+      if (session?.user) {
+        fetch("/api/quiz/result", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ answers, recommendations: data.recommendations }),
+        }).catch(() => null);
+      }
+
       setStep("result");
     } catch {
       setStep("result");
