@@ -71,6 +71,14 @@ body {
   font-family: "Pretendard", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
 }
 
+/* iOS Safari: input font-size < 16px triggers auto-zoom on focus.
+   Must be outside @layer base to override Tailwind utility classes (text-sm etc.) */
+@media (max-width: 767px) {
+  input, textarea, select {
+    font-size: 16px !important;
+  }
+}
+
 @layer base {
   * {
     border-color: var(--color-border);
@@ -81,11 +89,5 @@ body {
   }
   html {
     font-family: "Pretendard", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
-  }
-  /* iOS Safari: input font-size < 16px triggers auto-zoom on focus */
-  @media (max-width: 767px) {
-    input, textarea, select {
-      font-size: 16px;
-    }
   }
 }
