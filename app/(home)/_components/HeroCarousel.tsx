@@ -8,10 +8,14 @@ interface HeroCarouselProps {
 }
 
 const INTERVAL_MS = 3500;
+const SWIPE_THRESHOLD = 50;
 
 export function HeroCarousel({ programs }: HeroCarouselProps) {
   const [current, setCurrent] = useState(0);
+  const [dragOffset, setDragOffset] = useState(0);
+  const [isDragging, setIsDragging] = useState(false);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const dragStartX = useRef<number | null>(null);
 
   const startTimer = useCallback(() => {
     if (timerRef.current) clearInterval(timerRef.current);
@@ -28,14 +32,50 @@ export function HeroCarousel({ programs }: HeroCarouselProps) {
     };
   }, [programs.length, startTimer]);
 
+  const goTo = useCallback((index: number) => {
+    const clamped = (index + programs.length) % programs.length;
+    setCurrent(clamped);
+    startTimer();
+  }, [programs.length, startTimer]);
+
+  const handleDragStart = useCallback((clientX: number) => {
+    dragStartX.current = clientX;
+    setIsDragging(true);
+    if (timerRef.current) clearInterval(timerRef.current);
+  }, []);
+
+  const handleDragMove = useCallback((clientX: number) => {
+    if (dragStartX.current === null) return;
+    setDragOffset(clientX - dragStartX.current);
+  }, []);
+
+  const handleDragEnd = useCallback(() => {
+    if (dragStartX.current === null) return;
+    if (dragOffset < -SWIPE_THRESHOLD) goTo(current + 1);
+    else if (dragOffset > SWIPE_THRESHOLD) goTo(current - 1);
+    else startTimer();
+    dragStartX.current = null;
+    setDragOffset(0);
+    setIsDragging(false);
+  }, [dragOffset, current, goTo, startTimer]);
+
   if (programs.length === 0) return null;
 
   return (
-    <div className="relative overflow-hidden rounded-2xl bg-[#2D2D2D]">
+    <div
+      className="relative overflow-hidden rounded-2xl bg-[#2D2D2D] select-none cursor-grab active:cursor-grabbing"
+      onMouseDown={(e) => handleDragStart(e.clientX)}
+      onMouseMove={(e) => { if (isDragging) handleDragMove(e.clientX); }}
+      onMouseUp={handleDragEnd}
+      onMouseLeave={() => { if (isDragging) handleDragEnd(); }}
+      onTouchStart={(e) => handleDragStart(e.touches[0].clientX)}
+      onTouchMove={(e) => handleDragMove(e.touches[0].clientX)}
+      onTouchEnd={handleDragEnd}
+    >
       {/* Slides */}
       <div
-        className="flex transition-transform duration-500 ease-in-out"
-        style={{ transform: `translateX(-${current * 100}%)` }}
+        className={`flex ${isDragging ? '' : 'transition-transform duration-500 ease-in-out'}`}
+        style={{ transform: `translateX(calc(-${current * 100}% + ${dragOffset}px))` }}
       >
         {programs.map((program, i) => (
           <div key={program.id ?? program.name + i} className="min-w-full p-5 flex flex-col gap-2">
@@ -59,10 +99,7 @@ export function HeroCarousel({ programs }: HeroCarouselProps) {
               key={i}
               type="button"
               aria-label={`슬라이드 ${i + 1}`}
-              onClick={() => {
-                setCurrent(i);
-                startTimer();
-              }}
+              onClick={() => goTo(i)}
               className={`rounded-full transition-all duration-300 ${
                 i === current ? 'w-4 h-1.5 bg-primary' : 'w-1.5 h-1.5 bg-white/30'
               }`}
