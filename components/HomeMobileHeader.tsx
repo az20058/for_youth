@@ -30,7 +30,7 @@ export function HomeMobileHeader() {
   }, [pathname]);
 
   return (
-    <header className="md:hidden bg-background/80 backdrop-blur-md border-b border-foreground/10">
+    <header className="md:hidden bg-[#1C1C1E] border-b border-foreground/10">
       <div className="relative flex">
         {indicator && (
           <span
