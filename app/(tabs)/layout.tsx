@@ -1,9 +1,17 @@
+import type { Metadata } from "next";
 import { AppSidebar } from '@/components/AppSidebar';
 import { MobileHeader } from '@/components/MobileHeader';
 import { AuthGuard } from '@/components/AuthGuard';
 import { Header } from '@/components/ui/header';
 import { Toaster } from '@/components/ui/sonner';
 import { MobileFooterNav } from '@/components/MobileFooterNav';
+
+export const metadata: Metadata = {
+  robots: {
+    index: false,
+    follow: false,
+  },
+};
 
 export default function TabsLayout({ children }: { children: React.ReactNode }) {
   return (
