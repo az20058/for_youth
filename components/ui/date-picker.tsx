@@ -86,13 +86,16 @@ export function DatePicker({
   }
 
   return (
-    <Drawer open={open} onOpenChange={setOpen}>
+    <Drawer open={open} onOpenChange={setOpen} shouldScaleBackground={false}>
       <DrawerTrigger asChild>{triggerButton}</DrawerTrigger>
       <DrawerContent>
         <DrawerHeader>
           <DrawerTitle>날짜 선택</DrawerTitle>
         </DrawerHeader>
-        <div className="flex justify-center pb-8">
+        <div
+          className="flex justify-center"
+          style={{ paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 2rem)' }}
+        >
           <Calendar
             mode="single"
             selected={value}
