@@ -1,4 +1,3 @@
-import { ALL_PROGRAMS } from './recommendUtils';
 import type { Recommendation } from './quiz';
 import { prisma } from './db';
 
@@ -82,7 +81,7 @@ function mapDbPolicy(p: {
 /** 온통청년 API에서 직접 전체 정책을 가져옵니다. (배치 Job용) */
 export async function fetchFromYouthApi(): Promise<Recommendation[]> {
   const serviceKey = process.env.YOUTH_API_SERVICE_KEY;
-  if (!serviceKey) return ALL_PROGRAMS;
+  if (!serviceKey) return [];
 
   try {
     const firstParams = new URLSearchParams({
@@ -95,11 +94,11 @@ export async function fetchFromYouthApi(): Promise<Recommendation[]> {
       `https://www.youthcenter.go.kr/go/ythip/getPlcy?${firstParams}`,
       { headers: { Accept: 'application/json' }, cache: 'no-store', signal: AbortSignal.timeout(8000) },
     );
-    if (!firstRes.ok) return ALL_PROGRAMS;
+    if (!firstRes.ok) return [];
 
     const firstData = await firstRes.json();
     const totCount: number = firstData?.result?.pagging?.totCount ?? 0;
-    if (totCount === 0) return ALL_PROGRAMS;
+    if (totCount === 0) return [];
 
     const pageSize = 500;
     const totalPages = Math.ceil(totCount / pageSize);
@@ -124,7 +123,7 @@ export async function fetchFromYouthApi(): Promise<Recommendation[]> {
 
     return pages.flat().filter(isActive).map(mapApiPolicy);
   } catch {
-    return ALL_PROGRAMS;
+    return [];
   }
 }
 
