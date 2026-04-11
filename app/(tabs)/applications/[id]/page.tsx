@@ -58,7 +58,7 @@ export default async function ApplicationDetailPage({
               </h1>
               <div className="flex flex-wrap gap-2">
                 <Badge className={statusBadgeClass(application.status)}>
-                  <CircleDotIcon />
+                  <CircleDotIcon className="mr-1" />
                   {application.status}
                 </Badge>
               </div>
@@ -68,7 +68,7 @@ export default async function ApplicationDetailPage({
             <div className="flex flex-col items-start gap-1 rounded-xl bg-muted/50 px-4 py-3 sm:items-end">
               <span className="text-xs text-muted-foreground">마감일</span>
               <span className="text-base font-semibold">
-                {application.deadline ? formatDeadline(application.deadline) : '-'}
+                {application.deadline ? formatDeadline(application.deadline) : '채용 시 마감'}
               </span>
               <span className="text-sm font-medium text-primary">
                 {dday !== null ? formatDDay(dday) : ''}
@@ -86,12 +86,10 @@ export default async function ApplicationDetailPage({
               <BuildingIcon className="size-3" />
               {application.companySize}
             </Badge>
-            {application.deadline && (
-              <Badge variant="outline" className="gap-1">
-                <CalendarIcon className="size-3" />
-                {formatDeadline(application.deadline)}
-              </Badge>
-            )}
+            <Badge variant="outline" className="gap-1">
+              <CalendarIcon className="size-3" />
+              {application.deadline ? formatDeadline(application.deadline) : '채용 시 마감'}
+            </Badge>
             {application.url && (
               <a
                 href={application.url}
