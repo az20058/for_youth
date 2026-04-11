@@ -14,11 +14,55 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "취업 관리",
-  description: "입사 지원 현황 및 자기소개서 관리",
+  metadataBase: new URL("https://for-youth.site"),
+  title: {
+    template: "%s | For Youth",
+    default: "For Youth — 청년 취업·이직 준비 플랫폼",
+  },
+  description:
+    "이직과 취업을 준비하는 청년을 위한 정부 지원 프로그램 탐색과 지원 현황 관리 서비스",
   icons: {
     icon: "/icons/flame.svg",
   },
+  openGraph: {
+    siteName: "For Youth",
+    locale: "ko_KR",
+    type: "website",
+    images: [
+      {
+        url: "/opengraph-image",
+        width: 1200,
+        height: 630,
+        alt: "For Youth — 청년 취업·이직 준비 플랫폼",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    images: ["/opengraph-image"],
+  },
+  alternates: {
+    canonical: "https://for-youth.site",
+  },
+};
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebSite",
+      name: "For Youth",
+      url: "https://for-youth.site",
+      description:
+        "이직과 취업을 준비하는 청년을 위한 정부 지원 프로그램 탐색과 지원 현황 관리 서비스",
+      inLanguage: "ko",
+    },
+    {
+      "@type": "Organization",
+      name: "For Youth",
+      url: "https://for-youth.site",
+    },
+  ],
 };
 
 export default function RootLayout({
@@ -32,9 +76,11 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full">
-        <Providers>
-          {children}
-        </Providers>
+        <Providers>{children}</Providers>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
       </body>
     </html>
   );
