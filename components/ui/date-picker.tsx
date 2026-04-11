@@ -93,7 +93,7 @@ export function DatePicker({
           <DrawerTitle>날짜 선택</DrawerTitle>
         </DrawerHeader>
         <div
-          className="flex justify-center"
+          className="px-2"
           style={{ paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 2rem)' }}
         >
           <Calendar
@@ -105,6 +105,8 @@ export function DatePicker({
             }}
             disabled={disabledDays}
             locale={ko}
+            className="w-full [--cell-size:2.75rem]"
+            classNames={{ root: "w-full" }}
           />
         </div>
       </DrawerContent>
