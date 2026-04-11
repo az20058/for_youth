@@ -9,6 +9,14 @@ import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Calendar } from "@/components/ui/calendar"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import {
+  Drawer,
+  DrawerContent,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerTrigger,
+} from "@/components/ui/drawer"
+import { useMediaQuery } from "@/hooks/use-media-query"
 
 interface DatePickerProps {
   value?: Date
@@ -28,40 +36,75 @@ export function DatePicker({
   className,
   disablePast = false,
 }: DatePickerProps) {
-  return (
-    <Popover>
-      <PopoverTrigger asChild>
-        <Button
-          variant="outline"
-          className={cn(
-            "w-full justify-start gap-2 font-normal",
-            !value && "text-muted-foreground",
-            className
-          )}
-          disabled={disabled}
-          aria-label={value ? format(value, "PPP", { locale: ko }) : placeholder}
+  const [open, setOpen] = React.useState(false)
+  const isDesktop = useMediaQuery("(min-width: 768px)")
+
+  const disabledDays = disablePast
+    ? (date: Date) => date < new Date(new Date().setHours(0, 0, 0, 0))
+    : undefined
+
+  const triggerButton = (
+    <Button
+      variant="outline"
+      className={cn(
+        "w-full justify-start gap-2 font-normal",
+        !value && "text-muted-foreground",
+        className
+      )}
+      disabled={disabled}
+      aria-label={value ? format(value, "PPP", { locale: ko }) : placeholder}
+    >
+      <CalendarIcon className="size-4 shrink-0" />
+      {value ? format(value, "yyyy년 MM월 dd일", { locale: ko }) : placeholder}
+    </Button>
+  )
+
+  if (isDesktop) {
+    return (
+      <Popover open={open} onOpenChange={setOpen}>
+        <PopoverTrigger asChild>{triggerButton}</PopoverTrigger>
+        <PopoverContent
+          className="w-auto p-0"
+          align="start"
+          collisionPadding={{ top: 16, bottom: 16, left: 8, right: 8 }}
+          avoidCollisions
         >
-          <CalendarIcon className="size-4 shrink-0" />
-          {value ? format(value, "yyyy년 MM월 dd일", { locale: ko }) : placeholder}
-        </Button>
-      </PopoverTrigger>
-      <PopoverContent
-        className="w-[min(340px,calc(100vw-2rem))] p-0 overflow-y-auto"
-        style={{ maxHeight: 'var(--radix-popper-available-height)' }}
-        collisionPadding={{ top: 100, bottom: 16, left: 8, right: 8 }}
-        side="bottom"
-        avoidCollisions={true}
-      >
-        <Calendar
-          mode="single"
-          selected={value}
-          onSelect={onChange}
-          disabled={disablePast ? (date) => date < new Date(new Date().setHours(0, 0, 0, 0)) : undefined}
-          locale={ko}
-          className="w-full [--cell-size:auto]"
-          autoFocus
-        />
-      </PopoverContent>
-    </Popover>
+          <Calendar
+            mode="single"
+            selected={value}
+            onSelect={(date) => {
+              onChange?.(date)
+              setOpen(false)
+            }}
+            disabled={disabledDays}
+            locale={ko}
+            autoFocus
+          />
+        </PopoverContent>
+      </Popover>
+    )
+  }
+
+  return (
+    <Drawer open={open} onOpenChange={setOpen}>
+      <DrawerTrigger asChild>{triggerButton}</DrawerTrigger>
+      <DrawerContent>
+        <DrawerHeader>
+          <DrawerTitle>날짜 선택</DrawerTitle>
+        </DrawerHeader>
+        <div className="flex justify-center pb-8">
+          <Calendar
+            mode="single"
+            selected={value}
+            onSelect={(date) => {
+              onChange?.(date)
+              setOpen(false)
+            }}
+            disabled={disabledDays}
+            locale={ko}
+          />
+        </div>
+      </DrawerContent>
+    </Drawer>
   )
 }
