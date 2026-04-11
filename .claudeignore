@@ -1,0 +1,33 @@
+# Dependencies
+node_modules/
+
+# Build outputs
+.next/
+out/
+dist/
+
+# Package manager lock files
+package-lock.json
+
+# TypeScript build cache
+tsconfig.tsbuildinfo
+
+# Test results & coverage
+test-results/
+coverage/
+
+# Logs
+*.log
+debug-storybook.log
+
+# Storybook stories (design-only, not logic)
+stories/
+
+# Public assets
+public/
+
+# Prisma generated client (derived from schema)
+prisma/migrations/
+
+# Docs (reference only)
+docs/
