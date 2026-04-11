@@ -26,7 +26,7 @@ export function MobileFooterNav() {
               key={href}
               href={href}
               className={cn(
-                'flex flex-col items-center gap-0.5 px-3 py-1 rounded-lg text-xs font-medium transition-colors',
+                'flex flex-col items-center gap-0.5 px-3 py-1 rounded-lg text-xs font-medium transition-all active:scale-[0.92] active:bg-foreground/10',
                 isActive ? 'text-primary' : 'text-muted-foreground',
               )}
             >

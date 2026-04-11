@@ -35,7 +35,7 @@ export function ProgramCard({ program, badgeClassName }: ProgramCardProps) {
 
   return (
     <>
-      <Card className="cursor-pointer hover:ring-1 hover:ring-primary/40 transition-all" onClick={() => setOpen(true)}>
+      <Card className="cursor-pointer hover:ring-1 hover:ring-primary/40 active:ring-1 active:ring-primary/40 active:scale-[0.99] transition-all" onClick={() => setOpen(true)}>
         <CardHeader>
           <div className="flex items-start justify-between gap-2">
             <div className="flex flex-col gap-2">
