@@ -29,5 +29,8 @@ export async function GET(req: Request) {
 
   const categories = ['전체', ...Array.from(new Set(all.map((p) => p.mainCategory ?? '기타')))];
 
-  return Response.json({ items, total, totalPages, page, limit, categories });
+  return Response.json(
+    { items, total, totalPages, page, limit, categories },
+    { headers: { 'Cache-Control': 'public, max-age=300, stale-while-revalidate=600' } },
+  );
 }

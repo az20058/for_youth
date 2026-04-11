@@ -5,6 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { ProgramCard } from "@/components/ui/program-card";
+import { FlameLoading } from "@/components/ui/flame-loading";
 import { HeroCarousel } from "./HeroCarousel";
 import type { Recommendation } from "@/lib/quiz";
 
@@ -25,9 +26,10 @@ export function HomeContent() {
     } catch {}
   }, []);
 
-  const { data: allPrograms = [] } = useQuery({
+  const { data: allPrograms = [], isLoading } = useQuery({
     queryKey: ["programs"],
     queryFn: fetchPrograms,
+    staleTime: 5 * 60 * 1000,
   });
 
   const heroPrograms = useMemo(
@@ -44,6 +46,8 @@ export function HomeContent() {
         .sort((a, b) => (b.viewCount ?? 0) - (a.viewCount ?? 0))
         .slice(0, 4)
     : heroPrograms;
+
+  if (isLoading) return <FlameLoading />;
 
   return (
     <div className="flex flex-col gap-8">
