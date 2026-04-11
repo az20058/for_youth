@@ -69,7 +69,21 @@ export function ProgramsList() {
 
   return (
     <div>
-      <div className="flex items-center justify-between gap-3 mb-4">
+      <div className="flex flex-col gap-2 mb-4">
+        <div className="flex justify-end">
+          <Select value={activeRegion} onValueChange={handleRegionChange}>
+            <SelectTrigger className="w-28 h-8 text-sm">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="전체">전체 지역</SelectItem>
+              {SIDO_REGIONS.map((r) => (
+                <SelectItem key={r.code} value={r.code}>{r.name}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
         <div className="flex flex-wrap gap-2">
           {categories.map((category) => (
             <button
@@ -87,18 +101,6 @@ export function ProgramsList() {
             </button>
           ))}
         </div>
-
-        <Select value={activeRegion} onValueChange={handleRegionChange}>
-          <SelectTrigger className="w-28 shrink-0 h-8 text-sm">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="전체">전체 지역</SelectItem>
-            {SIDO_REGIONS.map((r) => (
-              <SelectItem key={r.code} value={r.code}>{r.name}</SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
       </div>
 
       <p className="mb-4 text-sm text-muted-foreground">총 {total}개</p>
