@@ -45,7 +45,7 @@ export function DatePicker({
           {value ? format(value, "yyyy년 MM월 dd일", { locale: ko }) : placeholder}
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-[340px] p-0">
+      <PopoverContent className="w-[min(340px,calc(100vw-2rem))] p-0" collisionPadding={8}>
         <Calendar
           mode="single"
           selected={value}
