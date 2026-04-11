@@ -52,7 +52,7 @@ export function AddEventDialog({ selectedDate, onAdd }: AddEventDialogProps) {
           일정 추가
         </Button>
       </DialogTrigger>
-      <DialogContent className="w-[90%] max-w-md">
+      <DialogContent className="w-[90%] max-w-md max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>새 일정 추가</DialogTitle>
           <DialogDescription>코딩테스트, 면접 등 일정을 등록하세요.</DialogDescription>
@@ -72,7 +72,7 @@ export function AddEventDialog({ selectedDate, onAdd }: AddEventDialogProps) {
 
           <div className="flex flex-col gap-1.5">
             <label className="text-sm font-medium">날짜</label>
-            <DatePicker value={date} onChange={setDate} />
+            <DatePicker value={date} onChange={setDate} side="bottom" />
           </div>
 
           <div className="flex flex-col gap-1.5">

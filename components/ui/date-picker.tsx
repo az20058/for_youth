@@ -18,6 +18,8 @@ interface DatePickerProps {
   className?: string
   /** 오늘 이전 날짜 비활성화 여부 (기본: false) */
   disablePast?: boolean
+  /** 팝오버 열리는 방향 (기본: auto) */
+  side?: "top" | "bottom" | "left" | "right"
 }
 
 export function DatePicker({
@@ -27,6 +29,7 @@ export function DatePicker({
   disabled,
   className,
   disablePast = false,
+  side,
 }: DatePickerProps) {
   return (
     <Popover>
@@ -45,7 +48,12 @@ export function DatePicker({
           {value ? format(value, "yyyy년 MM월 dd일", { locale: ko }) : placeholder}
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-[min(340px,calc(100vw-2rem))] p-0" collisionPadding={8}>
+      <PopoverContent
+        className="w-[min(340px,calc(100vw-2rem))] p-0"
+        collisionPadding={8}
+        side={side}
+        avoidCollisions={side === undefined}
+      >
         <Calendar
           mode="single"
           selected={value}
