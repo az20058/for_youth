@@ -21,7 +21,6 @@ export function HomeContent() {
   useEffect(() => {
     try {
       const stored = localStorage.getItem("ember_recommendations");
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       if (stored) setRecommendations(JSON.parse(stored) as Recommendation[]);
     } catch {}
   }, []);
