@@ -11,11 +11,11 @@ export default function TabsLayout({ children }: { children: React.ReactNode }) 
       <div className="flex flex-col min-h-screen">
         <div className="sticky top-0 z-40">
           <Header />
+          <MobileHeader />
         </div>
         <div className="flex flex-1">
           <AppSidebar />
           <div className="flex-1 min-w-0 flex flex-col">
-            <MobileHeader />
             <div className="mx-auto w-full max-w-3xl px-4 sm:px-6 pb-24 md:pb-0">
               {children}
             </div>
