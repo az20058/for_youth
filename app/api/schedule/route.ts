@@ -69,7 +69,7 @@ export async function POST(request: NextRequest) {
   }
 
   const body = await request.json();
-  const { title, date, type, memo } = body;
+  const { title, date, type, memo, applicationId } = body;
 
   if (!title || !date || !type) {
     return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
@@ -82,6 +82,7 @@ export async function POST(request: NextRequest) {
       type,
       memo: memo || null,
       userId,
+      applicationId: applicationId || null,
     },
   });
 
