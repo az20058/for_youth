@@ -144,7 +144,6 @@ export function NewApplicationForm() {
             onChange={(date) => setForm((prev) => ({ ...prev, deadline: date }))}
             placeholder="마감일 선택"
             disablePast
-            side="bottom"
           />
           {errors.deadline && (
             <p className="text-xs text-destructive">{errors.deadline}</p>

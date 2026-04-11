@@ -72,7 +72,7 @@ export function AddEventDialog({ selectedDate, onAdd }: AddEventDialogProps) {
 
           <div className="flex flex-col gap-1.5">
             <label className="text-sm font-medium">날짜</label>
-            <DatePicker value={date} onChange={setDate} side="bottom" />
+            <DatePicker value={date} onChange={setDate} />
           </div>
 
           <div className="flex flex-col gap-1.5">
