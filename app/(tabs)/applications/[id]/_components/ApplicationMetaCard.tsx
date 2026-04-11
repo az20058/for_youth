@@ -1,0 +1,195 @@
+"use client"
+
+import { useState } from 'react'
+import * as SelectPrimitive from "@radix-ui/react-select"
+import { BriefcaseIcon, BuildingIcon, CalendarIcon, CircleDotIcon, ExternalLinkIcon, PencilIcon } from 'lucide-react'
+import { cn } from '@/lib/utils'
+import { Badge } from '@/components/ui/badge'
+import { Select, SelectContent, SelectItem } from '@/components/ui/select'
+import { DatePicker } from '@/components/ui/date-picker'
+import { toast } from 'sonner'
+import { statusBadgeClass } from '@/lib/statusBadge'
+import { formatDeadline } from '@/lib/deadline'
+import { calculateDDay, formatDDay } from '@/lib/dday'
+import type { ApplicationStatus } from '@/lib/types'
+
+const STATUS_OPTIONS: ApplicationStatus[] = [
+  '지원 예정', '코테 기간', '면접 기간', '지원 완료',
+  '최종 합격', '서류 탈락', '코테 탈락', '면접 탈락',
+]
+
+interface ApplicationMetaCardProps {
+  applicationId: string
+  companyName: string
+  careerLevel: string
+  companySize: string
+  initialStatus: ApplicationStatus
+  initialDeadline: Date | null
+  initialUrl: string | undefined
+}
+
+export function ApplicationMetaCard({
+  applicationId,
+  companyName,
+  careerLevel,
+  companySize,
+  initialStatus,
+  initialDeadline,
+  initialUrl,
+}: ApplicationMetaCardProps) {
+  const [status, setStatus] = useState(initialStatus)
+  const [deadline, setDeadline] = useState<Date | null>(initialDeadline)
+  const [url, setUrl] = useState(initialUrl ?? '')
+  const [editingUrl, setEditingUrl] = useState(false)
+  const [urlInput, setUrlInput] = useState(initialUrl ?? '')
+
+  const dday = deadline ? calculateDDay(deadline) : null
+
+  async function patch(body: Record<string, unknown>) {
+    const res = await fetch(`/api/applications/${applicationId}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    })
+    if (!res.ok) throw new Error('저장 실패')
+  }
+
+  async function handleStatusChange(newStatus: string) {
+    const next = newStatus as ApplicationStatus
+    const prev = status
+    setStatus(next)
+    try {
+      await patch({ status: next })
+    } catch {
+      setStatus(prev)
+      toast.error('상태 저장에 실패했습니다.')
+    }
+  }
+
+  async function handleDeadlineChange(date: Date | undefined) {
+    const prev = deadline
+    const next = date ?? null
+    setDeadline(next)
+    try {
+      await patch({ deadline: next ? next.toISOString().split('T')[0] : null })
+    } catch {
+      setDeadline(prev)
+      toast.error('마감일 저장에 실패했습니다.')
+    }
+  }
+
+  async function handleUrlSave() {
+    const trimmed = urlInput.trim()
+    const prev = url
+    setUrl(trimmed)
+    setEditingUrl(false)
+    try {
+      await patch({ url: trimmed || null })
+    } catch {
+      setUrl(prev)
+      setUrlInput(prev)
+      toast.error('URL 저장에 실패했습니다.')
+    }
+  }
+
+  return (
+    <div className="mb-8 rounded-2xl bg-card ring-1 ring-foreground/10 p-5 sm:p-6">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+        <div className="flex flex-col gap-2">
+          <h1 className="text-2xl font-semibold sm:text-3xl">{companyName}</h1>
+          <div className="flex flex-wrap gap-2">
+            {/* 지원 상태 인라인 편집 */}
+            <Select value={status} onValueChange={handleStatusChange}>
+              <SelectPrimitive.Trigger asChild>
+                <Badge className={cn(statusBadgeClass(status), 'cursor-pointer select-none')}>
+                  <CircleDotIcon className="mr-1" />
+                  {status}
+                </Badge>
+              </SelectPrimitive.Trigger>
+              <SelectContent>
+                {STATUS_OPTIONS.map((s) => (
+                  <SelectItem key={s} value={s}>{s}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+
+        {/* 마감일 인라인 편집 */}
+        <div className="flex flex-col items-start gap-1 rounded-xl bg-muted/50 px-4 py-3 sm:items-end">
+          <span className="text-xs text-muted-foreground">마감일</span>
+          <DatePicker
+            value={deadline ?? undefined}
+            onChange={handleDeadlineChange}
+            placeholder="채용 시 마감"
+            className="h-auto border-0 bg-transparent p-0 text-base font-semibold shadow-none hover:bg-transparent focus-visible:ring-0"
+          />
+          <span className="text-sm font-medium text-primary">
+            {dday !== null ? formatDDay(dday) : ''}
+          </span>
+        </div>
+      </div>
+
+      {/* 상세 뱃지 */}
+      <div className="mt-4 flex flex-wrap items-center gap-2 border-t border-foreground/10 pt-4">
+        <Badge variant="outline" className="gap-1">
+          <BriefcaseIcon className="size-3" />
+          {careerLevel}
+        </Badge>
+        <Badge variant="outline" className="gap-1">
+          <BuildingIcon className="size-3" />
+          {companySize}
+        </Badge>
+        <Badge variant="outline" className="gap-1">
+          <CalendarIcon className="size-3" />
+          {deadline ? formatDeadline(deadline) : '채용 시 마감'}
+        </Badge>
+
+        {/* 채용공고 URL 인라인 편집 */}
+        {editingUrl ? (
+          <input
+            type="url"
+            value={urlInput}
+            onChange={(e) => setUrlInput(e.target.value)}
+            onBlur={handleUrlSave}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') handleUrlSave()
+              if (e.key === 'Escape') {
+                setUrlInput(url)
+                setEditingUrl(false)
+              }
+            }}
+            placeholder="https://..."
+            autoFocus
+            className="h-6 w-48 rounded border border-input bg-background px-2 text-xs focus:outline-none focus:ring-1 focus:ring-primary"
+          />
+        ) : url ? (
+          <div className="flex items-center gap-1">
+            <a href={url} target="_blank" rel="noopener noreferrer">
+              <Badge variant="outline" className="gap-1">
+                <ExternalLinkIcon className="size-3" />
+                채용 공고
+              </Badge>
+            </a>
+            <button
+              onClick={() => { setUrlInput(url); setEditingUrl(true) }}
+              className="text-muted-foreground transition-colors hover:text-foreground"
+              aria-label="URL 수정"
+            >
+              <PencilIcon className="size-3" />
+            </button>
+          </div>
+        ) : (
+          <Badge
+            variant="outline"
+            className="cursor-pointer gap-1 text-muted-foreground hover:text-foreground"
+            onClick={() => setEditingUrl(true)}
+          >
+            <PencilIcon className="size-3" />
+            URL 추가
+          </Badge>
+        )}
+      </div>
+    </div>
+  )
+}

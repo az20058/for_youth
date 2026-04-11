@@ -1,14 +1,11 @@
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
-import { ArrowLeftIcon, BriefcaseIcon, BuildingIcon, CalendarIcon, CircleDotIcon, ExternalLinkIcon } from 'lucide-react';
+import { ArrowLeftIcon } from 'lucide-react';
 import { prisma } from '@/lib/db';
 import { STATUS_FROM_DB, SIZE_FROM_DB, COVER_LETTER_TYPE_FROM_DB } from '@/lib/enumMaps';
-import { formatDeadline } from '@/lib/deadline';
-import { calculateDDay, formatDDay } from '@/lib/dday';
-import { Badge } from '@/components/ui/badge';
 import { CoverLetterList } from './_components/CoverLetterList';
 import { CompanySummary } from './_components/CompanySummary';
-import { statusBadgeClass } from '@/lib/statusBadge';
+import { ApplicationMetaCard } from './_components/ApplicationMetaCard';
 
 export default async function ApplicationDetailPage({
   params,
@@ -36,8 +33,6 @@ export default async function ApplicationDetailPage({
     })),
   };
 
-  const dday = application.deadline ? calculateDDay(application.deadline) : null;
-
   return (
     <main className="py-6">
       <Link
@@ -50,60 +45,15 @@ export default async function ApplicationDetailPage({
 
       <div>
         {/* 기업 정보 카드 */}
-        <div className="mb-8 rounded-2xl bg-card ring-1 ring-foreground/10 p-5 sm:p-6">
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-            <div className="flex flex-col gap-2">
-              <h1 className="text-2xl font-semibold sm:text-3xl">
-                {application.companyName}
-              </h1>
-              <div className="flex flex-wrap gap-2">
-                <Badge className={statusBadgeClass(application.status)}>
-                  <CircleDotIcon className="mr-1" />
-                  {application.status}
-                </Badge>
-              </div>
-            </div>
-
-            {/* 마감일 강조 영역 */}
-            <div className="flex flex-col items-start gap-1 rounded-xl bg-muted/50 px-4 py-3 sm:items-end">
-              <span className="text-xs text-muted-foreground">마감일</span>
-              <span className="text-base font-semibold">
-                {application.deadline ? formatDeadline(application.deadline) : '채용 시 마감'}
-              </span>
-              <span className="text-sm font-medium text-primary">
-                {dday !== null ? formatDDay(dday) : ''}
-              </span>
-            </div>
-          </div>
-
-          {/* 상세 뱃지 */}
-          <div className="mt-4 flex flex-wrap gap-2 border-t border-foreground/10 pt-4">
-            <Badge variant="outline" className="gap-1">
-              <BriefcaseIcon className="size-3" />
-              {application.careerLevel}
-            </Badge>
-            <Badge variant="outline" className="gap-1">
-              <BuildingIcon className="size-3" />
-              {application.companySize}
-            </Badge>
-            <Badge variant="outline" className="gap-1">
-              <CalendarIcon className="size-3" />
-              {application.deadline ? formatDeadline(application.deadline) : '채용 시 마감'}
-            </Badge>
-            {application.url && (
-              <a
-                href={application.url}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <Badge variant="outline" className="gap-1">
-                  <ExternalLinkIcon className="size-3" />
-                  채용 공고
-                </Badge>
-              </a>
-            )}
-          </div>
-        </div>
+        <ApplicationMetaCard
+          applicationId={id}
+          companyName={application.companyName}
+          careerLevel={application.careerLevel}
+          companySize={application.companySize}
+          initialStatus={application.status}
+          initialDeadline={application.deadline}
+          initialUrl={application.url}
+        />
 
         {/* 기업 분석 섹션 */}
         <div className="mb-8">

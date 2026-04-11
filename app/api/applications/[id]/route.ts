@@ -69,7 +69,7 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
     data: {
       ...(body.companyName !== undefined && { companyName: body.companyName }),
       ...(body.careerLevel !== undefined && { careerLevel: body.careerLevel }),
-      ...(body.deadline !== undefined && { deadline: new Date(body.deadline) }),
+      ...(body.deadline !== undefined && { deadline: body.deadline ? new Date(body.deadline) : null }),
       ...(body.companySize !== undefined && { companySize: SIZE_TO_DB[body.companySize] }),
       ...(body.status !== undefined && { status: STATUS_TO_DB[body.status] }),
       ...(body.url !== undefined && { url: body.url }),
