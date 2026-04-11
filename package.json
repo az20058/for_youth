@@ -51,6 +51,7 @@
   },
   "devDependencies": {
     "@chromatic-com/storybook": "^5.0.2",
+    "@playwright/test": "^1.59.1",
     "@storybook/addon-a11y": "^10.3.3",
     "@storybook/addon-docs": "^10.3.3",
     "@storybook/nextjs-vite": "^10.3.3",
