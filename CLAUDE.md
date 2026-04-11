@@ -14,6 +14,7 @@
 | 상태 관리 설계 또는 props 전달 구조 결정 시 | `docs/claude/state.md` |
 | 코드 작성을 마친 직후 | `docs/claude/checklist.md` |
 | 기능 구현 작업을 받았을 때 | `docs/claude/testing.md` |
+| 커밋/푸시 작업 시 | `docs/claude/git.md` |
 
 ---
 
@@ -25,3 +26,4 @@
 - [`docs/claude/state.md`](docs/claude/state.md) — 상태 관리 규칙 (zustand, props drilling)
 - [`docs/claude/checklist.md`](docs/claude/checklist.md) — 구현 후 체크리스트 (lint, tsc, 코드리뷰)
 - [`docs/claude/testing.md`](docs/claude/testing.md) — 테스트 규칙 (TDD, 테스트 실행)
+- [`docs/claude/git.md`](docs/claude/git.md) — Git 워크플로우 (커밋/푸시 규칙)
