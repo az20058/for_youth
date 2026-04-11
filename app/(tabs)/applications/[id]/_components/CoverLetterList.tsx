@@ -107,13 +107,13 @@ export function CoverLetterList({
       <div className="flex gap-2">
         <Button
           variant="outline"
-          className="gap-1.5 flex-1"
+          className="h-10 gap-1.5 flex-1"
           onClick={handleAddCoverLetter}
         >
           <PlusIcon />
           질문 추가
         </Button>
-        <Button className="gap-1.5" onClick={handleSave} disabled={isSaving}>
+        <Button className="h-10 gap-1.5" onClick={handleSave} disabled={isSaving}>
           <SaveIcon className="size-4" />
           {isSaving ? "저장 중..." : "저장"}
         </Button>

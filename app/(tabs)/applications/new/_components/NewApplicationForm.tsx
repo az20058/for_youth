@@ -252,11 +252,11 @@ export function NewApplicationForm() {
       )}
 
       <div className="mt-5 flex gap-2">
-        <Button type="button" variant="outline" className="gap-1.5" onClick={addCoverLetter}>
+        <Button type="button" variant="outline" className="h-10 gap-1.5" onClick={addCoverLetter}>
           <PlusIcon />
           질문 추가
         </Button>
-        <Button type="submit" disabled={isSubmitting}>
+        <Button type="submit" className="h-10" disabled={isSubmitting}>
           {isSubmitting ? '저장 중...' : '저장'}
         </Button>
       </div>
