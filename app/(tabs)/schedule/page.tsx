@@ -2,6 +2,7 @@
 
 import { useState, useMemo } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { toast } from 'sonner';
 import { format } from 'date-fns';
 import { ko } from 'date-fns/locale';
 import { Calendar } from '@/components/ui/calendar';
@@ -52,6 +53,10 @@ export default function SchedulePage() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['schedule', year, month] });
+      toast.success('일정이 추가되었습니다.');
+    },
+    onError: () => {
+      toast.error('일정 추가에 실패했습니다.');
     },
   });
 
@@ -63,6 +68,10 @@ export default function SchedulePage() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['schedule', year, month] });
+      toast.success('일정이 삭제되었습니다.');
+    },
+    onError: () => {
+      toast.error('일정 삭제에 실패했습니다.');
     },
   });
 

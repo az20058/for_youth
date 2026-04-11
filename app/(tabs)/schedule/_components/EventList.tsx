@@ -1,10 +1,18 @@
 'use client';
 
+import { useState } from 'react';
 import { format } from 'date-fns';
 import { ko } from 'date-fns/locale';
 import { Trash2Icon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from '@/components/ui/dialog';
 import { EVENT_TYPE_CONFIG, type ScheduleEvent } from './types';
 
 interface EventListProps {
@@ -14,6 +22,15 @@ interface EventListProps {
 }
 
 export function EventList({ events, selectedDate, onDelete }: EventListProps) {
+  const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
+
+  function handleDeleteConfirm() {
+    if (pendingDeleteId) {
+      onDelete(pendingDeleteId);
+      setPendingDeleteId(null);
+    }
+  }
+
   const filtered = selectedDate
     ? events.filter(
         (e) =>
@@ -37,6 +54,19 @@ export function EventList({ events, selectedDate, onDelete }: EventListProps) {
   }
 
   return (
+    <>
+    <Dialog open={pendingDeleteId !== null} onOpenChange={(open) => { if (!open) setPendingDeleteId(null); }}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>일정 삭제</DialogTitle>
+        </DialogHeader>
+        <p className="text-sm text-muted-foreground">이 일정을 삭제하시겠습니까? 삭제 후 복구할 수 없습니다.</p>
+        <DialogFooter>
+          <Button variant="outline" onClick={() => setPendingDeleteId(null)}>취소</Button>
+          <Button variant="destructive" onClick={handleDeleteConfirm}>삭제</Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
     <div className="flex flex-col gap-2">
       {sorted.map((event) => {
         const config = EVENT_TYPE_CONFIG[event.type];
@@ -70,7 +100,7 @@ export function EventList({ events, selectedDate, onDelete }: EventListProps) {
                 variant="ghost"
                 size="icon"
                 className="size-7 shrink-0 text-muted-foreground hover:text-destructive"
-                onClick={() => onDelete(event.id)}
+                onClick={() => setPendingDeleteId(event.id)}
               >
                 <Trash2Icon className="size-3.5" />
               </Button>
@@ -79,5 +109,6 @@ export function EventList({ events, selectedDate, onDelete }: EventListProps) {
         );
       })}
     </div>
+    </>
   );
 }

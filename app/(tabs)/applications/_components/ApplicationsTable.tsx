@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect, useMemo } from 'react';
+import { toast } from 'sonner';
 import Link from 'next/link';
 import { format } from 'date-fns';
 import { ExternalLinkIcon, PlusIcon, CheckIcon, XIcon } from 'lucide-react';
@@ -150,10 +151,12 @@ export function ApplicationsTable() {
       setIsAddingRow(false);
       setNewRow(INITIAL_NEW_ROW);
       setErrors({});
+      toast.success('지원서가 추가되었습니다.');
     },
     onError: (error: unknown) => {
       const err = error as { errors?: FormErrors };
       if (err?.errors) setErrors(err.errors);
+      else toast.error('지원서 추가에 실패했습니다.');
     },
   });
 
