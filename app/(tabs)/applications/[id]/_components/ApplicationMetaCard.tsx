@@ -2,15 +2,13 @@
 
 import { useState } from 'react'
 import * as SelectPrimitive from "@radix-ui/react-select"
-import { BriefcaseIcon, BuildingIcon, CalendarIcon, CircleDotIcon, ExternalLinkIcon, PencilIcon } from 'lucide-react'
+import { BriefcaseIcon, BuildingIcon, CircleDotIcon, ExternalLinkIcon, PencilIcon } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Badge } from '@/components/ui/badge'
 import { Select, SelectContent, SelectItem } from '@/components/ui/select'
 import { DatePicker } from '@/components/ui/date-picker'
 import { toast } from 'sonner'
 import { statusBadgeClass } from '@/lib/statusBadge'
-import { formatDeadline } from '@/lib/deadline'
-import { calculateDDay, formatDDay } from '@/lib/dday'
 import type { ApplicationStatus } from '@/lib/types'
 
 const STATUS_OPTIONS: ApplicationStatus[] = [
@@ -42,8 +40,6 @@ export function ApplicationMetaCard({
   const [url, setUrl] = useState(initialUrl ?? '')
   const [editingUrl, setEditingUrl] = useState(false)
   const [urlInput, setUrlInput] = useState(initialUrl ?? '')
-
-  const dday = deadline ? calculateDDay(deadline) : null
 
   async function patch(body: Record<string, unknown>) {
     const res = await fetch(`/api/applications/${applicationId}`, {
@@ -97,37 +93,22 @@ export function ApplicationMetaCard({
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div className="flex flex-col gap-2">
           <h1 className="text-2xl font-semibold sm:text-3xl">{companyName}</h1>
-          <div className="flex flex-wrap gap-2">
-            {/* 지원 상태 인라인 편집 */}
-            <Select value={status} onValueChange={handleStatusChange}>
-              <SelectPrimitive.Trigger asChild>
-                <Badge className={cn(statusBadgeClass(status), 'cursor-pointer select-none')}>
-                  <CircleDotIcon className="mr-1" />
-                  {status}
-                </Badge>
-              </SelectPrimitive.Trigger>
-              <SelectContent>
-                {STATUS_OPTIONS.map((s) => (
-                  <SelectItem key={s} value={s}>{s}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
         </div>
 
-        {/* 마감일 인라인 편집 */}
-        <div className="flex flex-col items-start gap-1 rounded-xl bg-muted/50 px-4 py-3 sm:items-end">
-          <span className="text-xs text-muted-foreground">마감일</span>
-          <DatePicker
-            value={deadline ?? undefined}
-            onChange={handleDeadlineChange}
-            placeholder="채용 시 마감"
-            className="h-auto border-0 bg-transparent p-0 text-base font-semibold shadow-none hover:bg-transparent focus-visible:ring-0"
-          />
-          <span className="text-sm font-medium text-primary">
-            {dday !== null ? formatDDay(dday) : ''}
-          </span>
-        </div>
+        {/* 지원 상태 인라인 편집 */}
+        <Select value={status} onValueChange={handleStatusChange}>
+          <SelectPrimitive.Trigger asChild>
+            <Badge className={cn(statusBadgeClass(status), 'cursor-pointer select-none')}>
+              <CircleDotIcon className="mr-1" />
+              {status}
+            </Badge>
+          </SelectPrimitive.Trigger>
+          <SelectContent>
+            {STATUS_OPTIONS.map((s) => (
+              <SelectItem key={s} value={s}>{s}</SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </div>
 
       {/* 상세 뱃지 */}
@@ -140,10 +121,12 @@ export function ApplicationMetaCard({
           <BuildingIcon className="size-3" />
           {companySize}
         </Badge>
-        <Badge variant="outline" className="gap-1">
-          <CalendarIcon className="size-3" />
-          {deadline ? formatDeadline(deadline) : '채용 시 마감'}
-        </Badge>
+        <DatePicker
+          value={deadline ?? undefined}
+          onChange={handleDeadlineChange}
+          placeholder="채용 시 마감"
+          className="w-auto h-auto border border-border rounded-full bg-transparent px-2.5 py-0.5 text-xs font-semibold shadow-none hover:bg-accent focus-visible:ring-0"
+        />
 
         {/* 채용공고 URL 인라인 편집 */}
         {editingUrl ? (
@@ -166,7 +149,7 @@ export function ApplicationMetaCard({
         ) : url ? (
           <div className="flex items-center gap-1">
             <a href={url} target="_blank" rel="noopener noreferrer">
-              <Badge variant="outline" className="gap-1">
+              <Badge variant="destructive" className="gap-1">
                 <ExternalLinkIcon className="size-3" />
                 채용 공고
               </Badge>
