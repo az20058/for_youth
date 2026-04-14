@@ -4,7 +4,7 @@ import { useState, useMemo } from 'react';
 import Link from 'next/link';
 import { useQuery } from '@tanstack/react-query';
 import { cn } from '@/lib/utils';
-import { fetchApplications } from '@/lib/api';
+import { fetchApplications, type ApplicationDTO } from '@/lib/api';
 import { FlameLoading } from '@/components/ui/flame-loading';
 import type { CoverLetterType, CoverLetterWithApplication } from '@/lib/types';
 import {
@@ -27,12 +27,20 @@ const ALL_TYPES: (CoverLetterType | '전체')[] = [
   '기타',
 ];
 
-export function CoverLettersList() {
+interface Props {
+  initialData?: ApplicationDTO[];
+}
+
+export function CoverLettersList({ initialData }: Props) {
   const [activeType, setActiveType] = useState<CoverLetterType | '전체'>('전체');
 
   const { data: applications = [], isLoading, isError } = useQuery({
     queryKey: ['applications'],
     queryFn: fetchApplications,
+    initialData: initialData?.map((app) => ({
+      ...app,
+      deadline: app.deadline ? new Date(app.deadline) : null,
+    })),
   });
 
   const coverLetters = useMemo<CoverLetterWithApplication[]>(() => {

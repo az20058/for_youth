@@ -1,20 +1,38 @@
-import { notFound } from 'next/navigation';
+import { notFound, redirect } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowLeftIcon } from 'lucide-react';
+import type { Metadata } from 'next';
 import { prisma } from '@/lib/db';
+import { getAuthenticatedUserId } from '@/lib/auth';
 import { STATUS_FROM_DB, SIZE_FROM_DB, COVER_LETTER_TYPE_FROM_DB } from '@/lib/enumMaps';
 import { CoverLetterList } from './_components/CoverLetterList';
 import { CompanySummary } from './_components/CompanySummary';
 import { ApplicationMetaCard } from './_components/ApplicationMetaCard';
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}): Promise<Metadata> {
+  const { id } = await params;
+  const app = await prisma.application.findUnique({
+    where: { id },
+    select: { companyName: true },
+  });
+  return { title: app ? `${app.companyName} 지원서` : '지원서 상세' };
+}
 
 export default async function ApplicationDetailPage({
   params,
 }: {
   params: Promise<{ id: string }>;
 }) {
+  const userId = await getAuthenticatedUserId();
+  if (!userId) redirect('/login');
+
   const { id } = await params;
-  const raw = await prisma.application.findUnique({
-    where: { id },
+  const raw = await prisma.application.findFirst({
+    where: { id, userId, deletedAt: null },
     include: { coverLetters: true },
   });
 

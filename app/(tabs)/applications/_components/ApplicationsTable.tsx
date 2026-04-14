@@ -35,7 +35,7 @@ import { cn } from '@/lib/utils';
 import { calculateDDay, formatDDay } from '@/lib/dday';
 import { statusBadgeClass } from '@/lib/statusBadge';
 import type { Application, ApplicationStatus } from '@/lib/types';
-import { fetchApplications, postApplication } from '@/lib/api';
+import { fetchApplications, postApplication, type ApplicationDTO } from '@/lib/api';
 import {
   validateApplication,
   COMPANY_SIZES,
@@ -132,7 +132,11 @@ const INITIAL_NEW_ROW: NewRowState = {
 const cellInputClass =
   'w-full rounded bg-muted/50 px-2 py-1 text-sm ring-1 ring-foreground/10 focus:outline-none focus:ring-primary';
 
-export function ApplicationsTable() {
+interface Props {
+  initialData?: ApplicationDTO[];
+}
+
+export function ApplicationsTable({ initialData }: Props) {
   const queryClient = useQueryClient();
   const [isAddingRow, setIsAddingRow] = useState(false);
   const [newRow, setNewRow] = useState<NewRowState>(INITIAL_NEW_ROW);
@@ -142,6 +146,10 @@ export function ApplicationsTable() {
   const { data: applications = [], isLoading, isError } = useQuery({
     queryKey: ['applications'],
     queryFn: fetchApplications,
+    initialData: initialData?.map((app) => ({
+      ...app,
+      deadline: app.deadline ? new Date(app.deadline) : null,
+    })),
   });
 
   const mutation = useMutation({

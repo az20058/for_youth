@@ -1,7 +1,7 @@
 import type { Application } from './types';
 import type { NewApplicationData } from './applicationValidation';
 
-type ApplicationDTO = Omit<Application, 'deadline'> & { deadline: string | null };
+export type ApplicationDTO = Omit<Application, 'deadline'> & { deadline: string | null };
 
 export async function fetchApplications(): Promise<Application[]> {
   const res = await fetch('/api/applications');
