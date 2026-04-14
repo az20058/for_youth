@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { fetchAllYouthPolicies } from "@/lib/youthApi";
 import { ProgramsList } from "./_components/ProgramsList";
 
 export const metadata: Metadata = {
@@ -10,13 +11,19 @@ export const metadata: Metadata = {
   },
 };
 
-export default function ProgramsPage() {
+export default async function ProgramsPage() {
+  const policies = await fetchAllYouthPolicies();
+  const categories = [
+    '전체',
+    ...Array.from(new Set(policies.map((p) => p.mainCategory ?? '기타'))),
+  ];
+
   return (
     <div className="flex flex-col gap-6">
       <div>
         <h1 className="text-white font-bold text-base">정책 둘러보기</h1>
       </div>
-      <ProgramsList />
+      <ProgramsList initialPolicies={policies} initialCategories={categories} />
     </div>
   );
 }
