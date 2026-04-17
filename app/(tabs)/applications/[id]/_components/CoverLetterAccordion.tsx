@@ -85,6 +85,7 @@ export function CoverLetterAccordion({
                 placeholder="질문을 입력하세요"
                 onBlur={(e) => onQuestionBlur(id, e.target.value)}
                 onClick={(e) => e.stopPropagation()}
+                onKeyDown={(e) => e.stopPropagation()}
               />
             ) : (
               /* 접힘: 질문 텍스트 */
