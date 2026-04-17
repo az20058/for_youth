@@ -90,15 +90,15 @@ export function ApplicationMetaCard({
 
   return (
     <div className="mb-8 rounded-2xl bg-card ring-1 ring-foreground/10 p-5 sm:p-6">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-        <div className="flex flex-col gap-2">
-          <h1 className="text-2xl font-semibold sm:text-3xl">{companyName}</h1>
-        </div>
+      <div className="flex flex-row items-start justify-between gap-3">
+        <h1 className="min-w-0 flex-1 break-keep text-2xl font-semibold sm:text-3xl">
+          {companyName}
+        </h1>
 
         {/* 지원 상태 인라인 편집 */}
         <Select value={status} onValueChange={handleStatusChange}>
           <SelectPrimitive.Trigger asChild>
-            <Badge className={cn(statusBadgeClass(status), 'cursor-pointer select-none')}>
+            <Badge className={cn(statusBadgeClass(status), 'shrink-0 cursor-pointer select-none')}>
               <CircleDotIcon className="mr-1" />
               {status}
             </Badge>

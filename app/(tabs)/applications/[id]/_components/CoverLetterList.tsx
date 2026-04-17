@@ -54,6 +54,11 @@ export function CoverLetterList({
     setItems((prev) => [...prev, { id, type: null }]);
   }
 
+  function handleDelete(id: string) {
+    delete valuesRef.current[id];
+    setItems((prev) => prev.filter((item) => item.id !== id));
+  }
+
   async function handleSave() {
     setIsSaving(true);
     try {
@@ -99,6 +104,7 @@ export function CoverLetterList({
               onQuestionBlur={handleQuestionBlur}
               onAnswerBlur={handleAnswerBlur}
               onTypeChange={handleTypeChange}
+              onDelete={handleDelete}
             />
           );
         })}
