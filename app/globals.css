@@ -69,6 +69,14 @@ body {
   background: var(--color-background);
   color: var(--color-text);
   font-family: "Pretendard", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-font-smoothing: antialiased;
+  overscroll-behavior-y: none;
+}
+
+/* iOS: prevent text size inflation on landscape */
+html {
+  -webkit-text-size-adjust: 100%;
 }
 
 /* vaul Drawer: ::after pseudo-element can clip bottom of drawer content on iOS */

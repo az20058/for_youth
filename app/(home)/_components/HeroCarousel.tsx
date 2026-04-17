@@ -63,7 +63,7 @@ export function HeroCarousel({ programs }: HeroCarouselProps) {
 
   return (
     <div
-      className="relative overflow-hidden rounded-2xl bg-[#2D2D2D] select-none cursor-grab active:cursor-grabbing"
+      className="relative overflow-hidden rounded-2xl bg-[#2D2D2D] select-none cursor-grab active:cursor-grabbing touch-pan-y"
       onMouseDown={(e) => handleDragStart(e.clientX)}
       onMouseMove={(e) => { if (isDragging) handleDragMove(e.clientX); }}
       onMouseUp={handleDragEnd}
