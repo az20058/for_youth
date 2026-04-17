@@ -5,11 +5,11 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
 import { ko } from 'date-fns/locale';
-import { Calendar } from '@/components/ui/calendar';
 import { FlameLoading } from '@/components/ui/flame-loading';
 import { AddEventDialog } from './_components/AddEventDialog';
 import { EventList } from './_components/EventList';
-import { EVENT_TYPE_CONFIG, type ScheduleEvent } from './_components/types';
+import { MonthCalendar } from './_components/MonthCalendar';
+import { type ScheduleEvent } from './_components/types';
 
 export default function SchedulePage() {
   const queryClient = useQueryClient();
@@ -29,17 +29,6 @@ export default function SchedulePage() {
   });
 
   const events = useMemo(() => data?.events ?? [], [data?.events]);
-
-  const eventDatesMap = useMemo(() => {
-    const map = new Map<string, ScheduleEvent['type'][]>();
-    for (const event of events) {
-      const key = format(new Date(event.date), 'yyyy-MM-dd');
-      const types = map.get(key) || [];
-      if (!types.includes(event.type)) types.push(event.type);
-      map.set(key, types);
-    }
-    return map;
-  }, [events]);
 
   const addMutation = useMutation({
     mutationFn: async (newEvent: { title: string; date: string; type: string; memo: string }) => {
@@ -89,48 +78,13 @@ export default function SchedulePage() {
         <FlameLoading />
       ) : (
         <>
-          <div className="rounded-xl border border-border bg-card p-4 mb-6">
-            <Calendar
-              mode="single"
-              selected={selectedDate}
-              onSelect={setSelectedDate}
+          <div className="rounded-xl border border-border bg-card p-3 sm:p-4 mb-6">
+            <MonthCalendar
               month={currentMonth}
+              selectedDate={selectedDate}
+              events={events}
               onMonthChange={setCurrentMonth}
-              locale={ko}
-              className="w-full [--cell-size:auto]"
-              components={{
-                DayButton: ({ day, modifiers, ...props }) => {
-                  const dateKey = format(day.date, 'yyyy-MM-dd');
-                  const types = eventDatesMap.get(dateKey);
-
-                  return (
-                    <button
-                      {...props}
-                      className={`relative flex flex-col items-center justify-center w-full aspect-square rounded-md text-sm transition-colors ${
-                        modifiers.selected
-                          ? 'bg-primary text-primary-foreground'
-                          : modifiers.today
-                            ? 'bg-accent text-accent-foreground'
-                            : modifiers.outside
-                              ? 'text-muted-foreground/50'
-                              : 'hover:bg-muted'
-                      }`}
-                    >
-                      <span>{day.date.getDate()}</span>
-                      {types && types.length > 0 && (
-                        <div className="flex gap-0.5 mt-0.5">
-                          {types.slice(0, 3).map((type) => (
-                            <span
-                              key={type}
-                              className={`size-1.5 rounded-full ${EVENT_TYPE_CONFIG[type].dot}`}
-                            />
-                          ))}
-                        </div>
-                      )}
-                    </button>
-                  );
-                },
-              }}
+              onSelectDate={setSelectedDate}
             />
           </div>
 
