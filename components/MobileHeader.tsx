@@ -48,7 +48,7 @@ export function MobileHeader() {
               ref={(el) => { tabRefs.current[i] = el; }}
               data-active={String(isActive)}
               className={cn(
-                'flex-1 text-center py-2.5 text-sm font-medium transition-colors active:bg-foreground/5',
+                'flex-1 flex items-center justify-center min-h-11 text-sm font-medium transition-colors active:bg-foreground/5',
                 isActive ? 'text-foreground' : 'text-muted-foreground',
               )}
             >
