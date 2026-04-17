@@ -28,6 +28,3 @@ public/
 
 # Prisma generated client (derived from schema)
 prisma/migrations/
-
-# Docs (reference only)
-docs/
