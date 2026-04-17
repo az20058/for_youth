@@ -16,7 +16,7 @@ export const metadata: Metadata = {
 export default function TabsLayout({ children }: { children: React.ReactNode }) {
   return (
     <AuthGuard>
-      <div className="flex flex-col min-h-screen">
+      <div className="flex flex-col min-h-dvh">
         <div className="sticky top-0 z-40 isolate">
           <Header />
           <MobileHeader />
@@ -24,7 +24,7 @@ export default function TabsLayout({ children }: { children: React.ReactNode }) 
         <div className="flex flex-1">
           <AppSidebar />
           <div className="flex-1 min-w-0 flex flex-col">
-            <div className="mx-auto w-full max-w-3xl px-4 sm:px-6 pb-24 md:pb-0">
+            <div className="mx-auto w-full max-w-3xl px-4 sm:px-6 pb-[calc(6rem+env(safe-area-inset-bottom))] md:pb-0">
               {children}
             </div>
           </div>

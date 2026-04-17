@@ -15,7 +15,10 @@ export function MobileFooterNav() {
   const pathname = usePathname();
 
   return (
-    <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-[#1C1C1E] border-t border-foreground/10">
+    <nav
+      className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-[#1C1C1E] border-t border-foreground/10"
+      style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
+    >
       <div className="flex items-center justify-around px-2 py-2">
         {navItems.map(({ href, label, icon: Icon, activePaths }) => {
           const isActive = activePaths.some(
@@ -26,7 +29,7 @@ export function MobileFooterNav() {
               key={href}
               href={href}
               className={cn(
-                'flex flex-col items-center gap-0.5 px-3 py-1 rounded-lg text-xs font-medium transition-all active:scale-[0.92] active:bg-foreground/10',
+                'flex flex-col items-center gap-0.5 px-4 py-1.5 rounded-lg text-xs font-medium transition-all active:scale-[0.92] active:bg-foreground/10 min-w-[56px]',
                 isActive ? 'text-primary' : 'text-muted-foreground',
               )}
             >
