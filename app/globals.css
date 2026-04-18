@@ -95,7 +95,7 @@ html {
 @keyframes slide-from-right {
   from {
     opacity: 0.6;
-    transform: translateX(24px);
+    transform: translateX(16px);
   }
   to {
     opacity: 1;
@@ -106,7 +106,7 @@ html {
 @keyframes slide-from-left {
   from {
     opacity: 0.6;
-    transform: translateX(-24px);
+    transform: translateX(-16px);
   }
   to {
     opacity: 1;

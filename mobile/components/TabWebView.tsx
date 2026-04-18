@@ -45,7 +45,7 @@ export function TabWebView({ path }: TabWebViewProps) {
     if (isFocused && !prevFocused.current) {
       const dir = getDirection();
       if (dir) {
-        const startX = dir === 'right' ? 24 : -24;
+        const startX = dir === 'right' ? 16 : -16;
         translateX.setValue(startX);
         opacity.setValue(0.6);
         Animated.parallel([
