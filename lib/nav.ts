@@ -5,6 +5,7 @@ import {
   UserIcon,
   LayoutListIcon,
   FileTextIcon,
+  ListIcon,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 
@@ -17,7 +18,7 @@ export interface NavItem {
   /** exact=true면 pathname === href 일 때만 active */
   exact?: boolean;
   /** 표시 위치 제한 — 없으면 전체 */
-  placement?: ('global' | 'home-sidebar' | 'home-tabs' | 'app-sidebar' | 'app-tabs')[];
+  placement?: ('global' | 'home-sidebar' | 'home-tabs' | 'app-sidebar' | 'app-tabs' | 'schedule-sidebar' | 'schedule-tabs')[];
 }
 
 /** 앱 전체 네비게이션 단일 정의 */
@@ -57,6 +58,21 @@ export const NAV_ITEMS: NavItem[] = [
     icon: CalendarIcon,
     activePaths: ['/schedule'],
     placement: ['global'],
+  },
+  {
+    href: '/schedule',
+    label: '달력',
+    icon: CalendarIcon,
+    activePaths: ['/schedule'],
+    exact: true,
+    placement: ['schedule-sidebar', 'schedule-tabs'],
+  },
+  {
+    href: '/schedule/list',
+    label: '목록',
+    icon: ListIcon,
+    activePaths: ['/schedule/list'],
+    placement: ['schedule-sidebar', 'schedule-tabs'],
   },
   {
     href: '/mypage',
