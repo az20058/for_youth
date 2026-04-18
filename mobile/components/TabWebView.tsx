@@ -1,5 +1,5 @@
 import { useRef, useState, useEffect } from 'react';
-import { StyleSheet, Platform, BackHandler } from 'react-native';
+import { View, StyleSheet, Platform, BackHandler } from 'react-native';
 import { WebView } from 'react-native-webview';
 import type { WebViewNavigation } from 'react-native-webview';
 import { useIsFocused } from './useIsFocused';
@@ -41,25 +41,32 @@ export function TabWebView({ path }: TabWebViewProps) {
     setCanGoBack(navState.canGoBack);
   };
 
-  if (!isFocused) return null;
-
   return (
-    <WebView
-      ref={webViewRef}
-      source={{ uri: `${BASE_URL}${path}` }}
-      style={styles.webview}
-      onNavigationStateChange={handleNavigationStateChange}
-      injectedJavaScript={HIDE_WEB_NAV}
-      userAgent="ForYouthApp"
-      javaScriptEnabled
-      domStorageEnabled
-      startInLoadingState
-      allowsBackForwardNavigationGestures
-    />
+    <View style={[styles.container, !isFocused && styles.hidden]}>
+      <WebView
+        ref={webViewRef}
+        source={{ uri: `${BASE_URL}${path}` }}
+        style={[styles.webview, { backgroundColor: '#1C1C1E' }]}
+        onNavigationStateChange={handleNavigationStateChange}
+        injectedJavaScript={HIDE_WEB_NAV}
+        userAgent="ForYouthApp"
+        javaScriptEnabled
+        domStorageEnabled
+        startInLoadingState
+        allowsBackForwardNavigationGestures
+      />
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  hidden: {
+    opacity: 0,
+    pointerEvents: 'none',
+  },
   webview: {
     flex: 1,
   },

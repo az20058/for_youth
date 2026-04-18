@@ -1,6 +1,7 @@
-import { Tabs } from 'expo-router';
-import { Home, Briefcase, Calendar, User } from 'lucide-react-native';
-import { View, Text, StyleSheet } from 'react-native';
+import { Tabs, useRouter } from 'expo-router';
+import { Home, Briefcase, Calendar, User, CircleUserRound } from 'lucide-react-native';
+import { View, Text, Pressable, StyleSheet, Platform } from 'react-native';
+import * as Haptics from 'expo-haptics';
 
 function HeaderTitle() {
   return (
@@ -8,6 +9,19 @@ function HeaderTitle() {
       <Text style={headerStyles.logo}>🔥</Text>
       <Text style={headerStyles.title}>EMBER</Text>
     </View>
+  );
+}
+
+function HeaderRight() {
+  const router = useRouter();
+
+  return (
+    <Pressable
+      onPress={() => router.push('/mypage')}
+      style={headerStyles.profileButton}
+    >
+      <CircleUserRound size={24} color="#9C9C9C" />
+    </Pressable>
   );
 }
 
@@ -25,6 +39,10 @@ const headerStyles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '700',
     letterSpacing: 1,
+  },
+  profileButton: {
+    marginRight: Platform.OS === 'ios' ? 0 : 12,
+    padding: 4,
   },
 });
 
@@ -57,6 +75,13 @@ export default function TabsLayout() {
         },
         headerTitleAlign: 'left',
         headerTitle: () => <HeaderTitle />,
+        headerRight: () => <HeaderRight />,
+        sceneStyle: { backgroundColor: '#1C1C1E' },
+      }}
+      screenListeners={{
+        tabPress: () => {
+          Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+        },
       }}
     >
       <Tabs.Screen
