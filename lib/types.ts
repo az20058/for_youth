@@ -47,3 +47,32 @@ export interface CoverLetterWithApplication {
   applicationId: string;
   companyName: string;
 }
+
+export interface UserProfile {
+  id: string;
+  name: string | null;
+  email: string | null;
+  image: string | null;
+  bio: string | null;
+  desiredJob: string | null;
+  desiredIndustry: string | null;
+  desiredRegion: string | null;
+  school: string | null;
+  major: string | null;
+  careerLevel: string | null;
+  portfolioUrl: string | null;
+  certifications: string[];
+  techStacks: string[];
+}
+
+export type NotificationType = '마감 임박' | '일정 알림' | '상태 변경';
+
+export interface Notification {
+  id: string;
+  type: NotificationType;
+  title: string;
+  message: string;
+  isRead: boolean;
+  relatedId: string | null;
+  createdAt: string;
+}
