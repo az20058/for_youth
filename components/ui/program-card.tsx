@@ -73,7 +73,7 @@ export function ProgramCard({ program }: ProgramCardProps) {
               </p>
             )}
             {text && (
-              <div className="rounded-xl bg-primary/10 border border-primary/20 px-3 py-2">
+              <div className="rounded-lg bg-primary/10 border border-primary/20 px-3 py-2">
                 <p
                   ref={textRef}
                   className={`text-xs text-white leading-relaxed flex items-start gap-1.5 ${expanded ? '' : 'line-clamp-3'}`}
