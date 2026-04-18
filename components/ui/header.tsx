@@ -7,6 +7,7 @@ import { usePathname } from 'next/navigation';
 import { CircleUserRound, HomeIcon, BriefcaseIcon, CalendarIcon, UserIcon } from 'lucide-react';
 import { FlameIcon } from '@/components/icons/FlameIcon';
 import { cn } from '@/lib/utils';
+import { useIsApp } from '@/lib/useIsApp';
 
 const navItems = [
   { href: '/', label: '홈', icon: HomeIcon, activePaths: ['/', '/programs'] },
@@ -22,6 +23,9 @@ interface HeaderProps {
 export function Header({ title = 'EMBER' }: HeaderProps) {
   const { data: session } = useSession();
   const pathname = usePathname();
+  const isApp = useIsApp();
+
+  if (isApp) return null;
 
   return (
     <header className="flex items-center gap-6 px-6 py-3 bg-[#1C1C1E]">

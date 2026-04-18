@@ -4,6 +4,7 @@ import { useRef, useLayoutEffect, useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
+import { useIsApp } from '@/lib/useIsApp';
 
 const tabs = [
   { href: '/', label: '홈', exact: true },
@@ -12,6 +13,7 @@ const tabs = [
 
 export function HomeMobileHeader() {
   const pathname = usePathname();
+  const isApp = useIsApp();
   const tabRefs = useRef<(HTMLAnchorElement | null)[]>([]);
   const initializedRef = useRef(false);
   const [indicator, setIndicator] = useState<{ left: number; width: number } | null>(null);
@@ -28,6 +30,8 @@ export function HomeMobileHeader() {
     if (initializedRef.current) setAnimate(true);
     initializedRef.current = true;
   }, [pathname]);
+
+  if (isApp) return null;
 
   return (
     <header className="md:hidden bg-[#1C1C1E] border-b border-foreground/10">
