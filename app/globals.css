@@ -122,35 +122,16 @@ html {
   animation: slide-from-left 0.25s ease-out both;
 }
 
-/* Mobile date picker: sticky header + always-visible scrollbar */
-.mobile-datepicker-scroll .rdp-nav {
-  position: sticky !important;
-  top: 0;
-  z-index: 20;
-}
-.mobile-datepicker-scroll .rdp-month_caption {
-  position: sticky;
-  top: 0;
-  z-index: 10;
-  background: hsl(var(--background));
-}
-.mobile-datepicker-scroll .rdp-button_previous,
-.mobile-datepicker-scroll .rdp-button_next {
-  background: hsl(var(--background));
-}
-.mobile-datepicker-scroll {
-  scrollbar-width: thin;
-  scrollbar-color: rgba(255, 255, 255, 0.25) transparent;
-}
-.mobile-datepicker-scroll::-webkit-scrollbar {
+/* Always show scrollbar for mobile date picker and similar scroll areas */
+.always-show-scrollbar::-webkit-scrollbar {
   -webkit-appearance: none;
   width: 4px;
 }
-.mobile-datepicker-scroll::-webkit-scrollbar-thumb {
+.always-show-scrollbar::-webkit-scrollbar-thumb {
   background-color: rgba(255, 255, 255, 0.25);
   border-radius: 2px;
 }
-.mobile-datepicker-scroll::-webkit-scrollbar-track {
+.always-show-scrollbar::-webkit-scrollbar-track {
   background: transparent;
 }
 
