@@ -10,7 +10,7 @@ const BASE_URL = 'https://for-youth.site';
 const HIDE_WEB_NAV = `
   (function() {
     var style = document.createElement('style');
-    style.textContent = 'div.sticky.top-0.z-40 { display: none !important; } nav.fixed.bottom-0 { display: none !important; } body { padding-bottom: 0 !important; }';
+    style.textContent = '[data-web-header] { display: none !important; } [data-web-footer] { display: none !important; }';
     document.head.appendChild(style);
   })();
 `;

@@ -1,5 +1,32 @@
 import { Tabs } from 'expo-router';
-import { Home, Briefcase, Calendar } from 'lucide-react-native';
+import { Home, Briefcase, Calendar, User } from 'lucide-react-native';
+import { View, Text, StyleSheet } from 'react-native';
+
+function HeaderTitle() {
+  return (
+    <View style={headerStyles.container}>
+      <Text style={headerStyles.logo}>🔥</Text>
+      <Text style={headerStyles.title}>EMBER</Text>
+    </View>
+  );
+}
+
+const headerStyles = StyleSheet.create({
+  container: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  logo: {
+    fontSize: 28,
+  },
+  title: {
+    color: '#FFFFFF',
+    fontSize: 18,
+    fontWeight: '700',
+    letterSpacing: 1,
+  },
+});
 
 export default function TabsLayout() {
   return (
@@ -11,8 +38,12 @@ export default function TabsLayout() {
           backgroundColor: '#1C1C1E',
           borderTopColor: 'rgba(255,255,255,0.1)',
           borderTopWidth: 1,
-          height: 56,
-          paddingTop: 4,
+          paddingTop: 6,
+          paddingBottom: 6,
+        },
+        tabBarItemStyle: {
+          gap: 2,
+          minWidth: 56,
         },
         tabBarLabelStyle: {
           fontSize: 12,
@@ -22,13 +53,10 @@ export default function TabsLayout() {
           backgroundColor: '#1C1C1E',
           shadowColor: 'transparent',
           elevation: 0,
+          borderBottomWidth: 0,
         },
-        headerTintColor: '#FFFFFF',
-        headerTitleStyle: {
-          fontSize: 14,
-          fontWeight: '500',
-        },
-        headerShown: false,
+        headerTitleAlign: 'left',
+        headerTitle: () => <HeaderTitle />,
       }}
     >
       <Tabs.Screen
@@ -50,6 +78,13 @@ export default function TabsLayout() {
         options={{
           title: '일정',
           tabBarIcon: ({ color }) => <Calendar size={20} color={color} />,
+        }}
+      />
+      <Tabs.Screen
+        name="mypage"
+        options={{
+          title: '마이',
+          tabBarIcon: ({ color }) => <User size={20} color={color} />,
         }}
       />
     </Tabs>

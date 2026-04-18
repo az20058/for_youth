@@ -17,7 +17,7 @@ export default function TabsLayout({ children }: { children: React.ReactNode }) 
   return (
     <AuthGuard>
       <div className="flex flex-col min-h-dvh">
-        <div className="sticky top-0 z-40 isolate">
+        <div className="sticky top-0 z-40 isolate" data-web-header>
           <Header />
           <MobileHeader />
         </div>
