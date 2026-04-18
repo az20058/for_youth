@@ -6,7 +6,7 @@ import { MobileFooterNav } from '@/components/MobileFooterNav';
 export default function HomeLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex flex-col min-h-dvh bg-[#1C1C1E]">
-      <div className="sticky top-0 z-40 isolate">
+      <div className="sticky top-0 z-40 isolate" data-web-header>
         <Header />
         <HomeMobileHeader />
       </div>
