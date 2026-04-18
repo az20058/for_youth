@@ -2,8 +2,9 @@ import {
   ApplicationStatus as DbStatus,
   CompanySize as DbSize,
   CoverLetterType as DbType,
+  NotificationType as DbNotificationType,
 } from './generated/prisma/client';
-import type { ApplicationStatus, CompanySize, CoverLetterType } from './types';
+import type { ApplicationStatus, CompanySize, CoverLetterType, NotificationType } from './types';
 
 export const STATUS_TO_DB: Record<ApplicationStatus, DbStatus> = {
   '지원 예정': DbStatus.PENDING,
@@ -63,4 +64,10 @@ export const COVER_LETTER_TYPE_FROM_DB: Record<DbType, CoverLetterType> = {
   TEAMWORK: '팀워크 경험',
   FUTURE_GOALS: '입사 후 포부',
   OTHER: '기타',
+};
+
+export const NOTIFICATION_TYPE_FROM_DB: Record<DbNotificationType, NotificationType> = {
+  DEADLINE: '마감 임박',
+  SCHEDULE: '일정 알림',
+  STATUS_CHANGE: '상태 변경',
 };
