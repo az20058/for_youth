@@ -94,7 +94,7 @@ export function DatePicker({
           <DrawerTitle>날짜 선택</DrawerTitle>
         </DrawerHeader>
         <div
-          className="px-2 mobile-datepicker-scroll"
+          className="overflow-y-scroll px-2 mobile-datepicker-scroll"
           style={{
             maxHeight: 'calc(100dvh - 8rem)',
             paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 2rem)',
