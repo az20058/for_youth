@@ -2,17 +2,17 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { useSession, signOut } from 'next-auth/react';
+import { useSession } from 'next-auth/react';
 import { usePathname } from 'next/navigation';
-import { CircleUserRound, LogOut, HomeIcon, BriefcaseIcon, CalendarIcon } from 'lucide-react';
+import { CircleUserRound, HomeIcon, BriefcaseIcon, CalendarIcon, UserIcon } from 'lucide-react';
 import { FlameIcon } from '@/components/icons/FlameIcon';
-import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
 const navItems = [
   { href: '/', label: '홈', icon: HomeIcon, activePaths: ['/', '/programs'] },
   { href: '/applications', label: '지원 현황', icon: BriefcaseIcon, activePaths: ['/applications', '/cover-letters'] },
   { href: '/schedule', label: '일정', icon: CalendarIcon, activePaths: ['/schedule'] },
+  { href: '/mypage', label: '마이페이지', icon: UserIcon, activePaths: ['/mypage'] },
 ];
 
 interface HeaderProps {
@@ -57,7 +57,7 @@ export function Header({ title = 'EMBER' }: HeaderProps) {
 
       <div className="ml-auto">
         {session?.user ? (
-          <div className="flex items-center gap-2">
+          <Link href="/mypage" className="flex items-center">
             {session.user.image ? (
               <Image
                 src={session.user.image}
@@ -69,28 +69,11 @@ export function Header({ title = 'EMBER' }: HeaderProps) {
             ) : (
               <CircleUserRound className="size-6 text-[#9B9B9B]" />
             )}
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => signOut({ callbackUrl: '/login' })}
-              aria-label="로그아웃"
-              className="rounded-full text-[#9B9B9B] hover:text-white hover:bg-[#3A3A3A]"
-            >
-              <LogOut className="size-5" />
-            </Button>
-          </div>
+          </Link>
         ) : (
-          <Button
-            variant="ghost"
-            size="icon"
-            asChild
-            aria-label="로그인"
-            className="rounded-full text-[#9B9B9B] hover:text-white hover:bg-[#3A3A3A]"
-          >
-            <Link href="/login">
-              <CircleUserRound className="size-6" />
-            </Link>
-          </Button>
+          <Link href="/login" aria-label="로그인">
+            <CircleUserRound className="size-6 text-[#9B9B9B] hover:text-white transition-colors" />
+          </Link>
         )}
       </div>
     </header>

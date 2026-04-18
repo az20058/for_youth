@@ -2,17 +2,22 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { HomeIcon, BriefcaseIcon, CalendarIcon } from 'lucide-react';
+import { HomeIcon, BriefcaseIcon, CalendarIcon, UserIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useIsApp } from '@/lib/useIsApp';
 
 const navItems = [
   { href: '/', label: '홈', icon: HomeIcon, activePaths: ['/', '/programs'] },
   { href: '/applications', label: '지원 현황', icon: BriefcaseIcon, activePaths: ['/applications', '/cover-letters'] },
   { href: '/schedule', label: '일정', icon: CalendarIcon, activePaths: ['/schedule'] },
+  { href: '/mypage', label: '마이', icon: UserIcon, activePaths: ['/mypage'] },
 ];
 
 export function MobileFooterNav() {
   const pathname = usePathname();
+  const isApp = useIsApp();
+
+  if (isApp) return null;
 
   return (
     <nav
