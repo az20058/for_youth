@@ -2,6 +2,7 @@ import { Tabs, useRouter } from 'expo-router';
 import { Home, Briefcase, Calendar, User, CircleUserRound } from 'lucide-react-native';
 import { View, Text, Pressable, StyleSheet, Platform } from 'react-native';
 import * as Haptics from 'expo-haptics';
+import { onTabChange } from '../../components/tabDirection';
 
 function HeaderTitle() {
   return (
@@ -79,8 +80,9 @@ export default function TabsLayout() {
         sceneStyle: { backgroundColor: '#1C1C1E' },
       }}
       screenListeners={{
-        tabPress: () => {
+        tabPress: (e) => {
           Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+          onTabChange(e.target?.split('-')[0] ?? '');
         },
       }}
     >

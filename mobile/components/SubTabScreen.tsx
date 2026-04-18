@@ -1,8 +1,10 @@
 import { useRef, useState, useEffect } from 'react';
-import { View, StyleSheet, Platform, BackHandler } from 'react-native';
+import { View, Animated, StyleSheet, Platform, BackHandler } from 'react-native';
 import { WebView } from 'react-native-webview';
 import type { WebViewNavigation } from 'react-native-webview';
 import { SubTabBar } from './SubTabBar';
+import { useIsFocused } from './useIsFocused';
+import { getDirection } from './tabDirection';
 
 const BASE_URL = 'https://for-youth.site';
 
@@ -28,6 +30,10 @@ export function SubTabScreen({ tabs, defaultIndex = 0 }: SubTabScreenProps) {
   const webViewRefs = useRef<(WebView | null)[]>([]);
   const [activeIndex, setActiveIndex] = useState(defaultIndex);
   const [canGoBack, setCanGoBack] = useState(false);
+  const isFocused = useIsFocused();
+  const translateX = useRef(new Animated.Value(0)).current;
+  const opacity = useRef(new Animated.Value(1)).current;
+  const prevFocused = useRef(isFocused);
 
   useEffect(() => {
     if (Platform.OS === 'android') {
@@ -43,6 +49,30 @@ export function SubTabScreen({ tabs, defaultIndex = 0 }: SubTabScreenProps) {
     }
   }, [canGoBack, activeIndex]);
 
+  useEffect(() => {
+    if (isFocused && !prevFocused.current) {
+      const dir = getDirection();
+      if (dir) {
+        const startX = dir === 'right' ? 24 : -24;
+        translateX.setValue(startX);
+        opacity.setValue(0.6);
+        Animated.parallel([
+          Animated.timing(translateX, {
+            toValue: 0,
+            duration: 250,
+            useNativeDriver: true,
+          }),
+          Animated.timing(opacity, {
+            toValue: 1,
+            duration: 250,
+            useNativeDriver: true,
+          }),
+        ]).start();
+      }
+    }
+    prevFocused.current = isFocused;
+  }, [isFocused, translateX, opacity]);
+
   const handleNavigationStateChange = (index: number) => (navState: WebViewNavigation) => {
     if (index === activeIndex) {
       setCanGoBack(navState.canGoBack);
@@ -54,7 +84,12 @@ export function SubTabScreen({ tabs, defaultIndex = 0 }: SubTabScreenProps) {
   };
 
   return (
-    <View style={styles.container}>
+    <Animated.View
+      style={[
+        styles.container,
+        { transform: [{ translateX }], opacity },
+      ]}
+    >
       <SubTabBar tabs={tabs} activeIndex={activeIndex} onTabPress={handleTabPress} />
       <View style={styles.webviewContainer}>
         {tabs.map((tab, index) => (
@@ -80,7 +115,7 @@ export function SubTabScreen({ tabs, defaultIndex = 0 }: SubTabScreenProps) {
           </View>
         ))}
       </View>
-    </View>
+    </Animated.View>
   );
 }
 
