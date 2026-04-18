@@ -48,9 +48,12 @@ export function CoverLetterList({
     );
   }
 
+  const [newlyAddedId, setNewlyAddedId] = useState<string | null>(null);
+
   function handleAddCoverLetter() {
     const id = `cl-${Date.now()}`;
     valuesRef.current[id] = { question: "", answer: "" };
+    setNewlyAddedId(id);
     setItems((prev) => [...prev, { id, type: null }]);
   }
 
@@ -105,6 +108,7 @@ export function CoverLetterList({
               onAnswerBlur={handleAnswerBlur}
               onTypeChange={handleTypeChange}
               onDelete={handleDelete}
+              defaultOpen={item.id === newlyAddedId}
             />
           );
         })}

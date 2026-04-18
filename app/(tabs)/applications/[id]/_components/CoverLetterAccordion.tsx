@@ -24,6 +24,7 @@ interface CoverLetterAccordionProps {
   onAnswerBlur: (id: string, value: string) => void;
   onTypeChange: (id: string, type: CoverLetterType | null) => void;
   onDelete: (id: string) => void;
+  defaultOpen?: boolean;
 }
 
 export function CoverLetterAccordion({
@@ -35,8 +36,9 @@ export function CoverLetterAccordion({
   onAnswerBlur,
   onTypeChange,
   onDelete,
+  defaultOpen,
 }: CoverLetterAccordionProps) {
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(defaultOpen ?? false);
   const [charCount, setCharCount] = useState(answer.length);
   return (
     <Accordion
