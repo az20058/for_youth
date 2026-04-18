@@ -94,7 +94,7 @@ export function DatePicker({
           <DrawerTitle>날짜 선택</DrawerTitle>
         </DrawerHeader>
         <div
-          className="overflow-y-scroll px-2 always-show-scrollbar [&_.rdp-nav]:!sticky [&_.rdp-nav]:!top-0 [&_.rdp-nav]:z-20 [&_.rdp-month_caption]:sticky [&_.rdp-month_caption]:top-0 [&_.rdp-month_caption]:z-10 [&_.rdp-month_caption]:bg-background [&_.rdp-button_previous]:bg-background [&_.rdp-button_next]:bg-background"
+          className="overflow-y-scroll px-2 mobile-datepicker-scroll"
           style={{
             maxHeight: 'calc(100dvh - 8rem)',
             paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 2rem)',
