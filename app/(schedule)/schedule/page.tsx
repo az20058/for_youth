@@ -19,13 +19,14 @@ export default function SchedulePage() {
   const year = currentMonth.getFullYear();
   const month = currentMonth.getMonth() + 1;
 
-  const { data, isLoading } = useQuery<{ events: ScheduleEvent[] }>({
+  const { data, isLoading, isFetching } = useQuery<{ events: ScheduleEvent[] }>({
     queryKey: ['schedule', year, month],
     queryFn: async () => {
       const res = await fetch(`/api/schedule?year=${year}&month=${month}`);
       if (!res.ok) throw new Error('Failed to fetch schedule');
       return res.json();
     },
+    placeholderData: (prev) => prev,
   });
 
   const events = useMemo(() => data?.events ?? [], [data?.events]);
@@ -78,7 +79,7 @@ export default function SchedulePage() {
         <FlameLoading />
       ) : (
         <>
-          <div className="rounded-xl border border-border bg-card p-3 sm:p-4 mb-6">
+          <div className={`rounded-xl border border-border bg-card p-3 sm:p-4 mb-6 transition-opacity duration-200 ${isFetching ? 'opacity-60 pointer-events-none' : ''}`}>
             <MonthCalendar
               month={currentMonth}
               selectedDate={selectedDate}
@@ -96,11 +97,13 @@ export default function SchedulePage() {
             </h2>
           </div>
 
-          <EventList
-            events={events}
-            selectedDate={selectedDate}
-            onDelete={(id) => deleteMutation.mutate(id)}
-          />
+          <div className={`transition-opacity duration-200 ${isFetching ? 'opacity-60' : ''}`}>
+            <EventList
+              events={events}
+              selectedDate={selectedDate}
+              onDelete={(id) => deleteMutation.mutate(id)}
+            />
+          </div>
         </>
       )}
     </main>
