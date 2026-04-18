@@ -1,11 +1,18 @@
+import Link from 'next/link';
+import { PlusIcon } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 
 export default function ApplicationsLoading() {
   return (
     <main className="py-8">
       <div className="flex items-start justify-between mb-6">
-        <Skeleton className="h-8 w-36" />
-        <Skeleton className="h-9 w-32 rounded-lg" />
+        <h1 className="text-2xl font-bold tracking-tight">입사 지원 현황</h1>
+        <Link
+          href="/applications/new"
+          className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 h-9 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/80"
+        >
+          <PlusIcon className="size-4" />새 지원서 추가
+        </Link>
       </div>
 
       <Skeleton className="h-4 w-32 mb-3" />
