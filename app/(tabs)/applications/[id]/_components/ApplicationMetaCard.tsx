@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import * as SelectPrimitive from "@radix-ui/react-select"
-import { BriefcaseIcon, BuildingIcon, CircleDotIcon, ExternalLinkIcon, PencilIcon } from 'lucide-react'
+import { BriefcaseIcon, BuildingIcon, ChevronDownIcon, CircleDotIcon, ExternalLinkIcon, PencilIcon } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Badge } from '@/components/ui/badge'
 import { Select, SelectContent, SelectItem } from '@/components/ui/select'
@@ -101,6 +101,7 @@ export function ApplicationMetaCard({
             <Badge className={cn(statusBadgeClass(status), 'shrink-0 cursor-pointer select-none')}>
               <CircleDotIcon className="mr-1" />
               {status}
+              <ChevronDownIcon className="ml-0.5 size-3 opacity-60" />
             </Badge>
           </SelectPrimitive.Trigger>
           <SelectContent>
@@ -121,12 +122,15 @@ export function ApplicationMetaCard({
           <BuildingIcon className="size-3" />
           {companySize}
         </Badge>
-        <DatePicker
-          value={deadline ?? undefined}
-          onChange={handleDeadlineChange}
-          placeholder="채용 시 마감"
-          className="w-auto h-auto border border-border rounded-full bg-transparent px-2.5 py-0.5 text-xs font-semibold shadow-none hover:bg-accent focus-visible:ring-0"
-        />
+        <div className="relative">
+          <DatePicker
+            value={deadline ?? undefined}
+            onChange={handleDeadlineChange}
+            placeholder="채용 시 마감"
+            className="w-auto h-auto border border-border rounded-full bg-transparent pl-2.5 pr-5 py-0.5 text-xs font-semibold shadow-none hover:bg-accent focus-visible:ring-0"
+          />
+          <ChevronDownIcon className="pointer-events-none absolute right-1.5 top-1/2 size-3 -translate-y-1/2 opacity-60" />
+        </div>
 
         {/* 채용공고 URL 인라인 편집 */}
         {editingUrl ? (
