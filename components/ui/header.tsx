@@ -9,6 +9,7 @@ import { FlameIcon } from '@/components/icons/FlameIcon';
 import { cn } from '@/lib/utils';
 import { useIsApp } from '@/lib/useIsApp';
 import { getNavItems, isNavActive } from '@/lib/nav';
+import { NotificationBell } from '@/components/NotificationBell';
 
 const navItems = getNavItems('global');
 
@@ -54,21 +55,24 @@ export function Header({ title = 'EMBER' }: HeaderProps) {
         })}
       </nav>
 
-      <div className="ml-auto">
+      <div className="ml-auto flex items-center gap-3">
         {session?.user ? (
-          <Link href="/mypage" className="flex items-center">
-            {session.user.image ? (
-              <Image
-                src={session.user.image}
-                alt="프로필"
-                width={32}
-                height={32}
-                className="rounded-full"
-              />
-            ) : (
-              <CircleUserRound className="size-6 text-muted-foreground" />
-            )}
-          </Link>
+          <>
+            <NotificationBell />
+            <Link href="/mypage" className="flex items-center">
+              {session.user.image ? (
+                <Image
+                  src={session.user.image}
+                  alt="프로필"
+                  width={32}
+                  height={32}
+                  className="rounded-full"
+                />
+              ) : (
+                <CircleUserRound className="size-6 text-muted-foreground" />
+              )}
+            </Link>
+          </>
         ) : (
           <Link href="/login" aria-label="로그인">
             <CircleUserRound className="size-6 text-muted-foreground hover:text-white transition-colors" />
