@@ -64,7 +64,7 @@ export function DatePicker({
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>{triggerButton}</PopoverTrigger>
         <PopoverContent
-          className="w-auto p-0"
+          className="w-auto min-w-[320px] p-0"
           align="start"
           collisionPadding={{ top: 16, bottom: 16, left: 8, right: 8 }}
           avoidCollisions
