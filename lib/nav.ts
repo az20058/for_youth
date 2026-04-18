@@ -68,7 +68,7 @@ export const NAV_ITEMS: NavItem[] = [
 ];
 
 /** placement 필터 헬퍼 */
-export function getNavItems(placement: NavItem['placement'][number]): NavItem[] {
+export function getNavItems(placement: NonNullable<NavItem['placement']>[number]): NavItem[] {
   return NAV_ITEMS.filter(
     (item) => !item.placement || item.placement.includes(placement),
   );
