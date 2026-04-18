@@ -92,7 +92,7 @@ export function getNavItems(placement: NonNullable<NavItem['placement']>[number]
 
 /** pathname이 NavItem의 activePaths에 매치되는지 확인 */
 export function isNavActive(item: NavItem, pathname: string): boolean {
-  if (item.exact && item.href === pathname) return true;
+  if (item.exact) return pathname === item.href;
   return item.activePaths.some(
     (p) => pathname === p || pathname.startsWith(p + '/'),
   );
