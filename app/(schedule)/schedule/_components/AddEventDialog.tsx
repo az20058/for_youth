@@ -17,14 +17,25 @@ import { EVENT_TYPE_CONFIG, type ScheduleEvent } from './types';
 interface AddEventDialogProps {
   selectedDate?: Date;
   onAdd: (event: { title: string; date: string; type: ScheduleEvent['type']; memo: string }) => void;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
 }
 
-export function AddEventDialog({ selectedDate, onAdd }: AddEventDialogProps) {
-  const [open, setOpen] = useState(false);
+export function AddEventDialog({ selectedDate, onAdd, open: controlledOpen, onOpenChange }: AddEventDialogProps) {
+  const [internalOpen, setInternalOpen] = useState(false);
+  const open = controlledOpen ?? internalOpen;
+  const setOpen = onOpenChange ?? setInternalOpen;
   const [title, setTitle] = useState('');
   const [date, setDate] = useState<Date | undefined>(selectedDate);
   const [type, setType] = useState<ScheduleEvent['type']>('CODING_TEST');
   const [memo, setMemo] = useState('');
+
+  function handleOpenChange(nextOpen: boolean) {
+    if (nextOpen && selectedDate) {
+      setDate(selectedDate);
+    }
+    setOpen(nextOpen);
+  }
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -45,7 +56,7 @@ export function AddEventDialog({ selectedDate, onAdd }: AddEventDialogProps) {
   };
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
         <Button size="sm" className="gap-1.5">
           <PlusIcon className="size-4" />
