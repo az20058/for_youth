@@ -34,10 +34,21 @@ model User {
   email         String?          @unique
   emailVerified DateTime?
   image         String?
+  bio             String?
+  desiredJob      String?
+  desiredIndustry String?
+  desiredRegion   String?
+  school          String?
+  major           String?
+  careerLevel     String?
+  portfolioUrl    String?
+  certifications  Json?
+  techStacks      Json?
   accounts       Account[]
   applications   Application[]
   scheduleEvents ScheduleEvent[]
   quizResults    UserQuizResult[]
+  notifications  Notification[]
   createdAt      DateTime         @default(now())
   updatedAt     DateTime         @updatedAt
 }
@@ -161,4 +172,25 @@ model YouthPolicy {
 
   @@index([region])
   @@index([mainCategory])
+}
+
+model Notification {
+  id        String           @id @default(cuid())
+  userId    String
+  user      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type      NotificationType
+  title     String
+  message   String
+  isRead    Boolean          @default(false)
+  relatedId String?
+  createdAt DateTime         @default(now())
+
+  @@index([userId])
+  @@index([userId, isRead])
+}
+
+enum NotificationType {
+  DEADLINE
+  SCHEDULE
+  STATUS_CHANGE
 }
