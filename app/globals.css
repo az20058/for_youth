@@ -115,11 +115,11 @@ html {
 }
 
 .animate-slide-from-right {
-  animation: slide-from-right 0.25s ease-out both;
+  animation: slide-from-right 0.15s ease-out both;
 }
 
 .animate-slide-from-left {
-  animation: slide-from-left 0.25s ease-out both;
+  animation: slide-from-left 0.15s ease-out both;
 }
 
 /* Always show scrollbar for mobile date picker and similar scroll areas */

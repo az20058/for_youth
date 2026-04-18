@@ -59,12 +59,12 @@ export function SubTabScreen({ tabs, defaultIndex = 0 }: SubTabScreenProps) {
         Animated.parallel([
           Animated.timing(translateX, {
             toValue: 0,
-            duration: 250,
+            duration: 150,
             useNativeDriver: true,
           }),
           Animated.timing(opacity, {
             toValue: 1,
-            duration: 250,
+            duration: 150,
             useNativeDriver: true,
           }),
         ]).start();
