@@ -79,6 +79,8 @@ export function DatePicker({
             disabled={disabledDays}
             locale={ko}
             autoFocus
+            className="w-full"
+            classNames={{ root: "w-full" }}
             style={{ '--cell-size': '2.5rem' } as React.CSSProperties}
           />
         </PopoverContent>
