@@ -1,29 +1,23 @@
-# Claude 규칙 인덱스
+# CLAUDE.md
 
-상황에 따라 아래 파일을 읽고 규칙을 적용한다. 각 파일은 필요한 시점에만 읽는다.
+## 프로젝트
 
----
+Next.js (App Router) 기반 취업 준비 관리 앱. UI는 shadcn/ui + Tailwind CSS.
 
-## 언제 무엇을 읽을까
+## 필수 규칙 (항상 적용)
 
-| 상황 | 읽을 파일 |
-|------|-----------|
-| Next.js 코드 작성 전 (라우팅, API, 미들웨어 등) | `docs/claude/nextjs.md` |
-| UI 컴포넌트 구현 또는 수정 시 | `docs/claude/components.md` |
-| `useEffect`, `useState`, 커스텀 훅 작성 시 | `docs/claude/hooks.md` |
-| 상태 관리 설계 또는 props 전달 구조 결정 시 | `docs/claude/state.md` |
-| 코드 작성을 마친 직후 | `docs/claude/checklist.md` |
-| 기능 구현 작업을 받았을 때 | `docs/claude/testing.md` |
-| 커밋/푸시 작업 시 | `docs/claude/git.md` |
+1. **코드 수정 후 반드시 실행**: `npx eslint <수정 파일>` → `npx tsc --noEmit` → 직접 코드 리뷰 → 문제 발견 시 보고
+2. **컴포넌트 중복 금지**: UI 작성 전 `components/ui/`와 해당 페이지 `_components/`를 먼저 확인하고 재사용
+3. **커밋/푸시**: lint·tsc·리뷰 통과 후 확인 없이 `git add && git commit && git push origin master` 한 번에 실행
 
----
+## 상황별 참조 문서
 
-## 규칙 파일 목록
+코드 작성 전, 해당되는 문서를 읽고 따른다:
 
-- [`docs/claude/nextjs.md`](docs/claude/nextjs.md) — Next.js 버전 주의사항
-- [`docs/claude/components.md`](docs/claude/components.md) — 컴포넌트 재사용 규칙
-- [`docs/claude/hooks.md`](docs/claude/hooks.md) — Hook 사용 규칙 (useEffect 등)
-- [`docs/claude/state.md`](docs/claude/state.md) — 상태 관리 규칙 (zustand, props drilling)
-- [`docs/claude/checklist.md`](docs/claude/checklist.md) — 구현 후 체크리스트 (lint, tsc, 코드리뷰)
-- [`docs/claude/testing.md`](docs/claude/testing.md) — 테스트 규칙 (TDD, 테스트 실행)
-- [`docs/claude/git.md`](docs/claude/git.md) — Git 워크플로우 (커밋/푸시 규칙)
+| 해당 조건 | 읽을 파일 |
+|-----------|-----------|
+| Next.js API·라우팅·미들웨어를 수정할 때 | `docs/claude/nextjs.md` |
+| `components/ui/` 파일을 수정하거나 새 컴포넌트를 만들 때 | `docs/claude/components.md` |
+| `useEffect`, `useState`, 커스텀 훅을 작성할 때 | `docs/claude/hooks.md` |
+| props를 3단계 이상 전달하거나 zustand 스토어를 다룰 때 | `docs/claude/state.md` |
+| 새 기능을 구현할 때 (버그 수정 제외) | `docs/claude/testing.md` |
