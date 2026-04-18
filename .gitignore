@@ -48,6 +48,9 @@ storybook-static
 # oh-my-claudecode
 .omc
 
+# superpowers
+.superpowers/
+
 /lib/generated/prisma
 
 # mobile (Expo)
