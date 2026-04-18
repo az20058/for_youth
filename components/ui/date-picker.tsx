@@ -79,6 +79,7 @@ export function DatePicker({
             disabled={disabledDays}
             locale={ko}
             autoFocus
+            className="[--cell-size:2.5rem]"
           />
         </PopoverContent>
       </Popover>
