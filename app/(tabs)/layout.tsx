@@ -25,7 +25,7 @@ export default function TabsLayout({ children }: { children: React.ReactNode }) 
         <div className="flex flex-1">
           <AppSidebar />
           <div className="flex-1 min-w-0 flex flex-col">
-            <div className="mx-auto w-full max-w-3xl px-4 sm:px-6 pb-[calc(6rem+env(safe-area-inset-bottom))] md:pb-0">
+            <div className="mx-auto w-full max-w-3xl px-4 sm:px-6 py-6 pb-[calc(6rem+env(safe-area-inset-bottom))] md:pb-6">
               <PageTransition>{children}</PageTransition>
             </div>
           </div>

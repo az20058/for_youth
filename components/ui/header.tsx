@@ -4,17 +4,13 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useSession } from 'next-auth/react';
 import { usePathname } from 'next/navigation';
-import { CircleUserRound, HomeIcon, BriefcaseIcon, CalendarIcon, UserIcon } from 'lucide-react';
+import { CircleUserRound } from 'lucide-react';
 import { FlameIcon } from '@/components/icons/FlameIcon';
 import { cn } from '@/lib/utils';
 import { useIsApp } from '@/lib/useIsApp';
+import { getNavItems, isNavActive } from '@/lib/nav';
 
-const navItems = [
-  { href: '/', label: '홈', icon: HomeIcon, activePaths: ['/', '/programs'] },
-  { href: '/applications', label: '지원 현황', icon: BriefcaseIcon, activePaths: ['/applications', '/cover-letters'] },
-  { href: '/schedule', label: '일정', icon: CalendarIcon, activePaths: ['/schedule'] },
-  { href: '/mypage', label: '마이페이지', icon: UserIcon, activePaths: ['/mypage'] },
-];
+const navItems = getNavItems('global');
 
 interface HeaderProps {
   title?: string;
@@ -28,7 +24,7 @@ export function Header({ title = 'EMBER' }: HeaderProps) {
   if (isApp) return null;
 
   return (
-    <header className="flex items-center gap-6 px-6 py-3 bg-[#1C1C1E]">
+    <header className="flex items-center gap-6 px-6 py-3 bg-background">
       <Link href="/" className="flex items-center gap-2 shrink-0">
         <FlameIcon className="size-10" />
         <span className="text-white text-lg font-bold tracking-wide">
@@ -37,23 +33,22 @@ export function Header({ title = 'EMBER' }: HeaderProps) {
       </Link>
 
       <nav className="hidden md:flex items-center gap-1 flex-1">
-        {navItems.map(({ href, label, icon: Icon, activePaths }) => {
-          const isActive = activePaths.some(
-            (p) => pathname === p || pathname.startsWith(p + '/'),
-          );
+        {navItems.map((item) => {
+          const active = isNavActive(item, pathname);
+          const Icon = item.icon;
           return (
             <Link
-              key={href}
-              href={href}
+              key={item.href}
+              href={item.href}
               className={cn(
                 'flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors',
-                isActive
+                active
                   ? 'text-primary bg-primary/10'
                   : 'text-muted-foreground hover:text-foreground hover:bg-muted/50',
               )}
             >
               <Icon className="size-4" />
-              {label}
+              {item.label}
             </Link>
           );
         })}
@@ -71,12 +66,12 @@ export function Header({ title = 'EMBER' }: HeaderProps) {
                 className="rounded-full"
               />
             ) : (
-              <CircleUserRound className="size-6 text-[#9B9B9B]" />
+              <CircleUserRound className="size-6 text-muted-foreground" />
             )}
           </Link>
         ) : (
           <Link href="/login" aria-label="로그인">
-            <CircleUserRound className="size-6 text-[#9B9B9B] hover:text-white transition-colors" />
+            <CircleUserRound className="size-6 text-muted-foreground hover:text-white transition-colors" />
           </Link>
         )}
       </div>

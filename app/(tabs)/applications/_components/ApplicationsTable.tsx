@@ -222,7 +222,7 @@ export function ApplicationsTable({ initialData }: Props) {
       <p className="mb-3 text-sm text-muted-foreground">
         {isLoading ? '불러오는 중…' : `총 ${applications.length}개의 지원서`}
       </p>
-      <div className="rounded-xl border border-foreground/10 overflow-hidden">
+      <div className="rounded-xl border border-border overflow-hidden">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((hg) => (

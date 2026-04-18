@@ -53,13 +53,13 @@ export function HomeContent() {
     <div className="flex flex-col gap-8">
       {/* 히어로 슬라이드 섹션 */}
       <section className="flex flex-col gap-3">
-        <h2 className="text-white font-bold text-base">
+        <h2 className="text-base font-semibold">
           이번주 이런 도전은 어때요?
         </h2>
         <HeroCarousel programs={heroPrograms} />
         <Link
           href="/quiz"
-          className="flex items-center justify-between bg-[#FE6E6E] text-white rounded-xl px-5 py-4 text-sm font-medium hover:bg-[#FE6E6E]/90 transition-colors"
+          className="flex items-center justify-between bg-primary text-primary-foreground rounded-md px-5 py-4 text-sm font-medium hover:bg-primary/90 transition-colors"
         >
           새로운 도전을 추천받기
           <ArrowRight className="size-5" />
@@ -68,13 +68,12 @@ export function HomeContent() {
 
       {/* HOT 프로그램 섹션 */}
       <section className="flex flex-col gap-3">
-        <h2 className="text-white font-bold text-base">지금 HOT한 열정들</h2>
+        <h2 className="text-base font-semibold">지금 HOT한 열정들</h2>
         <div className="flex flex-col gap-3">
           {hotPrograms.map((program) => (
             <ProgramCard
               key={program.id ?? program.name}
               program={program}
-              badgeClassName="text-yellow-300 border-[#3A3A3A]"
             />
           ))}
         </div>

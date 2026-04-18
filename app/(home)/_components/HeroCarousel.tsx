@@ -63,7 +63,7 @@ export function HeroCarousel({ programs }: HeroCarouselProps) {
 
   return (
     <div
-      className="relative overflow-hidden rounded-2xl bg-[#2D2D2D] select-none cursor-grab active:cursor-grabbing touch-pan-y"
+      className="relative overflow-hidden rounded-2xl bg-secondary select-none cursor-grab active:cursor-grabbing touch-pan-y"
       onMouseDown={(e) => handleDragStart(e.clientX)}
       onMouseMove={(e) => { if (isDragging) handleDragMove(e.clientX); }}
       onMouseUp={handleDragEnd}
@@ -81,9 +81,9 @@ export function HeroCarousel({ programs }: HeroCarouselProps) {
           <div key={program.id ?? program.name + i} className="min-w-full p-5 flex flex-col gap-2">
             <span className="text-xs text-primary font-medium">{program.mainCategory}</span>
             <p className="text-white font-bold text-lg leading-snug">{program.name}</p>
-            <p className="text-[#9B9B9B] text-xs">{program.agency}</p>
+            <p className="text-muted-foreground text-xs">{program.agency}</p>
             {program.description && (
-              <p className="text-[#9B9B9B] text-sm leading-relaxed mt-1 line-clamp-2">
+              <p className="text-muted-foreground text-sm leading-relaxed mt-1 line-clamp-2">
                 {program.description}
               </p>
             )}

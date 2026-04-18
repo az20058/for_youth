@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import { ExternalLink } from "lucide-react";
+import { ExternalLink, Lightbulb } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -18,7 +18,7 @@ interface ProgramCardProps {
   badgeClassName?: string;
 }
 
-export function ProgramCard({ program, badgeClassName }: ProgramCardProps) {
+export function ProgramCard({ program }: ProgramCardProps) {
   const [expanded, setExpanded] = useState(false);
   const [isClamped, setIsClamped] = useState(false);
   const [open, setOpen] = useState(false);
@@ -29,9 +29,8 @@ export function ProgramCard({ program, badgeClassName }: ProgramCardProps) {
     if (el) setIsClamped(el.scrollHeight > el.clientHeight);
   }, []);
 
-  const text = program.matchReason
-    ? `💡 ${program.matchReason}`
-    : program.description;
+  const hasMatchReason = !!program.matchReason;
+  const text = hasMatchReason ? program.matchReason : program.description;
 
   return (
     <>
@@ -43,11 +42,11 @@ export function ProgramCard({ program, badgeClassName }: ProgramCardProps) {
               <span className="text-xs text-muted-foreground">{program.agency}</span>
               <div className="flex flex-wrap gap-1.5">
                 {program.mainCategory && (
-                  <Badge variant="outline" className={`text-xs ${badgeClassName ?? ''}`}>
+                  <Badge variant="tag" className="text-xs">
                     #{program.mainCategory}
                   </Badge>
                 )}
-                <Badge variant="outline" className={`text-xs ${badgeClassName ?? ''}`}>
+                <Badge variant="tag" className="text-xs">
                   #{program.category}
                 </Badge>
               </div>
@@ -68,7 +67,7 @@ export function ProgramCard({ program, badgeClassName }: ProgramCardProps) {
         </CardHeader>
         {(program.description || program.matchReason) && (
           <CardContent className="flex flex-col gap-3">
-            {program.matchReason && program.description && (
+            {hasMatchReason && program.description && (
               <p className="text-sm text-muted-foreground leading-relaxed">
                 {program.description}
               </p>
@@ -77,8 +76,9 @@ export function ProgramCard({ program, badgeClassName }: ProgramCardProps) {
               <div className="rounded-xl bg-primary/10 border border-primary/20 px-3 py-2">
                 <p
                   ref={textRef}
-                  className={`text-xs text-white leading-relaxed ${expanded ? '' : 'line-clamp-3'}`}
+                  className={`text-xs text-white leading-relaxed flex items-start gap-1.5 ${expanded ? '' : 'line-clamp-3'}`}
                 >
+                  {hasMatchReason && <Lightbulb className="size-3.5 shrink-0 mt-0.5 text-primary" />}
                   {text}
                 </p>
                 {(isClamped || expanded) && (
@@ -104,12 +104,12 @@ export function ProgramCard({ program, badgeClassName }: ProgramCardProps) {
           </DialogHeader>
           <div className="flex flex-wrap gap-1.5">
             {program.mainCategory && (
-              <Badge variant="outline" className="text-xs text-yellow-300 border-[#3A3A3A]">#{program.mainCategory}</Badge>
+              <Badge variant="tag" className="text-xs">#{program.mainCategory}</Badge>
             )}
-            <Badge variant="outline" className="text-xs text-yellow-300 border-[#3A3A3A]">#{program.category}</Badge>
+            <Badge variant="tag" className="text-xs">#{program.category}</Badge>
             {program.region &&
               program.region.split(', ').map((r) => (
-                <Badge key={r} variant="outline" className="text-xs text-yellow-300 border-[#3A3A3A]">#{r}</Badge>
+                <Badge key={r} variant="tag" className="text-xs">#{r}</Badge>
               ))}
           </div>
           <div className="overflow-y-auto flex-1 min-h-0">

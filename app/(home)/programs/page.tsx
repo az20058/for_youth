@@ -21,7 +21,7 @@ export default async function ProgramsPage() {
   return (
     <div className="flex flex-col gap-6">
       <div>
-        <h1 className="text-white font-bold text-base">정책 둘러보기</h1>
+        <h1 className="text-2xl font-bold tracking-tight">정책 둘러보기</h1>
       </div>
       <ProgramsList initialPolicies={policies} initialCategories={categories} />
     </div>

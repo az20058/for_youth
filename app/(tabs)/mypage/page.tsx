@@ -16,11 +16,11 @@ export default function MyPage() {
   const user = session?.user;
 
   return (
-    <div className="py-8 space-y-8">
-      <h1 className="text-xl font-bold">마이페이지</h1>
+    <div className="space-y-8">
+      <h1 className="text-2xl font-bold tracking-tight">마이페이지</h1>
 
       {/* 프로필 정보 */}
-      <section className="flex items-center gap-4 p-6 rounded-2xl bg-card border border-border">
+      <section className="flex items-center gap-4 p-6 rounded-xl bg-card border border-border">
         {user?.image ? (
           <Image
             src={user.image}

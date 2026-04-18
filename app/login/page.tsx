@@ -17,17 +17,17 @@ export default function LoginPage() {
   }, [status, router]);
 
   return (
-    <div className="min-h-screen bg-[#1C1C1E] flex flex-col items-center justify-center px-4">
+    <div className="min-h-screen bg-background flex flex-col items-center justify-center px-4">
       <div className="flex flex-col items-center gap-6 w-full max-w-sm">
         <FlameIcon className="size-20" glow />
         <div className="text-center">
           <h1 className="text-white text-2xl font-bold tracking-wide">EMBER</h1>
-          <p className="text-[#9B9B9B] text-sm mt-1">청년을 위한 도전 플랫폼</p>
+          <p className="text-muted-foreground text-sm mt-1">청년을 위한 도전 플랫폼</p>
         </div>
 
         <div className="flex flex-col gap-3 w-full mt-4">
           <Button
-            className="w-full h-12 rounded-xl bg-white text-black hover:bg-gray-100 font-medium text-sm gap-2"
+            className="w-full h-12 rounded-md bg-white text-black hover:bg-gray-100 font-medium text-sm gap-2"
             onClick={() => signIn('google', { callbackUrl: '/' })}
           >
             <svg className="size-5" viewBox="0 0 24 24">
@@ -40,7 +40,7 @@ export default function LoginPage() {
           </Button>
 
           <Button
-            className="w-full h-12 rounded-xl bg-[#FEE500] text-[#191919] hover:bg-[#FEE500]/90 font-medium text-sm gap-2"
+            className="w-full h-12 rounded-md bg-[#FEE500] text-[#191919] hover:bg-[#FEE500]/90 font-medium text-sm gap-2"
             onClick={() => signIn('kakao', { callbackUrl: '/' })}
           >
             <svg className="size-5" viewBox="0 0 24 24" fill="#191919">
@@ -50,7 +50,7 @@ export default function LoginPage() {
           </Button>
         </div>
 
-        <p className="text-[#9B9B9B] text-xs text-center mt-4 leading-relaxed">
+        <p className="text-muted-foreground text-xs text-center mt-4 leading-relaxed">
           로그인하면 EMBER의 이용약관 및<br />개인정보처리방침에 동의하게 됩니다.
         </p>
       </div>

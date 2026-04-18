@@ -113,7 +113,7 @@ export function ApplicationMetaCard({
       </div>
 
       {/* 상세 뱃지 */}
-      <div className="mt-4 flex flex-wrap items-center gap-2 border-t border-foreground/10 pt-4">
+      <div className="mt-4 flex flex-wrap items-center gap-2 border-t border-border pt-4">
         <Badge variant="outline" className="gap-1">
           <BriefcaseIcon className="size-3" />
           {careerLevel}

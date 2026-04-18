@@ -13,7 +13,7 @@ export default function ApplicationDetailLoading() {
             <Skeleton className="h-8 w-40 sm:h-9 sm:w-52" />
             <Skeleton className="h-6 w-24 rounded-full" />
           </div>
-          <div className="mt-4 flex flex-wrap items-center gap-2 border-t border-foreground/10 pt-4">
+          <div className="mt-4 flex flex-wrap items-center gap-2 border-t border-border pt-4">
             <Skeleton className="h-6 w-16 rounded-full" />
             <Skeleton className="h-6 w-20 rounded-full" />
             <Skeleton className="h-6 w-24 rounded-full" />

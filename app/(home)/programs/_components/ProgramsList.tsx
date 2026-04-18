@@ -96,7 +96,7 @@ export function ProgramsList({ initialPolicies, initialCategories }: Props) {
 
       <div className="flex flex-col gap-3">
         {items.map((program) => (
-          <ProgramCard key={program.id ?? program.name} program={program} badgeClassName="text-yellow-300 border-[#3A3A3A]" />
+          <ProgramCard key={program.id ?? program.name} program={program} />
         ))}
       </div>
 

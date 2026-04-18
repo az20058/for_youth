@@ -2,6 +2,7 @@
 
 import { usePathname } from 'next/navigation';
 import { useEffect, useCallback } from 'react';
+import { useIsApp } from '@/lib/useIsApp';
 
 const TABS = [
   { index: 0, paths: ['/', '/programs'] },
@@ -23,6 +24,7 @@ let prevPath = '';
 
 export function PageTransition({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const isApp = useIsApp();
 
   const ref = useCallback((node: HTMLDivElement | null) => {
     if (!node) return;
