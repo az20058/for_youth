@@ -50,6 +50,7 @@ export function TabWebView({ path }: TabWebViewProps) {
       style={styles.webview}
       onNavigationStateChange={handleNavigationStateChange}
       injectedJavaScript={HIDE_WEB_NAV}
+      userAgent="ForYouthApp"
       javaScriptEnabled
       domStorageEnabled
       startInLoadingState

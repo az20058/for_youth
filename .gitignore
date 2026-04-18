@@ -49,3 +49,14 @@ storybook-static
 .omc
 
 /lib/generated/prisma
+
+# mobile (Expo)
+/mobile/node_modules
+/mobile/.expo
+/mobile/dist
+/mobile/web-build
+/mobile/expo-env.d.ts
+/mobile/.metro-health-check*
+/mobile/.kotlin
+/mobile/ios
+/mobile/android
