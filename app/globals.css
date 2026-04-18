@@ -122,35 +122,37 @@ html {
   animation: slide-from-left 0.25s ease-out both;
 }
 
-/* Mobile date picker: sticky header + always-visible scrollbar */
-.mobile-datepicker-scroll .rdp-nav {
-  position: sticky !important;
-  top: 0;
-  z-index: 20;
-}
-.mobile-datepicker-scroll .rdp-month_caption {
-  position: sticky;
-  top: 0;
-  z-index: 10;
-  background: hsl(var(--background));
-}
-.mobile-datepicker-scroll .rdp-button_previous,
-.mobile-datepicker-scroll .rdp-button_next {
-  background: hsl(var(--background));
-}
+/* Mobile date picker: only the grid scrolls, header stays fixed */
 .mobile-datepicker-scroll {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.mobile-datepicker-scroll .rdp-root,
+.mobile-datepicker-scroll .rdp-months,
+.mobile-datepicker-scroll .rdp-month {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+}
+.mobile-datepicker-scroll .rdp-month_grid {
+  overflow-y: scroll;
+  flex: 1;
+  min-height: 0;
+  display: block;
   scrollbar-width: thin;
   scrollbar-color: rgba(255, 255, 255, 0.25) transparent;
 }
-.mobile-datepicker-scroll::-webkit-scrollbar {
+.mobile-datepicker-scroll .rdp-month_grid::-webkit-scrollbar {
   -webkit-appearance: none;
   width: 4px;
 }
-.mobile-datepicker-scroll::-webkit-scrollbar-thumb {
+.mobile-datepicker-scroll .rdp-month_grid::-webkit-scrollbar-thumb {
   background-color: rgba(255, 255, 255, 0.25);
   border-radius: 2px;
 }
-.mobile-datepicker-scroll::-webkit-scrollbar-track {
+.mobile-datepicker-scroll .rdp-month_grid::-webkit-scrollbar-track {
   background: transparent;
 }
 
