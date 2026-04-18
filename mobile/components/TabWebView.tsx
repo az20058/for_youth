@@ -88,7 +88,7 @@ export function TabWebView({ path }: TabWebViewProps) {
         userAgent="ForYouthApp"
         javaScriptEnabled
         domStorageEnabled
-        startInLoadingState
+
         allowsBackForwardNavigationGestures
       />
     </Animated.View>

@@ -111,7 +111,7 @@ export function SubTabScreen({ tabs, defaultIndex = 0 }: SubTabScreenProps) {
               userAgent="ForYouthApp"
               javaScriptEnabled
               domStorageEnabled
-              startInLoadingState
+
               allowsBackForwardNavigationGestures
             />
           </View>
