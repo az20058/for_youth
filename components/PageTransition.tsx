@@ -3,13 +3,18 @@
 import { usePathname } from 'next/navigation';
 import { useEffect, useCallback } from 'react';
 
-const TAB_ORDER = ['/', '/programs', '/applications', '/cover-letters', '/schedule', '/mypage'];
+const TABS = [
+  { index: 0, paths: ['/', '/programs'] },
+  { index: 1, paths: ['/applications', '/cover-letters'] },
+  { index: 2, paths: ['/schedule'] },
+  { index: 3, paths: ['/mypage'] },
+];
 
 function getTabIndex(pathname: string): number {
-  const exact = TAB_ORDER.indexOf(pathname);
-  if (exact !== -1) return exact;
-  for (let i = TAB_ORDER.length - 1; i >= 0; i--) {
-    if (pathname.startsWith(TAB_ORDER[i] + '/')) return i;
+  for (const tab of TABS) {
+    if (tab.paths.some((p) => pathname === p || pathname.startsWith(p + '/'))) {
+      return tab.index;
+    }
   }
   return -1;
 }
