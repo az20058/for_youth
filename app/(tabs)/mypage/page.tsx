@@ -4,7 +4,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { signOut } from 'next-auth/react';
 import { LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { FlameLoading } from '@/components/ui/flame-loading';
+import { MypageSkeleton } from './_components/MypageSkeleton';
 import { fetchProfile, updateProfile } from '@/lib/profileApi';
 import type { UserProfile } from '@/lib/types';
 import { ProfileHeader } from './_components/ProfileHeader';
@@ -33,7 +33,12 @@ export default function MyPage() {
   }
 
   if (isLoading || !profile) {
-    return <FlameLoading />;
+    return (
+      <div className="py-8 space-y-4">
+        <h1 className="text-xl font-bold">마이페이지</h1>
+        <MypageSkeleton />
+      </div>
+    );
   }
 
   return (

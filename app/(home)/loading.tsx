@@ -1,5 +1,5 @@
-import { FlameLoading } from '@/components/ui/flame-loading';
+import { HomeContentSkeleton } from './_components/HomeContentSkeleton';
 
 export default function Loading() {
-  return <FlameLoading fullscreen />;
+  return <HomeContentSkeleton />;
 }

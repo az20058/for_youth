@@ -5,8 +5,8 @@ import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { ProgramCard } from "@/components/ui/program-card";
-import { FlameLoading } from "@/components/ui/flame-loading";
 import { HeroCarousel } from "./HeroCarousel";
+import { HomeContentSkeleton } from "./HomeContentSkeleton";
 import type { Recommendation } from "@/lib/quiz";
 
 async function fetchPrograms(): Promise<Recommendation[]> {
@@ -47,7 +47,7 @@ export function HomeContent() {
         .slice(0, 4)
     : heroPrograms;
 
-  if (isLoading) return <FlameLoading />;
+  if (isLoading) return <HomeContentSkeleton />;
 
   return (
     <div className="flex flex-col gap-8">

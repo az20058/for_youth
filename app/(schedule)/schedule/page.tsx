@@ -2,11 +2,11 @@
 
 import { format } from 'date-fns';
 import { ko } from 'date-fns/locale';
-import { FlameLoading } from '@/components/ui/flame-loading';
 import { AddEventDialog } from './_components/AddEventDialog';
 import { EventList } from './_components/EventList';
 import { MonthCalendar } from './_components/MonthCalendar';
 import { useSchedule } from './_components/useSchedule';
+import { ScheduleSkeleton } from './_components/ScheduleSkeleton';
 
 export default function ScheduleCalendarPage() {
   const {
@@ -43,7 +43,7 @@ export default function ScheduleCalendarPage() {
       </div>
 
       {isLoading ? (
-        <FlameLoading />
+        <ScheduleSkeleton />
       ) : (
         <>
           <div className={`rounded-xl border border-border bg-card p-3 sm:p-4 mb-6 transition-opacity duration-200 ${isFetching ? 'opacity-60 pointer-events-none' : ''}`}>
