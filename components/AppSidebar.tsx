@@ -13,7 +13,7 @@ export function AppSidebar() {
   if (pathname.startsWith('/mypage')) return null;
 
   return (
-    <aside className="hidden md:flex flex-col w-56 shrink-0 border-r border-border min-h-screen sticky top-0">
+    <aside className="hidden md:flex flex-col w-56 shrink-0 border-r border-border sticky top-16 self-start h-[calc(100vh-4rem)] overflow-y-auto">
       <div className="px-5 py-6">
         <span className="text-base font-bold tracking-tight">취업 관리</span>
       </div>
