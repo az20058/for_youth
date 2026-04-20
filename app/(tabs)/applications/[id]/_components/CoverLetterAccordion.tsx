@@ -2,9 +2,11 @@
 
 import { useState } from 'react';
 import * as AccordionPrimitive from '@radix-ui/react-accordion';
-import { ChevronDown, Trash2Icon } from 'lucide-react';
+import { ChevronDown, Trash2Icon, SpellCheck2 } from 'lucide-react';
+import { toast } from 'sonner';
 import { COVER_LETTER_TYPES } from '@/lib/coverLetterType';
 import type { CoverLetterType } from '@/lib/types';
+import type { Typo } from '@/lib/coverLetter';
 import { Accordion, AccordionContent, AccordionItem } from '@/components/ui/accordion';
 import { Button } from '@/components/ui/button';
 import {
@@ -14,6 +16,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { SpellerHighlightView } from './SpellerHighlightView';
 
 interface CoverLetterAccordionProps {
   id: string;
@@ -40,6 +43,41 @@ export function CoverLetterAccordion({
 }: CoverLetterAccordionProps) {
   const [open, setOpen] = useState(defaultOpen ?? false);
   const [charCount, setCharCount] = useState(answer.length);
+  const [currentAnswer, setCurrentAnswer] = useState(answer);
+  const [mode, setMode] = useState<'edit' | 'checking' | 'highlight'>('edit');
+  const [typos, setTypos] = useState<Typo[]>([]);
+
+  async function handleSpellCheck() {
+    if (!currentAnswer.trim()) return;
+    setMode('checking');
+    try {
+      const res = await fetch('/api/speller', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text: currentAnswer }),
+      });
+      if (!res.ok) throw new Error();
+      const data = await res.json();
+      if (data.typos.length === 0) {
+        toast.success('맞춤법 오류가 없습니다.');
+        setMode('edit');
+      } else {
+        setTypos(data.typos);
+        setMode('highlight');
+      }
+    } catch {
+      toast.error('맞춤법 검사에 실패했습니다.');
+      setMode('edit');
+    }
+  }
+
+  function handleApplyCorrections(correctedText: string) {
+    setCurrentAnswer(correctedText);
+    setCharCount(correctedText.length);
+    onAnswerBlur(id, correctedText);
+    setMode('edit');
+  }
+
   return (
     <Accordion
       type="single"
@@ -49,7 +87,6 @@ export function CoverLetterAccordion({
     >
       <AccordionItem value={id} className="border rounded-xl overflow-hidden">
         <AccordionPrimitive.Header className="flex items-center gap-2 px-3">
-          {/* 유형: 맨 왼쪽, trigger 밖에 배치 (중첩 button 방지) */}
           {open ? (
             <Select
               value={type ?? '__none__'}
@@ -75,12 +112,10 @@ export function CoverLetterAccordion({
             )
           )}
 
-          {/* 제목 + chevron 토글 버튼 */}
           <AccordionPrimitive.Trigger
             className="flex flex-1 min-w-0 items-center gap-2 py-3 text-sm font-medium transition-all [&[data-state=open]>svg]:rotate-180"
           >
             {open ? (
-              /* 펼침: 질문 input */
               <input
                 className="min-w-0 flex-1 rounded-lg bg-muted/50 px-3 py-1.5 text-sm ring-1 ring-foreground/10 focus:outline-none focus:ring-primary"
                 defaultValue={question}
@@ -90,7 +125,6 @@ export function CoverLetterAccordion({
                 onKeyDown={(e) => e.stopPropagation()}
               />
             ) : (
-              /* 접힘: 질문 텍스트 */
               <span className="min-w-0 flex-1 truncate text-left">
                 {question || '새 질문'}
               </span>
@@ -113,17 +147,42 @@ export function CoverLetterAccordion({
         </AccordionPrimitive.Header>
 
         <AccordionContent className="px-3 pb-3 pt-1">
-          <textarea
-            className="w-full resize-none rounded-lg bg-muted/50 px-3 py-2 text-sm ring-1 ring-foreground/10 focus:outline-none focus:ring-primary [field-sizing:content]"
-            defaultValue={answer}
-            placeholder="답변을 입력하세요"
-            rows={1}
-            onChange={(e) => setCharCount(e.target.value.length)}
-            onBlur={(e) => onAnswerBlur(id, e.target.value)}
-          />
-          <div className="mt-1 text-right text-xs text-muted-foreground">
-            {charCount}자
-          </div>
+          {mode === 'highlight' ? (
+            <SpellerHighlightView
+              text={currentAnswer}
+              typos={typos}
+              onApply={handleApplyCorrections}
+              onCancel={() => setMode('edit')}
+            />
+          ) : (
+            <>
+              <textarea
+                className="w-full resize-none rounded-lg bg-muted/50 px-3 py-2 text-sm ring-1 ring-foreground/10 focus:outline-none focus:ring-primary [field-sizing:content]"
+                value={currentAnswer}
+                placeholder="답변을 입력하세요"
+                rows={1}
+                onChange={(e) => {
+                  setCurrentAnswer(e.target.value);
+                  setCharCount(e.target.value.length);
+                }}
+                onBlur={(e) => onAnswerBlur(id, e.target.value)}
+              />
+              <div className="mt-1 flex items-center justify-between">
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  className="h-6 gap-1 px-2 text-xs text-muted-foreground hover:text-foreground"
+                  disabled={mode === 'checking' || !currentAnswer.trim()}
+                  onClick={handleSpellCheck}
+                >
+                  <SpellCheck2 className="size-3" />
+                  {mode === 'checking' ? '검사 중...' : '맞춤법 검사'}
+                </Button>
+                <span className="text-xs text-muted-foreground">{charCount}자</span>
+              </div>
+            </>
+          )}
         </AccordionContent>
       </AccordionItem>
     </Accordion>
