@@ -10,6 +10,8 @@ const navItems = getNavItems('app-sidebar');
 export function AppSidebar() {
   const pathname = usePathname();
 
+  if (pathname.startsWith('/mypage')) return null;
+
   return (
     <aside className="hidden md:flex flex-col w-56 shrink-0 border-r border-border min-h-screen sticky top-0">
       <div className="px-5 py-6">
