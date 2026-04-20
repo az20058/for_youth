@@ -5,15 +5,15 @@ declare module 'hanspell' {
     sentence: string,
     timeout: number,
     check: (typos: RawTypo[]) => void,
-    end: (() => void) | null,
-    error: ((err: Error) => void) | null,
+    end?: () => void,
+    error?: (err: Error) => void,
   ): void;
 
   export function spellCheckByPNU(
     sentence: string,
     timeout: number,
     check: (typos: RawTypo[]) => void,
-    end: (() => void) | null,
-    error: ((err: Error) => void) | null,
+    end?: () => void,
+    error?: (err: Error) => void,
   ): void;
 }
