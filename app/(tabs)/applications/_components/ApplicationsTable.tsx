@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect, useMemo } from 'react';
 import { toast } from 'sonner';
-import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { format } from 'date-fns';
 import { ExternalLinkIcon, PlusIcon, CheckIcon, XIcon } from 'lucide-react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -60,18 +60,13 @@ const columns: ColumnDef<Application, unknown>[] = [
     header: '회사명',
     cell: ({ getValue, row }) => (
       <div className="flex items-center gap-1.5">
-        <Link
-          href={`/applications/${row.original.id}`}
-          className="font-medium after:absolute after:inset-0"
-        >
-          {getValue<string>()}
-        </Link>
+        <span className="font-medium">{getValue<string>()}</span>
         {row.original.url && (
           <a
             href={row.original.url}
             target="_blank"
             rel="noopener noreferrer"
-            className="relative z-10 text-muted-foreground hover:text-foreground"
+            className="text-muted-foreground hover:text-foreground"
             aria-label="채용 공고 열기"
             onClick={(e) => e.stopPropagation()}
           >
@@ -137,6 +132,7 @@ interface Props {
 }
 
 export function ApplicationsTable({ initialData }: Props) {
+  const router = useRouter();
   const queryClient = useQueryClient();
   const [isAddingRow, setIsAddingRow] = useState(false);
   const [newRow, setNewRow] = useState<NewRowState>(INITIAL_NEW_ROW);
@@ -346,7 +342,11 @@ export function ApplicationsTable({ initialData }: Props) {
               </TableRow>
             ) : (
               table.getRowModel().rows.map((row) => (
-                <TableRow key={row.id} className="relative">
+                <TableRow
+                  key={row.id}
+                  className="cursor-pointer"
+                  onClick={() => router.push(`/applications/${row.original.id}`)}
+                >
                   {row.getVisibleCells().map((cell) => {
                     const meta = cell.column.columnDef.meta as { className?: string } | undefined;
                     return (
