@@ -42,7 +42,7 @@ export const NAV_ITEMS: NavItem[] = [
     href: '/applications',
     label: '지원 현황',
     icon: BriefcaseIcon,
-    activePaths: ['/applications', '/cover-letters'],
+    activePaths: ['/applications'],
     placement: ['global', 'app-sidebar', 'app-tabs'],
   },
   {
