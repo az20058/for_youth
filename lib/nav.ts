@@ -28,7 +28,6 @@ export const NAV_ITEMS: NavItem[] = [
     label: '홈',
     icon: HomeIcon,
     activePaths: ['/', '/programs'],
-    exact: true,
     placement: ['global', 'home-sidebar', 'home-tabs'],
   },
   {
@@ -42,7 +41,7 @@ export const NAV_ITEMS: NavItem[] = [
     href: '/applications',
     label: '지원 현황',
     icon: BriefcaseIcon,
-    activePaths: ['/applications'],
+    activePaths: ['/applications', '/cover-letters'],
     placement: ['global', 'app-sidebar', 'app-tabs'],
   },
   {
