@@ -4,6 +4,12 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { signOut } from 'next-auth/react';
 import { LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import {
+  Accordion,
+  AccordionItem,
+  AccordionTrigger,
+  AccordionContent,
+} from '@/components/ui/accordion';
 import { MypageSkeleton } from './_components/MypageSkeleton';
 import { fetchProfile, updateProfile } from '@/lib/profileApi';
 import type { UserProfile } from '@/lib/types';
@@ -12,6 +18,20 @@ import { DesiredConditions } from './_components/DesiredConditions';
 import { EducationCareer } from './_components/EducationCareer';
 import { TechStacks } from './_components/TechStacks';
 import { CertPortfolio } from './_components/CertPortfolio';
+
+function getDefaultOpen(profile: UserProfile): string[] {
+  const open: string[] = [];
+  const hasDesired = profile.desiredJob || profile.desiredIndustry || profile.desiredRegion;
+  const hasEducation = profile.school || profile.major || profile.careerLevel;
+  const hasTech = profile.techStacks.length > 0;
+  const hasCert = profile.certifications.length > 0 || profile.portfolioUrl;
+  if (!hasDesired) open.push('desired');
+  if (!hasEducation) open.push('education');
+  if (!hasTech) open.push('tech');
+  if (!hasCert) open.push('cert');
+  if (open.length === 0) open.push('desired');
+  return open;
+}
 
 export default function MyPage() {
   const queryClient = useQueryClient();
@@ -35,23 +55,48 @@ export default function MyPage() {
   if (isLoading || !profile) {
     return (
       <div className="py-8 space-y-4">
-        <h1 className="text-xl font-bold">마이페이지</h1>
+        <h1 className="text-2xl font-bold tracking-tight">마이페이지</h1>
         <MypageSkeleton />
       </div>
     );
   }
 
+  const defaultOpen = getDefaultOpen(profile);
+
   return (
     <div className="py-8 space-y-4">
-      <h1 className="text-xl font-bold">마이페이지</h1>
+      <h1 className="text-2xl font-bold tracking-tight">마이페이지</h1>
 
       <ProfileHeader profile={profile} onSave={handleSave} />
-      <DesiredConditions profile={profile} onSave={handleSave} />
-      <EducationCareer profile={profile} onSave={handleSave} />
-      <TechStacks profile={profile} onSave={handleSave} />
-      <CertPortfolio profile={profile} onSave={handleSave} />
 
-      <section className="p-5 rounded-2xl bg-card border border-border">
+      <Accordion type="multiple" defaultValue={defaultOpen} className="flex flex-col gap-2">
+        <AccordionItem value="desired" className="rounded-xl bg-card border border-border px-5 border-b-0">
+          <AccordionTrigger className="hover:no-underline font-semibold">희망 조건</AccordionTrigger>
+          <AccordionContent>
+            <DesiredConditions profile={profile} onSave={handleSave} />
+          </AccordionContent>
+        </AccordionItem>
+        <AccordionItem value="education" className="rounded-xl bg-card border border-border px-5 border-b-0">
+          <AccordionTrigger className="hover:no-underline font-semibold">학력 &amp; 경력</AccordionTrigger>
+          <AccordionContent>
+            <EducationCareer profile={profile} onSave={handleSave} />
+          </AccordionContent>
+        </AccordionItem>
+        <AccordionItem value="tech" className="rounded-xl bg-card border border-border px-5 border-b-0">
+          <AccordionTrigger className="hover:no-underline font-semibold">기술 스택</AccordionTrigger>
+          <AccordionContent>
+            <TechStacks profile={profile} onSave={handleSave} />
+          </AccordionContent>
+        </AccordionItem>
+        <AccordionItem value="cert" className="rounded-xl bg-card border border-border px-5 border-b-0">
+          <AccordionTrigger className="hover:no-underline font-semibold">자격증 &amp; 포트폴리오</AccordionTrigger>
+          <AccordionContent>
+            <CertPortfolio profile={profile} onSave={handleSave} />
+          </AccordionContent>
+        </AccordionItem>
+      </Accordion>
+
+      <section className="p-5 rounded-xl bg-card border border-border">
         <h2 className="font-semibold mb-3">계정 관리</h2>
         <Button
           variant="ghost"
