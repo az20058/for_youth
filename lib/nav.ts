@@ -15,6 +15,8 @@ export interface NavItem {
   icon: LucideIcon;
   /** 이 경로들 중 하나라도 매치되면 active 상태 */
   activePaths: string[];
+  /** global 헤더에서만 사용할 activePaths — 없으면 activePaths 사용 */
+  globalActivePaths?: string[];
   /** exact=true면 pathname === href 일 때만 active */
   exact?: boolean;
   /** 표시 위치 제한 — 없으면 전체 */
@@ -27,7 +29,9 @@ export const NAV_ITEMS: NavItem[] = [
     href: '/',
     label: '홈',
     icon: HomeIcon,
-    activePaths: ['/', '/programs'],
+    activePaths: ['/'],
+    globalActivePaths: ['/', '/programs'],
+    exact: true,
     placement: ['global', 'home-sidebar', 'home-tabs'],
   },
   {
@@ -41,7 +45,8 @@ export const NAV_ITEMS: NavItem[] = [
     href: '/applications',
     label: '지원 현황',
     icon: BriefcaseIcon,
-    activePaths: ['/applications', '/cover-letters'],
+    activePaths: ['/applications'],
+    globalActivePaths: ['/applications', '/cover-letters'],
     placement: ['global', 'app-sidebar', 'app-tabs'],
   },
   {
@@ -90,9 +95,10 @@ export function getNavItems(placement: NonNullable<NavItem['placement']>[number]
 }
 
 /** pathname이 NavItem의 activePaths에 매치되는지 확인 */
-export function isNavActive(item: NavItem, pathname: string): boolean {
-  if (item.exact) return pathname === item.href;
-  return item.activePaths.some(
+export function isNavActive(item: NavItem, pathname: string, placement?: string): boolean {
+  const paths = (placement === 'global' && item.globalActivePaths) ? item.globalActivePaths : item.activePaths;
+  if (item.exact && placement !== 'global') return pathname === item.href;
+  return paths.some(
     (p) => pathname === p || pathname.startsWith(p + '/'),
   );
 }

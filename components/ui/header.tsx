@@ -35,7 +35,7 @@ export function Header({ title = 'EMBER' }: HeaderProps) {
 
       <nav className="hidden md:flex items-center gap-1 flex-1">
         {navItems.map((item) => {
-          const active = isNavActive(item, pathname);
+          const active = isNavActive(item, pathname, 'global');
           const Icon = item.icon;
           return (
             <Link
