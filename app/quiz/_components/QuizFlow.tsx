@@ -131,7 +131,8 @@ export function QuizFlow() {
             </div>
           </div>
           <Button
-            className="w-full max-w-sm h-14 text-base rounded-2xl"
+            size="xl"
+            className="w-full max-w-sm"
             onClick={handleStart}
           >
             테스트 시작하기
@@ -176,21 +177,14 @@ export function QuizFlow() {
             <ChevronLeft className="size-5" />
           </Button>
 
-          {/* Progress dots */}
-          <div className="flex gap-1.5">
-            {QUIZ_QUESTIONS.map((_, i) => (
+          {/* Flame progress bar */}
+          <div className="flex-1 mx-4">
+            <div className="h-1.5 rounded-full bg-muted overflow-hidden">
               <div
-                key={i}
-                className={cn(
-                  "rounded-full transition-all",
-                  i === currentIndex
-                    ? "w-4 h-2 bg-primary"
-                    : i < currentIndex
-                      ? "w-2 h-2 bg-primary/50"
-                      : "w-2 h-2 bg-muted",
-                )}
+                className="h-full rounded-full bg-primary transition-all duration-300"
+                style={{ width: `${((currentIndex + 1) / totalSteps) * 100}%` }}
               />
-            ))}
+            </div>
           </div>
 
           <div className="size-9" />
@@ -306,7 +300,8 @@ export function QuizFlow() {
             </Button>
           )}
           <Button
-            className="w-full h-14 text-base rounded-2xl"
+            size="xl"
+            className="w-full"
             onClick={handleNext}
             disabled={!canProceed}
           >

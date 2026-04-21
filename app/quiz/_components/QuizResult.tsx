@@ -18,7 +18,9 @@ export function QuizResult({ recommendations }: QuizResultProps) {
         {/* Header */}
         <div className="flex flex-col items-center gap-3 mb-8 text-center">
           <FlameIcon className="size-20" glow />
-          <h1 className="text-2xl font-bold">맞춤 프로그램 추천 결과</h1>
+          <h1 className="text-2xl font-bold">
+            🔥 {recommendations.length}개의 불씨를 찾았어요
+          </h1>
           <p className="text-sm text-muted-foreground">
             AI가 분석한 나에게 딱 맞는 청년 지원 프로그램이에요.
           </p>
