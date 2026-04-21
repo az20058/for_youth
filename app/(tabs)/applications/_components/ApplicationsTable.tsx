@@ -4,7 +4,7 @@ import { useState, useRef, useEffect, useMemo } from 'react';
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
 import { format } from 'date-fns';
-import { ExternalLinkIcon, PlusIcon, CheckIcon, XIcon } from 'lucide-react';
+import { ExternalLinkIcon, PlusIcon, CheckIcon, XIcon, ChevronRightIcon } from 'lucide-react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import {
   useReactTable,
@@ -21,6 +21,14 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import {
+  Drawer,
+  DrawerContent,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerFooter,
+  DrawerClose,
+} from '@/components/ui/drawer';
 import { FlameLoading } from '@/components/ui/flame-loading';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -53,6 +61,20 @@ const STATUS_ORDER: Record<ApplicationStatus, number> = {
   '코테 탈락': 6,
   '면접 탈락': 7,
 };
+
+type FilterChip = '전체' | '진행중' | '합격' | '탈락';
+
+const ACTIVE_STATUSES: ApplicationStatus[] = ['지원 예정', '코테 기간', '면접 기간', '지원 완료'];
+const PASS_STATUSES: ApplicationStatus[] = ['최종 합격'];
+const FAIL_STATUSES: ApplicationStatus[] = ['서류 탈락', '코테 탈락', '면접 탈락'];
+
+function filterByChip(apps: Application[], chip: FilterChip): Application[] {
+  if (chip === '전체') return apps;
+  if (chip === '진행중') return apps.filter((a) => ACTIVE_STATUSES.includes(a.status));
+  if (chip === '합격') return apps.filter((a) => PASS_STATUSES.includes(a.status));
+  if (chip === '탈락') return apps.filter((a) => FAIL_STATUSES.includes(a.status));
+  return apps;
+}
 
 const columns: ColumnDef<Application, unknown>[] = [
   {
@@ -134,6 +156,8 @@ interface Props {
 export function ApplicationsTable({ initialData }: Props) {
   const router = useRouter();
   const queryClient = useQueryClient();
+  const [activeChip, setActiveChip] = useState<FilterChip>('전체');
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [isAddingRow, setIsAddingRow] = useState(false);
   const [newRow, setNewRow] = useState<NewRowState>(INITIAL_NEW_ROW);
   const [errors, setErrors] = useState<FormErrors>({});
@@ -152,6 +176,7 @@ export function ApplicationsTable({ initialData }: Props) {
     mutationFn: postApplication,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['applications'] });
+      setIsDrawerOpen(false);
       setIsAddingRow(false);
       setNewRow(INITIAL_NEW_ROW);
       setErrors({});
@@ -174,23 +199,24 @@ export function ApplicationsTable({ initialData }: Props) {
     [applications],
   );
 
+  const filtered = useMemo(() => filterByChip(sorted, activeChip), [sorted, activeChip]);
+
+  const chipCounts: Record<FilterChip, number> = useMemo(() => ({
+    전체: sorted.length,
+    진행중: filterByChip(sorted, '진행중').length,
+    합격: filterByChip(sorted, '합격').length,
+    탈락: filterByChip(sorted, '탈락').length,
+  }), [sorted]);
+
   const table = useReactTable({
-    data: sorted,
+    data: filtered,
     columns,
     getCoreRowModel: getCoreRowModel(),
   });
 
   useEffect(() => {
-    if (isAddingRow) {
-      firstInputRef.current?.focus();
-    }
+    if (isAddingRow) firstInputRef.current?.focus();
   }, [isAddingRow]);
-
-  function startAdding() {
-    setNewRow(INITIAL_NEW_ROW);
-    setErrors({});
-    setIsAddingRow(true);
-  }
 
   function handleCancel() {
     setIsAddingRow(false);
@@ -213,164 +239,310 @@ export function ApplicationsTable({ initialData }: Props) {
     if (e.key === 'Escape') handleCancel();
   }
 
+  const chips: FilterChip[] = ['전체', '진행중', '합격', '탈락'];
+
   return (
     <div>
-      <p className="mb-3 text-sm text-muted-foreground">
-        {isLoading ? '불러오는 중…' : `총 ${applications.length}개의 지원서`}
-      </p>
-      <div className="rounded-xl border border-border overflow-hidden">
-        <Table>
-          <TableHeader>
-            {table.getHeaderGroups().map((hg) => (
-              <TableRow key={hg.id} className="hover:bg-transparent">
-                {hg.headers.map((header) => {
-                  const meta = header.column.columnDef.meta as { className?: string } | undefined;
-                  return (
-                    <TableHead key={header.id} className={meta?.className}>
-                      {flexRender(header.column.columnDef.header, header.getContext())}
-                    </TableHead>
-                  );
-                })}
-              </TableRow>
-            ))}
-          </TableHeader>
-          <TableBody>
-            {isAddingRow && (
-              <TableRow className="hidden md:table-row bg-muted/20 hover:bg-muted/20">
-                <TableCell>
-                  <input
-                    ref={firstInputRef}
-                    className={cn(cellInputClass, errors.companyName && 'ring-destructive')}
-                    value={newRow.companyName}
-                    onChange={(e) => setNewRow((p) => ({ ...p, companyName: e.target.value }))}
-                    onKeyDown={handleKeyDown}
-                    placeholder="회사명"
-                  />
-                </TableCell>
-                <TableCell>
-                  <input
-                    className={cn(cellInputClass, errors.careerLevel && 'ring-destructive')}
-                    value={newRow.careerLevel}
-                    onChange={(e) => setNewRow((p) => ({ ...p, careerLevel: e.target.value }))}
-                    onKeyDown={handleKeyDown}
-                    placeholder="신입 / 경력"
-                  />
-                </TableCell>
-                <TableCell>
-                  <input
-                    type="date"
-                    className={cn(cellInputClass, errors.deadline && 'ring-destructive')}
-                    value={newRow.deadline}
-                    min={format(new Date(), 'yyyy-MM-dd')}
-                    onChange={(e) => setNewRow((p) => ({ ...p, deadline: e.target.value }))}
-                    onKeyDown={handleKeyDown}
-                  />
-                </TableCell>
-                <TableCell className="hidden sm:table-cell">
-                  <Select
-                    value={newRow.companySize}
-                    onValueChange={(v) => setNewRow((p) => ({ ...p, companySize: v }))}
-                  >
-                    <SelectTrigger
-                      className={cn('h-7 text-sm', errors.companySize && 'ring-destructive ring-1')}
-                      aria-label="기업 규모 선택"
-                    >
-                      <SelectValue placeholder="규모" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {COMPANY_SIZES.map((s) => (
-                        <SelectItem key={s} value={s}>{s}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </TableCell>
-                <TableCell>
-                  <div className="flex items-center justify-end gap-1">
+      {/* 상태 칩 필터 */}
+      <div className="flex gap-2 mb-4 flex-wrap">
+        {chips.map((chip) => (
+          <button
+            key={chip}
+            type="button"
+            onClick={() => setActiveChip(chip)}
+            className={cn(
+              'inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-sm font-medium transition-colors',
+              activeChip === chip
+                ? 'bg-primary text-primary-foreground'
+                : 'bg-muted text-muted-foreground hover:bg-muted/80',
+            )}
+          >
+            {chip}
+            <span className={cn(
+              'rounded-full px-1.5 py-0.5 text-xs font-semibold',
+              activeChip === chip ? 'bg-white/20' : 'bg-background',
+            )}>
+              {chipCounts[chip]}
+            </span>
+          </button>
+        ))}
+      </div>
+
+      {/* 모바일 카드 뷰 */}
+      <div className="flex flex-col gap-2 md:hidden">
+        {isLoading ? (
+          <FlameLoading />
+        ) : isError ? (
+          <p className="text-center text-muted-foreground py-12 text-sm">데이터를 불러오지 못했습니다.</p>
+        ) : filtered.length === 0 ? (
+          <p className="text-center text-muted-foreground py-12 text-sm">지원서가 없습니다.</p>
+        ) : (
+          filtered.map((app) => {
+            const dday = app.deadline ? formatDDay(calculateDDay(app.deadline)) : null;
+            return (
+              <div
+                key={app.id}
+                className="flex items-center gap-3 p-4 rounded-xl bg-card border border-border cursor-pointer hover:bg-accent transition-colors"
+                onClick={() => router.push(`/applications/${app.id}`)}
+              >
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className="font-medium truncate">{app.companyName}</span>
+                    {app.url && (
+                      <a
+                        href={app.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        onClick={(e) => e.stopPropagation()}
+                        className="text-muted-foreground hover:text-foreground shrink-0"
+                        aria-label="채용 공고 열기"
+                      >
+                        <ExternalLinkIcon className="size-3.5" />
+                      </a>
+                    )}
+                  </div>
+                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                    <span>{app.careerLevel}</span>
+                    {dday && <span>·</span>}
+                    {dday && <span className="text-primary font-medium">{dday}</span>}
+                  </div>
+                </div>
+                <Badge className={cn('whitespace-nowrap text-xs shrink-0', statusBadgeClass(app.status))}>
+                  {app.status}
+                </Badge>
+                <ChevronRightIcon className="size-4 text-muted-foreground shrink-0" />
+              </div>
+            );
+          })
+        )}
+        <button
+          type="button"
+          onClick={() => setIsDrawerOpen(true)}
+          className="flex items-center justify-center gap-1.5 w-full py-3 rounded-xl border border-dashed border-border text-muted-foreground text-sm hover:bg-muted/30 transition-colors"
+        >
+          <PlusIcon className="size-4" />
+          새 지원서 추가
+        </button>
+      </div>
+
+      {/* 데스크탑 테이블 뷰 */}
+      <div className="hidden md:block">
+        <p className="mb-3 text-sm text-muted-foreground">
+          {isLoading ? '불러오는 중…' : `총 ${filtered.length}개의 지원서`}
+        </p>
+        <div className="rounded-xl border border-border overflow-hidden">
+          <Table>
+            <TableHeader>
+              {table.getHeaderGroups().map((hg) => (
+                <TableRow key={hg.id} className="hover:bg-transparent">
+                  {hg.headers.map((header) => {
+                    const meta = header.column.columnDef.meta as { className?: string } | undefined;
+                    return (
+                      <TableHead key={header.id} className={meta?.className}>
+                        {flexRender(header.column.columnDef.header, header.getContext())}
+                      </TableHead>
+                    );
+                  })}
+                </TableRow>
+              ))}
+            </TableHeader>
+            <TableBody>
+              {isAddingRow && (
+                <TableRow className="bg-muted/20 hover:bg-muted/20">
+                  <TableCell>
+                    <input
+                      ref={firstInputRef}
+                      className={cn(cellInputClass, errors.companyName && 'ring-destructive')}
+                      value={newRow.companyName}
+                      onChange={(e) => setNewRow((p) => ({ ...p, companyName: e.target.value }))}
+                      onKeyDown={handleKeyDown}
+                      placeholder="회사명"
+                    />
+                  </TableCell>
+                  <TableCell>
+                    <input
+                      className={cn(cellInputClass, errors.careerLevel && 'ring-destructive')}
+                      value={newRow.careerLevel}
+                      onChange={(e) => setNewRow((p) => ({ ...p, careerLevel: e.target.value }))}
+                      onKeyDown={handleKeyDown}
+                      placeholder="신입 / 경력"
+                    />
+                  </TableCell>
+                  <TableCell>
+                    <input
+                      type="date"
+                      className={cn(cellInputClass, errors.deadline && 'ring-destructive')}
+                      value={newRow.deadline}
+                      min={format(new Date(), 'yyyy-MM-dd')}
+                      onChange={(e) => setNewRow((p) => ({ ...p, deadline: e.target.value }))}
+                      onKeyDown={handleKeyDown}
+                    />
+                  </TableCell>
+                  <TableCell className="hidden sm:table-cell">
                     <Select
-                      value={newRow.status}
-                      onValueChange={(v) => setNewRow((p) => ({ ...p, status: v }))}
+                      value={newRow.companySize}
+                      onValueChange={(v) => setNewRow((p) => ({ ...p, companySize: v }))}
                     >
-                      <SelectTrigger className="h-7 text-sm w-auto min-w-[5.5rem]" aria-label="지원 상태 선택">
-                        <SelectValue />
+                      <SelectTrigger
+                        className={cn('h-7 text-sm', errors.companySize && 'ring-destructive ring-1')}
+                        aria-label="기업 규모 선택"
+                      >
+                        <SelectValue placeholder="규모" />
                       </SelectTrigger>
                       <SelectContent>
-                        {APPLICATION_STATUSES.map((s) => (
+                        {COMPANY_SIZES.map((s) => (
                           <SelectItem key={s} value={s}>{s}</SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
-                    <Button
-                      size="icon"
-                      variant="ghost"
-                      className="size-7 shrink-0"
-                      onClick={handleSave}
-                      disabled={mutation.isPending}
-                      aria-label="저장"
-                    >
-                      <CheckIcon className="size-3.5 text-primary" />
-                    </Button>
-                    <Button
-                      size="icon"
-                      variant="ghost"
-                      className="size-7 shrink-0"
-                      onClick={handleCancel}
-                      aria-label="취소"
-                    >
-                      <XIcon className="size-3.5 text-muted-foreground" />
-                    </Button>
-                  </div>
-                </TableCell>
-              </TableRow>
-            )}
-            {isLoading ? (
-              <TableRow>
-                <TableCell colSpan={columns.length}>
-                  <FlameLoading />
-                </TableCell>
-              </TableRow>
-            ) : isError ? (
-              <TableRow>
-                <TableCell colSpan={columns.length} className="text-center text-muted-foreground py-12">
-                  데이터를 불러오지 못했습니다.
-                </TableCell>
-              </TableRow>
-            ) : table.getRowModel().rows.length === 0 && !isAddingRow ? (
-              <TableRow>
-                <TableCell colSpan={columns.length} className="text-center text-muted-foreground py-12">
-                  지원서가 없습니다.
-                </TableCell>
-              </TableRow>
-            ) : (
-              table.getRowModel().rows.map((row) => (
-                <TableRow
-                  key={row.id}
-                  className="cursor-pointer"
-                  onClick={() => router.push(`/applications/${row.original.id}`)}
-                >
-                  {row.getVisibleCells().map((cell) => {
-                    const meta = cell.column.columnDef.meta as { className?: string } | undefined;
-                    return (
-                      <TableCell key={cell.id} className={meta?.className}>
-                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                      </TableCell>
-                    );
-                  })}
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex items-center justify-end gap-1">
+                      <Select
+                        value={newRow.status}
+                        onValueChange={(v) => setNewRow((p) => ({ ...p, status: v }))}
+                      >
+                        <SelectTrigger className="h-7 text-sm w-auto min-w-[5.5rem]" aria-label="지원 상태 선택">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {APPLICATION_STATUSES.map((s) => (
+                            <SelectItem key={s} value={s}>{s}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <Button size="icon" variant="ghost" className="size-7 shrink-0" onClick={handleSave} disabled={mutation.isPending} aria-label="저장">
+                        <CheckIcon className="size-3.5 text-primary" />
+                      </Button>
+                      <Button size="icon" variant="ghost" className="size-7 shrink-0" onClick={handleCancel} aria-label="취소">
+                        <XIcon className="size-3.5 text-muted-foreground" />
+                      </Button>
+                    </div>
+                  </TableCell>
                 </TableRow>
-              ))
-            )}
-          </TableBody>
-        </Table>
-        {!isAddingRow && (
-          <button
-            type="button"
-            onClick={startAdding}
-            className="hidden md:flex w-full py-2 px-4 items-center gap-1 text-muted-foreground text-sm hover:bg-muted/30 transition-colors border-t border-foreground/5"
-          >
-            <PlusIcon className="size-3.5" />
-            <span>새 행</span>
-          </button>
-        )}
+              )}
+              {isLoading ? (
+                <TableRow>
+                  <TableCell colSpan={columns.length}><FlameLoading /></TableCell>
+                </TableRow>
+              ) : isError ? (
+                <TableRow>
+                  <TableCell colSpan={columns.length} className="text-center text-muted-foreground py-12">
+                    데이터를 불러오지 못했습니다.
+                  </TableCell>
+                </TableRow>
+              ) : table.getRowModel().rows.length === 0 && !isAddingRow ? (
+                <TableRow>
+                  <TableCell colSpan={columns.length} className="text-center text-muted-foreground py-12">
+                    지원서가 없습니다.
+                  </TableCell>
+                </TableRow>
+              ) : (
+                table.getRowModel().rows.map((row) => (
+                  <TableRow key={row.id} className="cursor-pointer" onClick={() => router.push(`/applications/${row.original.id}`)}>
+                    {row.getVisibleCells().map((cell) => {
+                      const meta = cell.column.columnDef.meta as { className?: string } | undefined;
+                      return (
+                        <TableCell key={cell.id} className={meta?.className}>
+                          {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                        </TableCell>
+                      );
+                    })}
+                  </TableRow>
+                ))
+              )}
+            </TableBody>
+          </Table>
+          {!isAddingRow && (
+            <button
+              type="button"
+              onClick={() => setIsAddingRow(true)}
+              className="flex w-full py-2 px-4 items-center gap-1 text-muted-foreground text-sm hover:bg-muted/30 transition-colors border-t border-foreground/5"
+            >
+              <PlusIcon className="size-3.5" />
+              <span>새 행</span>
+            </button>
+          )}
+        </div>
       </div>
+
+      {/* 모바일 새 지원서 Drawer */}
+      <Drawer open={isDrawerOpen} onOpenChange={setIsDrawerOpen}>
+        <DrawerContent>
+          <DrawerHeader>
+            <DrawerTitle>새 지원서 추가</DrawerTitle>
+          </DrawerHeader>
+          <div className="px-4 pb-2 flex flex-col gap-3">
+            <div>
+              <label className="text-sm text-muted-foreground mb-1 block">회사명 *</label>
+              <input
+                className={cn(
+                  'w-full rounded-lg border border-border bg-background px-3 py-2 text-sm outline-none focus:ring-1 focus:ring-primary',
+                  errors.companyName && 'border-destructive',
+                )}
+                value={newRow.companyName}
+                onChange={(e) => setNewRow((p) => ({ ...p, companyName: e.target.value }))}
+                placeholder="회사명을 입력하세요"
+              />
+            </div>
+            <div>
+              <label className="text-sm text-muted-foreground mb-1 block">경력</label>
+              <input
+                className={cn(
+                  'w-full rounded-lg border border-border bg-background px-3 py-2 text-sm outline-none focus:ring-1 focus:ring-primary',
+                  errors.careerLevel && 'border-destructive',
+                )}
+                value={newRow.careerLevel}
+                onChange={(e) => setNewRow((p) => ({ ...p, careerLevel: e.target.value }))}
+                placeholder="신입 / 경력"
+              />
+            </div>
+            <div>
+              <label className="text-sm text-muted-foreground mb-1 block">마감일</label>
+              <input
+                type="date"
+                className={cn(
+                  'w-full rounded-lg border border-border bg-background px-3 py-2 text-sm outline-none focus:ring-1 focus:ring-primary',
+                  errors.deadline && 'border-destructive',
+                )}
+                value={newRow.deadline}
+                min={format(new Date(), 'yyyy-MM-dd')}
+                onChange={(e) => setNewRow((p) => ({ ...p, deadline: e.target.value }))}
+              />
+            </div>
+            <div>
+              <label className="text-sm text-muted-foreground mb-1 block">기업 규모</label>
+              <Select value={newRow.companySize} onValueChange={(v) => setNewRow((p) => ({ ...p, companySize: v }))}>
+                <SelectTrigger className={cn(errors.companySize && 'border-destructive')} aria-label="기업 규모 선택">
+                  <SelectValue placeholder="선택하세요" />
+                </SelectTrigger>
+                <SelectContent>
+                  {COMPANY_SIZES.map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <label className="text-sm text-muted-foreground mb-1 block">지원 상태</label>
+              <Select value={newRow.status} onValueChange={(v) => setNewRow((p) => ({ ...p, status: v }))}>
+                <SelectTrigger aria-label="지원 상태 선택">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {APPLICATION_STATUSES.map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+          <DrawerFooter>
+            <Button onClick={handleSave} disabled={mutation.isPending} className="w-full">
+              저장하기
+            </Button>
+            <DrawerClose asChild>
+              <Button variant="outline" className="w-full">취소</Button>
+            </DrawerClose>
+          </DrawerFooter>
+        </DrawerContent>
+      </Drawer>
     </div>
   );
 }

@@ -44,7 +44,7 @@ export default async function ApplicationsPage() {
         <h1 className="text-2xl font-bold tracking-tight">입사 지원 현황</h1>
         <Link
           href="/applications/new"
-          className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 h-9 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+          className="hidden md:inline-flex items-center gap-2 rounded-lg bg-primary px-4 h-9 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
         >
           <PlusIcon className="size-4" />새 지원서 추가
         </Link>
