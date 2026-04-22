@@ -21,8 +21,8 @@ export const viewport: Viewport = {
 export const metadata: Metadata = {
   metadataBase: new URL("https://for-youth.site"),
   title: {
-    template: "%s | For Youth",
-    default: "For Youth — 청년 취업·이직 준비 플랫폼",
+    template: "%s | Ember",
+    default: "Ember — 청년 취업·이직 준비 플랫폼",
   },
   description:
     "이직과 취업을 준비하는 청년을 위한 정부 지원 프로그램 탐색과 지원 현황 관리 서비스",
@@ -30,7 +30,7 @@ export const metadata: Metadata = {
     icon: "/icons/flame.svg",
   },
   openGraph: {
-    siteName: "For Youth",
+    siteName: "Ember",
     locale: "ko_KR",
     type: "website",
     images: [
@@ -38,7 +38,7 @@ export const metadata: Metadata = {
         url: "/opengraph-image",
         width: 1200,
         height: 630,
-        alt: "For Youth — 청년 취업·이직 준비 플랫폼",
+        alt: "Ember — 청년 취업·이직 준비 플랫폼",
       },
     ],
   },
@@ -56,7 +56,7 @@ const jsonLd = {
   "@graph": [
     {
       "@type": "WebSite",
-      name: "For Youth",
+      name: "Ember",
       url: "https://for-youth.site",
       description:
         "이직과 취업을 준비하는 청년을 위한 정부 지원 프로그램 탐색과 지원 현황 관리 서비스",
@@ -64,7 +64,7 @@ const jsonLd = {
     },
     {
       "@type": "Organization",
-      name: "For Youth",
+      name: "Ember",
       url: "https://for-youth.site",
     },
   ],

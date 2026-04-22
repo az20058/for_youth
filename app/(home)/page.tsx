@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 export default function Home() {
   return (
     <>
-      <h1 className="sr-only">For Youth — 청년 취업·이직 준비 플랫폼</h1>
+      <h1 className="sr-only">Ember — 청년 취업·이직 준비 플랫폼</h1>
       <HomeContent />
     </>
   );

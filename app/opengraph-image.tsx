@@ -1,7 +1,7 @@
 import { ImageResponse } from "next/og";
 
 export const runtime = "edge";
-export const alt = "For Youth — 청년 취업·이직 준비 플랫폼";
+export const alt = "Ember — 청년 취업·이직 준비 플랫폼";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -36,7 +36,7 @@ export default function OgImage() {
               lineHeight: 1,
             }}
           >
-            For Youth
+            Ember
           </div>
           <div
             style={{
