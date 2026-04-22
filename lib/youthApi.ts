@@ -28,6 +28,14 @@ export const SIDO_MAP: Record<string, string> = {
   '46': '전남', '47': '경북', '48': '경남', '50': '제주',
 };
 
+export function normalizeUrl(url: string): string {
+  const trimmed = url.trim();
+  if (!trimmed) return '';
+  if (trimmed.startsWith('http://') || trimmed.startsWith('https://')) return trimmed;
+  if (trimmed.startsWith('www.')) return `https://${trimmed}`;
+  return '';
+}
+
 export function zipCdToRegions(zipCd: string): string {
   const codes = zipCd.split(',').map((c) => c.trim()).filter((c) => /^\d{5}$/.test(c));
   const regions = [...new Set(codes.map((c) => SIDO_MAP[c.slice(0, 2)] ?? '').filter(Boolean))];
@@ -51,7 +59,7 @@ function mapApiPolicy(p: YouthPolicy): Recommendation {
     description: p.plcyExplnCn || p.plcySprtCn || '',
     matchReason: '',
     supportContent: p.plcySprtCn || '',
-    applicationUrl: p.aplyUrlAddr || p.refUrlAddr1 || '',
+    applicationUrl: normalizeUrl(p.aplyUrlAddr || p.refUrlAddr1 || ''),
     viewCount: p.inqCnt ? Number(p.inqCnt) : 0,
     region: p.zipCd ? zipCdToRegions(p.zipCd) : '',
     zipCodes: p.zipCd || '',

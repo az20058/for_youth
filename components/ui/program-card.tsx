@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
+import { normalizeUrl } from '@/lib/youthApi';
 import { ExternalLink, Lightbulb } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -29,6 +30,7 @@ export function ProgramCard({ program }: ProgramCardProps) {
     if (el) setIsClamped(el.scrollHeight > el.clientHeight);
   }, []);
 
+  const safeUrl = normalizeUrl(program.applicationUrl ?? '');
   const hasMatchReason = !!program.matchReason;
   const text = hasMatchReason ? program.matchReason : program.description;
 
@@ -51,9 +53,9 @@ export function ProgramCard({ program }: ProgramCardProps) {
                 </Badge>
               </div>
             </div>
-            {program.applicationUrl && (
+            {safeUrl && (
               <a
-                href={program.applicationUrl}
+                href={safeUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={(e) => e.stopPropagation()}
