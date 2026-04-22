@@ -6,7 +6,7 @@ import { ProgramsList } from "./_components/ProgramsList";
 const getCachedPolicies = unstable_cache(
   fetchAllYouthPolicies,
   ["youth-policies"],
-  { revalidate: 3600, tags: ["youth-policies"] },
+  { tags: ["youth-policies"] },
 );
 
 export const metadata: Metadata = {
