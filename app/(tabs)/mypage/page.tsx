@@ -14,22 +14,22 @@ import { MypageSkeleton } from './_components/MypageSkeleton';
 import { fetchProfile, updateProfile } from '@/lib/profileApi';
 import type { UserProfile } from '@/lib/types';
 import { ProfileHeader } from './_components/ProfileHeader';
-import { DesiredConditions } from './_components/DesiredConditions';
 import { EducationCareer } from './_components/EducationCareer';
 import { TechStacks } from './_components/TechStacks';
 import { CertPortfolio } from './_components/CertPortfolio';
+import { ResumeFile } from './_components/ResumeFile';
 
 function getDefaultOpen(profile: UserProfile): string[] {
   const open: string[] = [];
-  const hasDesired = profile.desiredJob || profile.desiredIndustry || profile.desiredRegion;
   const hasEducation = profile.school || profile.major || profile.careerLevel;
   const hasTech = profile.techStacks.length > 0;
   const hasCert = profile.certifications.length > 0 || profile.portfolioUrl;
-  if (!hasDesired) open.push('desired');
+  const hasResume = !!profile.resumeUrl;
   if (!hasEducation) open.push('education');
   if (!hasTech) open.push('tech');
   if (!hasCert) open.push('cert');
-  if (open.length === 0) open.push('desired');
+  if (!hasResume) open.push('resume');
+  if (open.length === 0) open.push('education');
   return open;
 }
 
@@ -70,10 +70,10 @@ export default function MyPage() {
       <ProfileHeader profile={profile} onSave={handleSave} />
 
       <Accordion type="multiple" defaultValue={defaultOpen} className="flex flex-col gap-2">
-        <AccordionItem value="desired" className="rounded-xl bg-card border border-border px-5 border-b-0">
-          <AccordionTrigger className="hover:no-underline font-semibold">희망 조건</AccordionTrigger>
+        <AccordionItem value="resume" className="rounded-xl bg-card border border-border px-5 border-b-0">
+          <AccordionTrigger className="hover:no-underline font-semibold">이력서</AccordionTrigger>
           <AccordionContent>
-            <DesiredConditions profile={profile} onSave={handleSave} />
+            <ResumeFile profile={profile} onSave={handleSave} />
           </AccordionContent>
         </AccordionItem>
         <AccordionItem value="education" className="rounded-xl bg-card border border-border px-5 border-b-0">

@@ -11,9 +11,8 @@ export async function GET() {
     where: { id: userId },
     select: {
       id: true, name: true, email: true, image: true,
-      bio: true, desiredJob: true, desiredIndustry: true, desiredRegion: true,
-      school: true, major: true, careerLevel: true, portfolioUrl: true,
-      certifications: true, techStacks: true,
+      bio: true, school: true, major: true, careerLevel: true,
+      portfolioUrl: true, resumeUrl: true, certifications: true, techStacks: true,
     },
   });
 
@@ -29,8 +28,7 @@ export async function GET() {
 }
 
 const ALLOWED_FIELDS = [
-  'bio', 'desiredJob', 'desiredIndustry', 'desiredRegion',
-  'school', 'major', 'careerLevel', 'portfolioUrl',
+  'bio', 'school', 'major', 'careerLevel', 'portfolioUrl', 'resumeUrl',
   'certifications', 'techStacks',
 ] as const;
 
@@ -58,9 +56,8 @@ export async function PATCH(request: Request) {
     data,
     select: {
       id: true, name: true, email: true, image: true,
-      bio: true, desiredJob: true, desiredIndustry: true, desiredRegion: true,
-      school: true, major: true, careerLevel: true, portfolioUrl: true,
-      certifications: true, techStacks: true,
+      bio: true, school: true, major: true, careerLevel: true,
+      portfolioUrl: true, resumeUrl: true, certifications: true, techStacks: true,
     },
   });
 

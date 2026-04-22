@@ -54,13 +54,11 @@ export interface UserProfile {
   email: string | null;
   image: string | null;
   bio: string | null;
-  desiredJob: string | null;
-  desiredIndustry: string | null;
-  desiredRegion: string | null;
   school: string | null;
   major: string | null;
   careerLevel: string | null;
   portfolioUrl: string | null;
+  resumeUrl: string | null;
   certifications: string[];
   techStacks: string[];
 }

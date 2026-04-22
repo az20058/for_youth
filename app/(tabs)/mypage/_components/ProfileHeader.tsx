@@ -19,10 +19,11 @@ interface ProfileHeaderProps {
 }
 
 function calcReadiness(profile: UserProfile): number {
-  const desired = [profile.desiredJob, profile.desiredIndustry, profile.desiredRegion].filter(Boolean).length / 3;
   const education = [profile.school, profile.major, profile.careerLevel].filter(Boolean).length / 3;
+  const tech = profile.techStacks.length > 0 ? 1 : 0;
   const cert = (profile.certifications.length > 0 || !!profile.portfolioUrl) ? 1 : 0;
-  return Math.round(((desired + education + cert) / 3) * 100);
+  const resume = profile.resumeUrl ? 1 : 0;
+  return Math.round(((education + tech + cert + resume) / 4) * 100);
 }
 
 export function ProfileHeader({ profile, onSave }: ProfileHeaderProps) {

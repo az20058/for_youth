@@ -35,13 +35,11 @@ model User {
   emailVerified DateTime?
   image         String?
   bio             String?
-  desiredJob      String?
-  desiredIndustry String?
-  desiredRegion   String?
   school          String?
   major           String?
   careerLevel     String?
   portfolioUrl    String?
+  resumeUrl       String?
   certifications  Json?
   techStacks      Json?
   accounts       Account[]

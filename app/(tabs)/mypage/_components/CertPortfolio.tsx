@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { ExternalLink } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { TagInput } from './TagInput';
+import { FileOrLinkInput } from './FileOrLinkInput';
 import type { UserProfile } from '@/lib/types';
 
 interface CertPortfolioProps {
@@ -14,16 +15,13 @@ interface CertPortfolioProps {
 export function CertPortfolio({ profile, onSave }: CertPortfolioProps) {
   const [editing, setEditing] = useState(false);
   const [certs, setCerts] = useState<string[]>(profile.certifications);
-  const [portfolioUrl, setPortfolioUrl] = useState(profile.portfolioUrl ?? '');
+  const [portfolioUrl, setPortfolioUrl] = useState<string | null>(profile.portfolioUrl);
   const [saving, setSaving] = useState(false);
 
   async function handleSave() {
     setSaving(true);
     try {
-      await onSave({
-        certifications: certs,
-        portfolioUrl: portfolioUrl.trim() || null,
-      });
+      await onSave({ certifications: certs, portfolioUrl });
       setEditing(false);
     } finally {
       setSaving(false);
@@ -32,7 +30,7 @@ export function CertPortfolio({ profile, onSave }: CertPortfolioProps) {
 
   function handleCancel() {
     setCerts(profile.certifications);
-    setPortfolioUrl(profile.portfolioUrl ?? '');
+    setPortfolioUrl(profile.portfolioUrl);
     setEditing(false);
   }
 
@@ -44,14 +42,8 @@ export function CertPortfolio({ profile, onSave }: CertPortfolioProps) {
           <TagInput tags={certs} onChange={setCerts} placeholder="자격증 입력 후 Enter" />
         </div>
         <div>
-          <label className="text-sm text-muted-foreground mb-1 block">포트폴리오 URL</label>
-          <input
-            type="url"
-            value={portfolioUrl}
-            onChange={(e) => setPortfolioUrl(e.target.value)}
-            placeholder="https://github.com/username"
-            className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm outline-none focus:ring-1 focus:ring-ring"
-          />
+          <label className="text-sm text-muted-foreground mb-2 block">포트폴리오 (PDF 또는 링크)</label>
+          <FileOrLinkInput value={portfolioUrl} onChange={setPortfolioUrl} />
         </div>
         <div className="flex gap-2 pb-2">
           <Button size="sm" onClick={handleSave} disabled={saving}>저장</Button>
@@ -84,13 +76,13 @@ export function CertPortfolio({ profile, onSave }: CertPortfolioProps) {
             href={profile.portfolioUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-blue-400 hover:underline inline-flex items-center gap-1"
+            className="text-blue-400 hover:underline inline-flex items-center gap-1 truncate max-w-full"
           >
-            {profile.portfolioUrl}
-            <ExternalLink className="size-3" />
+            <span className="truncate">{profile.portfolioUrl}</span>
+            <ExternalLink className="size-3 shrink-0" />
           </a>
         ) : (
-          <p className="text-muted-foreground">포트폴리오 링크를 추가해보세요</p>
+          <p className="text-muted-foreground">포트폴리오를 등록해보세요</p>
         )}
       </div>
       <Button variant="outline" size="sm" onClick={() => setEditing(true)} className="mb-2">
