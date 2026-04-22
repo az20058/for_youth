@@ -26,6 +26,33 @@ export function ProgramsList({ initialPolicies, initialCategories }: Props) {
   const [activeCategory, setActiveCategory] = useState('전체');
   const [activeRegion, setActiveRegion] = useState('전체');
 
+  const availableRegions = useMemo(() => {
+    const categoryFiltered =
+      activeCategory === '전체'
+        ? initialPolicies
+        : initialPolicies.filter((p) => p.mainCategory === activeCategory);
+
+    const hasNationwide = categoryFiltered.some((p) => {
+      const codes = (p.zipCodes || '').split(',').map((c) => c.trim()).filter((c) => /^\d{5}$/.test(c));
+      return codes.length === 0;
+    });
+    if (hasNationwide) return SIDO_REGIONS;
+
+    const sidoCodes = new Set<string>();
+    categoryFiltered.forEach((p) => {
+      (p.zipCodes || '').split(',').forEach((raw) => {
+        const c = raw.trim();
+        if (/^\d{5}$/.test(c)) sidoCodes.add(c.slice(0, 2));
+      });
+    });
+    return SIDO_REGIONS.filter((r) => sidoCodes.has(r.code));
+  }, [initialPolicies, activeCategory]);
+
+  const effectiveRegion =
+    activeRegion === '전체' || availableRegions.some((r) => r.code === activeRegion)
+      ? activeRegion
+      : '전체';
+
   const filtered = useMemo(() => {
     const result = initialPolicies.filter((p) => {
       const categoryMatch = activeCategory === '전체' || p.mainCategory === activeCategory;
@@ -34,13 +61,13 @@ export function ProgramsList({ initialPolicies, initialCategories }: Props) {
         .map((c) => c.trim())
         .filter((c) => /^\d{5}$/.test(c));
       const regionMatch =
-        activeRegion === '전체' ||
+        effectiveRegion === '전체' ||
         validCodes.length === 0 ||
-        validCodes.some((c) => c.startsWith(activeRegion));
+        validCodes.some((c) => c.startsWith(effectiveRegion));
       return categoryMatch && regionMatch;
     });
     return result.sort((a, b) => (b.viewCount ?? 0) - (a.viewCount ?? 0));
-  }, [initialPolicies, activeCategory, activeRegion]);
+  }, [initialPolicies, activeCategory, effectiveRegion]);
 
   const total = filtered.length;
   const totalPages = Math.ceil(total / LIMIT);
@@ -78,13 +105,13 @@ export function ProgramsList({ initialPolicies, initialCategories }: Props) {
         </div>
 
         <div className="flex justify-end">
-          <Select value={activeRegion} onValueChange={handleRegionChange}>
+          <Select value={effectiveRegion} onValueChange={handleRegionChange}>
             <SelectTrigger className="w-28 h-8 text-sm">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="전체">전체 지역</SelectItem>
-              {SIDO_REGIONS.map((r) => (
+              {availableRegions.map((r) => (
                 <SelectItem key={r.code} value={r.code}>{r.name}</SelectItem>
               ))}
             </SelectContent>
