@@ -1,6 +1,13 @@
 import type { Metadata } from "next";
+import { unstable_cache } from "next/cache";
 import { fetchAllYouthPolicies } from "@/lib/youthApi";
 import { ProgramsList } from "./_components/ProgramsList";
+
+const getCachedPolicies = unstable_cache(
+  fetchAllYouthPolicies,
+  ["youth-policies"],
+  { revalidate: 3600, tags: ["youth-policies"] },
+);
 
 export const metadata: Metadata = {
   title: "정책 둘러보기",
@@ -12,7 +19,7 @@ export const metadata: Metadata = {
 };
 
 export default async function ProgramsPage() {
-  const policies = await fetchAllYouthPolicies();
+  const policies = await getCachedPolicies();
   const categories = [
     '전체',
     ...Array.from(new Set(policies.map((p) => p.mainCategory ?? '기타'))),

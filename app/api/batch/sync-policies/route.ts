@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { revalidateTag } from 'next/cache';
 import { prisma } from '@/lib/db';
 import { fetchFromYouthApi } from '@/lib/youthApi';
 
@@ -65,6 +66,7 @@ export async function GET(request: NextRequest) {
       ),
     );
 
+    revalidateTag('youth-policies', 'max');
     return NextResponse.json({ message: 'Sync complete', synced: policies.length });
   } catch (err) {
     console.error('[sync-policies]', err);
