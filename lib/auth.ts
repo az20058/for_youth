@@ -16,7 +16,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       clientSecret: process.env.AUTH_KAKAO_SECRET ?? '',
     }),
   ],
-  debug: true,
+  debug: process.env.NODE_ENV === 'development',
   session: { strategy: 'jwt' },
   pages: {
     signIn: '/login',
