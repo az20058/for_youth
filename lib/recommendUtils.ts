@@ -49,7 +49,8 @@ function generateMatchReason(program: Recommendation, answers: QuizAnswers): str
   const region = answers.region as string | undefined;
   const sigungu = answers.sigungu as string | undefined;
   const validRegionCodes = (program.zipCodes || '').split(',').map((c) => c.trim()).filter((c) => /^\d{5}$/.test(c));
-  if (sigungu && `${program.name} ${program.agency}`.toLowerCase().includes(sigungu.toLowerCase())) {
+  const sigunguKeyword = sigungu ? sigungu.replace(/[시군구]$/, '').toLowerCase() : '';
+  if (sigunguKeyword && `${program.name} ${program.agency}`.toLowerCase().includes(sigunguKeyword)) {
     reasons.push(`${sigungu} 지역 특화 지원입니다.`);
   } else if (region && validRegionCodes.some((c) => c.startsWith(region))) {
     const regionName = SIDO_CODE_TO_NAME[region] ?? region;
@@ -111,10 +112,11 @@ export function scoreAndRankPrograms(
       }
     }
 
-    // 시군구 매칭 (name·agency에 시군구명 포함 여부)
+    // 시군구 매칭 (name·agency에 시군구명 포함 여부, 시/군/구 접미사 제거)
     if (userSigungu) {
+      const keyword = userSigungu.replace(/[시군구]$/, '').toLowerCase();
       const nameAgency = `${p.name} ${p.agency}`.toLowerCase();
-      if (nameAgency.includes(userSigungu.toLowerCase())) score += 2;
+      if (keyword && nameAgency.includes(keyword)) score += 2;
     }
 
     // 취업 상태 매칭
