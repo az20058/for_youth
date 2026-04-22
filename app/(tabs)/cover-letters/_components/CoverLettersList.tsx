@@ -99,9 +99,9 @@ export function CoverLettersList({ initialData }: Props) {
             <AccordionItem
               key={cl.coverLetterId}
               value={cl.coverLetterId}
-              className="border rounded-xl px-1 overflow-hidden"
+              className="border rounded-xl px-1"
             >
-              <AccordionTrigger className="px-3 hover:no-underline gap-3">
+              <AccordionTrigger className="px-3 hover:no-underline gap-3 min-w-0">
                 <div className="flex flex-1 items-center gap-2 min-w-0">
                   {cl.type && (
                     <span className="text-xs text-muted-foreground bg-muted px-2 py-0.5 rounded-full shrink-0">
