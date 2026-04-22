@@ -47,8 +47,11 @@ function generateMatchReason(program: Recommendation, answers: QuizAnswers): str
   }
 
   const region = answers.region as string | undefined;
+  const sigungu = answers.sigungu as string | undefined;
   const validRegionCodes = (program.zipCodes || '').split(',').map((c) => c.trim()).filter((c) => /^\d{5}$/.test(c));
-  if (region && validRegionCodes.some((c) => c.startsWith(region))) {
+  if (sigungu && `${program.name} ${program.agency}`.toLowerCase().includes(sigungu.toLowerCase())) {
+    reasons.push(`${sigungu} 지역 특화 지원입니다.`);
+  } else if (region && validRegionCodes.some((c) => c.startsWith(region))) {
     const regionName = SIDO_CODE_TO_NAME[region] ?? region;
     reasons.push(`${regionName} 거주자를 대상으로 합니다.`);
   }
@@ -74,6 +77,7 @@ export function scoreAndRankPrograms(
 ): Recommendation[] {
   const needs = (answers.need as string[] | undefined) ?? [];
   const userRegion = answers.region as string | undefined;
+  const userSigungu = answers.sigungu as string | undefined;
   const status = answers.status as string | undefined;
   const income = answers.income as string | undefined;
   const freetext = answers.freetext as string | undefined;
@@ -105,6 +109,12 @@ export function scoreAndRankPrograms(
       } else if (validCodes.some((c) => c.startsWith(userRegion))) {
         score += 2;
       }
+    }
+
+    // 시군구 매칭 (name·agency에 시군구명 포함 여부)
+    if (userSigungu) {
+      const nameAgency = `${p.name} ${p.agency}`.toLowerCase();
+      if (nameAgency.includes(userSigungu.toLowerCase())) score += 2;
     }
 
     // 취업 상태 매칭

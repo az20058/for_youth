@@ -16,9 +16,11 @@ import {
 import { cn } from "@/lib/utils";
 import {
   QUIZ_QUESTIONS,
+  SIDO_REGIONS,
   type QuizAnswers,
   type Recommendation,
 } from "@/lib/quiz";
+import { AddressSearch } from "./AddressSearch";
 import { isAnswered, toggleMultiChoice } from "@/lib/quizUtils";
 import { QuizResult } from "./QuizResult";
 
@@ -241,6 +243,23 @@ export function QuizFlow() {
                 </Button>
               );
             })}
+
+          {currentQuestion.type === "address" && (() => {
+            const sidoCode = answers.region as string | undefined;
+            const sigungu = answers.sigungu as string | undefined;
+            const sidoName = sidoCode
+              ? (SIDO_REGIONS.find((r) => r.code === sidoCode)?.name ?? '')
+              : '';
+            return (
+              <AddressSearch
+                selectedAddress={sigungu ? `${sidoName} ${sigungu}`.trim() : undefined}
+                onSelect={(code, gu) => {
+                  setAnswer(currentQuestion.id, code);
+                  setAnswer('sigungu', gu);
+                }}
+              />
+            );
+          })()}
 
           {currentQuestion.type === "select" && (
             <Select

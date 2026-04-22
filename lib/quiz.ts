@@ -1,4 +1,4 @@
-export type QuestionType = 'multi-choice' | 'single-choice' | 'select' | 'number' | 'textarea';
+export type QuestionType = 'multi-choice' | 'single-choice' | 'select' | 'number' | 'textarea' | 'address';
 
 export interface QuizOption {
   label: string;
@@ -72,8 +72,7 @@ export const QUIZ_QUESTIONS: QuizQuestion[] = [
   {
     id: 'region',
     question: '나의 거주 지역은',
-    type: 'select',
-    options: SIDO_REGIONS.map((r) => ({ label: r.name, value: r.code })),
+    type: 'address',
   },
   {
     id: 'age',
