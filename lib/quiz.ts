@@ -31,14 +31,14 @@ export interface Recommendation {
   zipCodes?: string;
 }
 
-/** SIDO 코드 → 지역명 매핑 */
+/** 행정구역코드(행안부 기준) → 지역명 매핑 */
 export const SIDO_REGIONS = [
-  { code: '11', name: '서울' }, { code: '21', name: '부산' }, { code: '22', name: '대구' },
-  { code: '23', name: '인천' }, { code: '24', name: '광주' }, { code: '25', name: '대전' },
-  { code: '26', name: '울산' }, { code: '29', name: '세종' }, { code: '31', name: '경기' },
-  { code: '32', name: '강원' }, { code: '33', name: '충북' }, { code: '34', name: '충남' },
-  { code: '35', name: '전북' }, { code: '36', name: '전남' }, { code: '37', name: '경북' },
-  { code: '38', name: '경남' }, { code: '39', name: '제주' },
+  { code: '11', name: '서울' }, { code: '26', name: '부산' }, { code: '27', name: '대구' },
+  { code: '28', name: '인천' }, { code: '29', name: '광주' }, { code: '30', name: '대전' },
+  { code: '31', name: '울산' }, { code: '36', name: '세종' }, { code: '41', name: '경기' },
+  { code: '51', name: '강원' }, { code: '43', name: '충북' }, { code: '44', name: '충남' },
+  { code: '52', name: '전북' }, { code: '46', name: '전남' }, { code: '47', name: '경북' },
+  { code: '48', name: '경남' }, { code: '50', name: '제주' },
 ];
 
 /** @deprecated SIDO_REGIONS 사용 */
