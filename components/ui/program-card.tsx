@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import { normalizeUrl } from '@/lib/youthApi';
+import { normalizeUrl } from '@/lib/utils';
 import { ExternalLink, Lightbulb } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";

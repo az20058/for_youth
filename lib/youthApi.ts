@@ -1,5 +1,6 @@
 import type { Recommendation } from './quiz';
 import { prisma } from './db';
+import { normalizeUrl } from './utils';
 
 interface YouthPolicy {
   plcyNo?: string;
@@ -28,13 +29,7 @@ export const SIDO_MAP: Record<string, string> = {
   '46': '전남', '47': '경북', '48': '경남', '50': '제주',
 };
 
-export function normalizeUrl(url: string): string {
-  const trimmed = url.trim();
-  if (!trimmed) return '';
-  if (trimmed.startsWith('http://') || trimmed.startsWith('https://')) return trimmed;
-  if (trimmed.startsWith('www.')) return `https://${trimmed}`;
-  return '';
-}
+export { normalizeUrl } from './utils';
 
 export function zipCdToRegions(zipCd: string): string {
   const codes = zipCd.split(',').map((c) => c.trim()).filter((c) => /^\d{5}$/.test(c));
