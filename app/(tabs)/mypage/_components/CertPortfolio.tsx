@@ -39,20 +39,12 @@ function CertItemEditor({
           <X className="size-3.5" />
         </Button>
       </div>
-      <div className="grid grid-cols-3 gap-2">
+      <div className="grid grid-cols-2 gap-2">
         <input
           className={inputCls}
           value={item.issuer}
           onChange={(e) => onChange({ ...item, issuer: e.target.value })}
           placeholder="발급기관"
-        />
-        <DatePicker
-          value={item.date ? parseISO(item.date) : undefined}
-          onChange={(date) =>
-            onChange({ ...item, date: date ? format(date, 'yyyy-MM-dd') : '' })
-          }
-          placeholder="취득일"
-          className="h-8 text-sm px-2"
         />
         <input
           className={inputCls}
@@ -61,6 +53,15 @@ function CertItemEditor({
           placeholder="자격번호"
         />
       </div>
+      <DatePicker
+        value={item.date ? parseISO(item.date) : undefined}
+        onChange={(date) =>
+          onChange({ ...item, date: date ? format(date, 'yyyy-MM-dd') : '' })
+        }
+        placeholder="취득일"
+        granularity="month"
+        className="h-8 text-sm"
+      />
     </div>
   );
 }
@@ -71,7 +72,7 @@ function CertItemView({ item }: { item: CertItem }) {
       <p className="font-medium text-sm">{item.name}</p>
       <div className="flex flex-wrap gap-3 text-xs text-muted-foreground">
         {item.issuer && <span>{item.issuer}</span>}
-        {item.date && <span>{format(parseISO(item.date), 'yyyy.MM.dd')}</span>}
+        {item.date && <span>{format(parseISO(item.date), 'yyyy.MM')}</span>}
         {item.number && <span>#{item.number}</span>}
       </div>
     </div>
