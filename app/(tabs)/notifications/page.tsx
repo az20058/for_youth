@@ -52,12 +52,19 @@ export default function NotificationsPage() {
     if (!notification.isRead) {
       readMutation.mutate([notification.id]);
     }
-    if (notification.relatedId) {
-      if (notification.type === '일정 알림') {
+    switch (notification.type) {
+      case '신규 맞춤 정책':
+        router.push('/programs');
+        return;
+      case '일정 알림':
         router.push('/schedule');
-      } else {
-        router.push(`/applications/${notification.relatedId}`);
-      }
+        return;
+      case '마감 임박':
+      case '상태 변경':
+        if (notification.relatedId) {
+          router.push(`/applications/${notification.relatedId}`);
+        }
+        return;
     }
   }
 
