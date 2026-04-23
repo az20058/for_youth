@@ -91,7 +91,7 @@ export interface UserProfile {
   techStacks: string[];
 }
 
-export type NotificationType = '마감 임박' | '일정 알림' | '상태 변경';
+export type NotificationType = '마감 임박' | '일정 알림' | '상태 변경' | '신규 맞춤 정책';
 
 export interface Notification {
   id: string;

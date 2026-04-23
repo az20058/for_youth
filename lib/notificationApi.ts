@@ -30,3 +30,12 @@ export async function markAllAsRead(): Promise<void> {
   });
   if (!res.ok) throw new Error('알림 전체 읽음 처리에 실패했습니다.');
 }
+
+export async function registerPushToken(info: { token: string; platform: 'ios' | 'android' }): Promise<void> {
+  const res = await fetch('/api/push-tokens', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(info),
+  });
+  if (!res.ok) throw new Error('푸시 토큰 등록 실패');
+}

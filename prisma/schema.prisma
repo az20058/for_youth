@@ -50,6 +50,7 @@ model User {
   scheduleEvents ScheduleEvent[]
   quizResults    UserQuizResult[]
   notifications  Notification[]
+  pushTokens     PushToken[]
   createdAt      DateTime         @default(now())
   updatedAt     DateTime         @updatedAt
 }
@@ -131,6 +132,7 @@ model ScheduleEvent {
   user          User              @relation(fields: [userId], references: [id], onDelete: Cascade)
   applicationId String?
   application   Application?      @relation(fields: [applicationId], references: [id], onDelete: SetNull)
+  completedAt   DateTime?
   createdAt     DateTime          @default(now())
   updatedAt     DateTime          @updatedAt
 
@@ -176,22 +178,38 @@ model YouthPolicy {
 }
 
 model Notification {
-  id        String           @id @default(cuid())
-  userId    String
-  user      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
-  type      NotificationType
-  title     String
-  message   String
-  isRead    Boolean          @default(false)
-  relatedId String?
-  createdAt DateTime         @default(now())
+  id         String           @id @default(cuid())
+  userId     String
+  user       User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type       NotificationType
+  title      String
+  message    String
+  isRead     Boolean          @default(false)
+  relatedId  String?
+  dedupeKey  String?          @unique
+  pushedAt   DateTime?
+  createdAt  DateTime         @default(now())
 
   @@index([userId])
   @@index([userId, isRead])
+  @@index([pushedAt])
 }
 
 enum NotificationType {
   DEADLINE
   SCHEDULE
   STATUS_CHANGE
+  POLICY_MATCH
+}
+
+model PushToken {
+  id         String   @id @default(cuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  token      String   @unique
+  platform   String
+  lastSeenAt DateTime @default(now())
+  createdAt  DateTime @default(now())
+
+  @@index([userId])
 }

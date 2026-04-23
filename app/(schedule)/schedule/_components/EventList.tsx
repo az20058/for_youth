@@ -13,15 +13,17 @@ import {
   DialogTitle,
   DialogFooter,
 } from '@/components/ui/dialog';
+import { cn } from '@/lib/utils';
 import { EVENT_TYPE_CONFIG, type ScheduleEvent } from './types';
 
 interface EventListProps {
   events: ScheduleEvent[];
   selectedDate: Date | undefined;
   onDelete: (id: string) => void;
+  onToggleComplete?: (id: string, completed: boolean) => void;
 }
 
-export function EventList({ events, selectedDate, onDelete }: EventListProps) {
+export function EventList({ events, selectedDate, onDelete, onToggleComplete }: EventListProps) {
   const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
 
   function handleDeleteConfirm() {
@@ -75,10 +77,20 @@ export function EventList({ events, selectedDate, onDelete }: EventListProps) {
             key={event.id}
             className="flex items-start gap-3 rounded-lg border border-border bg-card p-3"
           >
+            {event.source === 'manual' && (
+              <input
+                type="checkbox"
+                className="mt-1.5 shrink-0"
+                checked={!!event.completedAt}
+                onChange={(e) => onToggleComplete?.(event.id, e.target.checked)}
+                onClick={(e) => e.stopPropagation()}
+                aria-label="완료 처리"
+              />
+            )}
             <span className={`mt-1.5 size-2.5 shrink-0 rounded-full ${config.dot}`} />
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2">
-                <span className="text-sm font-medium truncate">{event.title}</span>
+                <span className={cn('text-sm font-medium truncate', event.completedAt && 'line-through text-muted-foreground')}>{event.title}</span>
                 <Badge variant="outline" className={`text-xs shrink-0 ${config.color}`}>
                   {config.label}
                 </Badge>

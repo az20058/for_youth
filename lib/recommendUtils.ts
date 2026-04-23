@@ -147,6 +147,49 @@ export function scoreAndRankPrograms(
     }));
 }
 
+export function scoreAndFilterPrograms(
+  programs: Recommendation[],
+  answers: QuizAnswers,
+  minScore: number,
+): Recommendation[] {
+  const needs = (answers.need as string[] | undefined) ?? [];
+  const userRegion = answers.region as string | undefined;
+  const userSigungu = answers.sigungu as string | undefined;
+  const status = answers.status as string | undefined;
+  const income = answers.income as string | undefined;
+
+  if (!needs.length && !userRegion && !status && !income) return [];
+
+  return programs
+    .map((p) => {
+      let score = 0;
+      const searchText = `${p.name} ${p.mainCategory} ${p.category} ${p.description}`.toLowerCase();
+
+      for (const need of needs) {
+        const cats = NEED_TO_CATEGORIES[need] ?? [];
+        if (cats.some((c) => p.mainCategory?.includes(c))) { score += 3; break; }
+      }
+      if (userRegion) {
+        const validCodes = (p.zipCodes || '').split(',').map((c) => c.trim()).filter((c) => /^\d{5}$/.test(c));
+        if (validCodes.length === 0) score += 1;
+        else if (validCodes.some((c) => c.startsWith(userRegion))) score += 2;
+      }
+      if (userSigungu) {
+        const kw = userSigungu.replace(/[시군구]$/, '').toLowerCase();
+        if (kw && `${p.name} ${p.agency}`.toLowerCase().includes(kw)) score += 2;
+      }
+      if (status && STATUS_KEYWORDS[status]) {
+        if (STATUS_KEYWORDS[status].some((kw) => searchText.includes(kw))) score += 1;
+      }
+      if (income && INCOME_KEYWORDS[income]) {
+        if (INCOME_KEYWORDS[income].some((kw) => searchText.includes(kw))) score += 1;
+      }
+      return { program: p, score };
+    })
+    .filter(({ score }) => score >= minScore)
+    .map(({ program }) => program);
+}
+
 /** 전체 프로그램 목록 (API 실패 시 fallback) */
 export const ALL_PROGRAMS: Recommendation[] = [
   {

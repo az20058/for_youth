@@ -23,6 +23,7 @@ export default function ScheduleCalendarPage() {
     isFetching,
     addMutation,
     deleteMutation,
+    toggleComplete,
   } = useSchedule();
 
   const month = currentMonth.getMonth() + 1;
@@ -69,6 +70,7 @@ export default function ScheduleCalendarPage() {
               events={events}
               selectedDate={selectedDate}
               onDelete={(id) => deleteMutation.mutate(id)}
+              onToggleComplete={(id, completed) => toggleComplete({ id, completed })}
             />
           </div>
         </>

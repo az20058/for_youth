@@ -1,8 +1,6 @@
 {
   "crons": [
-    {
-      "path": "/api/batch/sync-policies",
-      "schedule": "0 2 * * *"
-    }
+    { "path": "/api/batch/nightly", "schedule": "0 17 * * *" },
+    { "path": "/api/batch/morning", "schedule": "0 0 * * *" }
   ]
 }

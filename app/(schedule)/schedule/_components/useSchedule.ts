@@ -61,6 +61,23 @@ export function useSchedule() {
     },
   });
 
+  const patchMutation = useMutation({
+    mutationFn: async ({ id, completed }: { id: string; completed: boolean }) => {
+      const res = await fetch(`/api/schedule?id=${id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ completed }),
+      });
+      if (!res.ok) throw new Error('완료 상태 변경 실패');
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['schedule', year, month] });
+    },
+    onError: () => {
+      toast.error('완료 상태 변경에 실패했습니다.');
+    },
+  });
+
   function handleAddForDate(date: Date) {
     setAddDialogDate(date);
     setAddDialogOpen(true);
@@ -80,6 +97,7 @@ export function useSchedule() {
     isFetching,
     addMutation,
     deleteMutation,
+    toggleComplete: patchMutation.mutate,
     handleAddForDate,
   };
 }
