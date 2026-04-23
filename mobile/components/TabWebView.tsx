@@ -4,6 +4,7 @@ import { WebView } from 'react-native-webview';
 import type { WebViewNavigation } from 'react-native-webview';
 import { useIsFocused } from './useIsFocused';
 import { getDirection } from './tabDirection';
+import { registerPushToken } from '../hooks/usePushToken';
 
 const BASE_URL = 'https://for-youth.site';
 
@@ -25,7 +26,12 @@ interface TabWebViewProps {
 export function TabWebView({ path }: TabWebViewProps) {
   const webViewRef = useRef<WebView>(null);
   const [canGoBack, setCanGoBack] = useState(false);
+  const [pushInfo, setPushInfo] = useState<{ token: string; platform: string } | null>(null);
   const isFocused = useIsFocused();
+
+  useEffect(() => {
+    registerPushToken().then(setPushInfo).catch(() => {});
+  }, []);
   const translateX = useRef(new Animated.Value(0)).current;
   const opacity = useRef(new Animated.Value(1)).current;
   const prevFocused = useRef(isFocused);
@@ -67,6 +73,10 @@ export function TabWebView({ path }: TabWebViewProps) {
     prevFocused.current = isFocused;
   }, [isFocused, translateX, opacity]);
 
+  const injectedJS = pushInfo
+    ? `window.__PUSH_TOKEN__ = ${JSON.stringify(pushInfo)}; true;`
+    : '';
+
   const handleNavigationStateChange = (navState: WebViewNavigation) => {
     setCanGoBack(navState.canGoBack);
   };
@@ -85,6 +95,7 @@ export function TabWebView({ path }: TabWebViewProps) {
         style={[styles.webview, { backgroundColor: '#1C1C1E' }]}
         onNavigationStateChange={handleNavigationStateChange}
         injectedJavaScript={INJECTED_JS}
+        injectedJavaScriptBeforeContentLoaded={injectedJS}
         userAgent="ForYouthApp"
         javaScriptEnabled
         domStorageEnabled
