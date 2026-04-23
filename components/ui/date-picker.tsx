@@ -26,7 +26,12 @@ interface DatePickerProps {
   className?: string
   /** 오늘 이전 날짜 비활성화 여부 (기본: false) */
   disablePast?: boolean
+  /** 'month': 연도+월 select만 표시 */
+  granularity?: 'month'
 }
+
+const selectCls =
+  "h-8 rounded-md border border-input bg-transparent px-2 py-1 text-sm outline-none focus:ring-1 focus:ring-ring disabled:opacity-50"
 
 export function DatePicker({
   value,
@@ -35,9 +40,50 @@ export function DatePicker({
   disabled,
   className,
   disablePast = false,
+  granularity,
 }: DatePickerProps) {
   const [open, setOpen] = React.useState(false)
   const isDesktop = useMediaQuery("(min-width: 768px)")
+
+  if (granularity === 'month') {
+    const currentYear = new Date().getFullYear()
+    const years = Array.from({ length: currentYear - 1959 }, (_, i) => currentYear - i)
+    const months = Array.from({ length: 12 }, (_, i) => i + 1)
+    const selectedYear = value?.getFullYear()
+    const selectedMonth = value ? value.getMonth() + 1 : undefined
+
+    function handleYear(y: string) {
+      const year = parseInt(y)
+      onChange?.(new Date(year, (selectedMonth ?? 1) - 1, 1))
+    }
+    function handleMonth(m: string) {
+      const month = parseInt(m)
+      onChange?.(new Date(selectedYear ?? currentYear, month - 1, 1))
+    }
+
+    return (
+      <div className={cn("flex gap-1", className)}>
+        <select
+          className={`${selectCls} flex-1`}
+          value={selectedYear ?? ''}
+          onChange={(e) => handleYear(e.target.value)}
+          disabled={disabled}
+        >
+          <option value="">연도</option>
+          {years.map((y) => <option key={y} value={y}>{y}년</option>)}
+        </select>
+        <select
+          className={`${selectCls} flex-1`}
+          value={selectedMonth ?? ''}
+          onChange={(e) => handleMonth(e.target.value)}
+          disabled={disabled}
+        >
+          <option value="">월</option>
+          {months.map((m) => <option key={m} value={m}>{m}월</option>)}
+        </select>
+      </div>
+    )
+  }
 
   const disabledDays = disablePast
     ? (date: Date) => date < new Date(new Date().setHours(0, 0, 0, 0))

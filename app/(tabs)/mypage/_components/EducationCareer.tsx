@@ -73,6 +73,7 @@ function CareerEditor({
           value={toDate(item.startDate)}
           onChange={(d) => onChange({ ...item, startDate: fromDate(d) })}
           placeholder="입사일"
+          granularity="month"
           className="h-8 text-sm px-2"
         />
         <DatePicker
@@ -80,6 +81,7 @@ function CareerEditor({
           onChange={(d) => onChange({ ...item, endDate: fromDate(d) })}
           placeholder="퇴사일"
           disabled={item.isCurrent}
+          granularity="month"
           className="h-8 text-sm px-2"
         />
       </div>
@@ -168,13 +170,15 @@ export function EducationCareer({ profile, onSave }: EducationCareerProps) {
                 value={toDate(edu.startDate)}
                 onChange={(d) => setEdu({ ...edu, startDate: fromDate(d) })}
                 placeholder="입학일"
-                className="h-8 text-sm px-2"
+                granularity="month"
+          className="h-8 text-sm px-2"
               />
               <DatePicker
                 value={toDate(edu.endDate)}
                 onChange={(d) => setEdu({ ...edu, endDate: fromDate(d) })}
                 placeholder="졸업일"
-                className="h-8 text-sm px-2"
+                granularity="month"
+          className="h-8 text-sm px-2"
               />
             </div>
             <div className="flex items-center gap-2">
