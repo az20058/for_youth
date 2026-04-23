@@ -33,8 +33,17 @@
       "expo-router",
       [
         "expo-notifications",
-        { "icon": "./assets/icon.png", "color": "#ffffff" }
+        {
+          "icon": "./assets/icon.png",
+          "color": "#ffffff"
+        }
       ]
-    ]
+    ],
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "d687064d-60c2-4fa1-b646-683e8de88295"
+      }
+    }
   }
 }
