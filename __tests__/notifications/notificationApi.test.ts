@@ -1,4 +1,4 @@
-import { fetchNotifications, fetchUnreadCount, markAsRead, markAllAsRead } from '@/lib/notificationApi';
+import { fetchNotifications, fetchUnreadCount, markAsRead, markAllAsRead, registerPushToken } from '@/lib/notificationApi';
 
 const mockNotification = {
   id: 'n1', type: '마감 임박' as const, title: '마감 임박: 네이버',
@@ -43,6 +43,18 @@ describe('markAllAsRead', () => {
     expect(fetch).toHaveBeenCalledWith('/api/notifications/read', {
       method: 'PATCH', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ all: true }),
+    });
+  });
+});
+
+describe('registerPushToken', () => {
+  it('토큰을 POST로 등록한다', async () => {
+    (fetch as jest.Mock).mockResolvedValue({ ok: true });
+    await registerPushToken({ token: 'ExponentPushToken[x]', platform: 'ios' });
+    expect(fetch).toHaveBeenCalledWith('/api/push-tokens', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ token: 'ExponentPushToken[x]', platform: 'ios' }),
     });
   });
 });
