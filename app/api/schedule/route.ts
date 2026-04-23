@@ -111,3 +111,27 @@ export async function DELETE(request: NextRequest) {
 
   return NextResponse.json({ success: true });
 }
+
+export async function PATCH(request: NextRequest) {
+  const userId = await getAuthenticatedUserId();
+  if (!userId) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+  const id = request.nextUrl.searchParams.get('id');
+  if (!id) {
+    return NextResponse.json({ error: 'Missing event id' }, { status: 400 });
+  }
+  const body = (await request.json()) as { completed?: unknown };
+  const completed = body.completed === true;
+
+  const event = await prisma.scheduleEvent.findUnique({ where: { id } });
+  if (!event || event.userId !== userId) {
+    return NextResponse.json({ error: 'Not found' }, { status: 404 });
+  }
+
+  await prisma.scheduleEvent.update({
+    where: { id },
+    data: { completedAt: completed ? new Date() : null },
+  });
+  return NextResponse.json({ success: true });
+}
