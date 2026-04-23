@@ -1,3 +1,4 @@
+import { revalidatePath } from 'next/cache';
 import { prisma } from '@/lib/db';
 import {
   STATUS_FROM_DB,
@@ -89,6 +90,7 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
     include: { coverLetters: true },
   });
 
+  revalidatePath('/applications');
   return Response.json(serializeApp(updated));
 }
 
@@ -103,5 +105,6 @@ export async function DELETE(_req: Request, { params }: { params: Promise<{ id: 
     where: { id },
     data: { deletedAt: new Date() },
   });
+  revalidatePath('/applications');
   return new Response(null, { status: 204 });
 }
