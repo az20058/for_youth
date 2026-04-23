@@ -70,4 +70,5 @@ export const NOTIFICATION_TYPE_FROM_DB: Record<DbNotificationType, NotificationT
   DEADLINE: '마감 임박',
   SCHEDULE: '일정 알림',
   STATUS_CHANGE: '상태 변경',
+  POLICY_MATCH: '정책 매칭',
 };
