@@ -23,8 +23,8 @@ function getDefaultOpen(profile: UserProfile): string[] {
   const open: string[] = [];
   const hasEducation = profile.school || profile.major || profile.careerLevel;
   const hasTech = profile.techStacks.length > 0;
-  const hasCert = profile.certifications.length > 0 || profile.portfolioUrl;
-  const hasResume = !!profile.resumeUrl;
+  const hasCert = profile.certifications.length > 0 || profile.languages.length > 0;
+  const hasResume = !!profile.resumeUrl || !!profile.portfolioUrl;
   if (!hasEducation) open.push('education');
   if (!hasTech) open.push('tech');
   if (!hasCert) open.push('cert');
@@ -71,7 +71,7 @@ export default function MyPage() {
 
       <Accordion type="multiple" defaultValue={defaultOpen} className="flex flex-col gap-2">
         <AccordionItem value="resume" className="rounded-xl bg-card border border-border px-5 border-b-0">
-          <AccordionTrigger className="hover:no-underline font-semibold">이력서</AccordionTrigger>
+          <AccordionTrigger className="hover:no-underline font-semibold">이력서 &amp; 포트폴리오</AccordionTrigger>
           <AccordionContent>
             <ResumeFile profile={profile} onSave={handleSave} />
           </AccordionContent>
@@ -89,7 +89,7 @@ export default function MyPage() {
           </AccordionContent>
         </AccordionItem>
         <AccordionItem value="cert" className="rounded-xl bg-card border border-border px-5 border-b-0">
-          <AccordionTrigger className="hover:no-underline font-semibold">자격증 &amp; 포트폴리오</AccordionTrigger>
+          <AccordionTrigger className="hover:no-underline font-semibold">자격증 &amp; 어학</AccordionTrigger>
           <AccordionContent>
             <CertPortfolio profile={profile} onSave={handleSave} />
           </AccordionContent>

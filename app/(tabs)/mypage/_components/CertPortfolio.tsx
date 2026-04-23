@@ -1,27 +1,89 @@
 'use client';
 
 import { useState } from 'react';
-import { ExternalLink } from 'lucide-react';
+import { Plus, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { TagInput } from './TagInput';
-import { FileOrLinkInput } from './FileOrLinkInput';
-import type { UserProfile } from '@/lib/types';
+import type { CertItem, UserProfile } from '@/lib/types';
 
 interface CertPortfolioProps {
   profile: UserProfile;
-  onSave: (data: { certifications: string[]; portfolioUrl: string | null }) => Promise<void>;
+  onSave: (data: { certifications: CertItem[]; languages: CertItem[] }) => Promise<void>;
+}
+
+const emptyItem = (): CertItem => ({ name: '', issuer: '', date: '', number: '' });
+
+const inputCls =
+  'h-8 w-full rounded-md border border-input bg-transparent px-2 py-1 text-sm outline-none focus:ring-1 focus:ring-ring';
+
+function CertItemEditor({
+  item,
+  onChange,
+  onRemove,
+}: {
+  item: CertItem;
+  onChange: (item: CertItem) => void;
+  onRemove: () => void;
+}) {
+  return (
+    <div className="border border-border rounded-lg p-3 space-y-2">
+      <div className="flex items-center gap-2">
+        <input
+          className={`${inputCls} flex-1`}
+          value={item.name}
+          onChange={(e) => onChange({ ...item, name: e.target.value })}
+          placeholder="명칭"
+        />
+        <Button size="icon" variant="ghost" className="size-7 shrink-0" onClick={onRemove}>
+          <X className="size-3.5" />
+        </Button>
+      </div>
+      <div className="grid grid-cols-3 gap-2">
+        <input
+          className={inputCls}
+          value={item.issuer}
+          onChange={(e) => onChange({ ...item, issuer: e.target.value })}
+          placeholder="발급기관"
+        />
+        <input
+          className={inputCls}
+          value={item.date}
+          onChange={(e) => onChange({ ...item, date: e.target.value })}
+          placeholder="취득일"
+        />
+        <input
+          className={inputCls}
+          value={item.number}
+          onChange={(e) => onChange({ ...item, number: e.target.value })}
+          placeholder="자격번호"
+        />
+      </div>
+    </div>
+  );
+}
+
+function CertItemView({ item }: { item: CertItem }) {
+  return (
+    <div className="rounded-lg border border-border px-3 py-2 space-y-0.5">
+      <p className="font-medium text-sm">{item.name}</p>
+      <div className="flex flex-wrap gap-3 text-xs text-muted-foreground">
+        {item.issuer && <span>{item.issuer}</span>}
+        {item.date && <span>{item.date}</span>}
+        {item.number && <span>#{item.number}</span>}
+      </div>
+    </div>
+  );
 }
 
 export function CertPortfolio({ profile, onSave }: CertPortfolioProps) {
   const [editing, setEditing] = useState(false);
-  const [certs, setCerts] = useState<string[]>(profile.certifications);
-  const [portfolioUrl, setPortfolioUrl] = useState<string | null>(profile.portfolioUrl);
+  const [certs, setCerts] = useState<CertItem[]>(profile.certifications);
+  const [languages, setLanguages] = useState<CertItem[]>(profile.languages);
   const [saving, setSaving] = useState(false);
 
   async function handleSave() {
     setSaving(true);
     try {
-      await onSave({ certifications: certs, portfolioUrl });
+      await onSave({ certifications: certs, languages });
       setEditing(false);
     } finally {
       setSaving(false);
@@ -30,20 +92,58 @@ export function CertPortfolio({ profile, onSave }: CertPortfolioProps) {
 
   function handleCancel() {
     setCerts(profile.certifications);
-    setPortfolioUrl(profile.portfolioUrl);
+    setLanguages(profile.languages);
     setEditing(false);
+  }
+
+  function updateCert(index: number, item: CertItem) {
+    setCerts((prev) => prev.map((c, i) => (i === index ? item : c)));
+  }
+
+  function updateLang(index: number, item: CertItem) {
+    setLanguages((prev) => prev.map((l, i) => (i === index ? item : l)));
   }
 
   if (editing) {
     return (
-      <div className="space-y-4">
-        <div>
-          <label className="text-sm text-muted-foreground mb-2 block">자격증</label>
-          <TagInput tags={certs} onChange={setCerts} placeholder="자격증 입력 후 Enter" />
+      <div className="space-y-5">
+        <div className="space-y-2">
+          <label className="text-sm text-muted-foreground">자격증</label>
+          {certs.map((cert, i) => (
+            <CertItemEditor
+              key={i}
+              item={cert}
+              onChange={(item) => updateCert(i, item)}
+              onRemove={() => setCerts((prev) => prev.filter((_, idx) => idx !== i))}
+            />
+          ))}
+          <Button
+            size="sm"
+            variant="outline"
+            className="w-full gap-1"
+            onClick={() => setCerts((prev) => [...prev, emptyItem()])}
+          >
+            <Plus className="size-3.5" /> 자격증 추가
+          </Button>
         </div>
-        <div>
-          <label className="text-sm text-muted-foreground mb-2 block">포트폴리오 (PDF 또는 링크)</label>
-          <FileOrLinkInput value={portfolioUrl} onChange={setPortfolioUrl} />
+        <div className="space-y-2">
+          <label className="text-sm text-muted-foreground">어학</label>
+          {languages.map((lang, i) => (
+            <CertItemEditor
+              key={i}
+              item={lang}
+              onChange={(item) => updateLang(i, item)}
+              onRemove={() => setLanguages((prev) => prev.filter((_, idx) => idx !== i))}
+            />
+          ))}
+          <Button
+            size="sm"
+            variant="outline"
+            className="w-full gap-1"
+            onClick={() => setLanguages((prev) => [...prev, emptyItem()])}
+          >
+            <Plus className="size-3.5" /> 어학 추가
+          </Button>
         </div>
         <div className="flex gap-2 pb-2">
           <Button size="sm" onClick={handleSave} disabled={saving}>저장</Button>
@@ -54,35 +154,21 @@ export function CertPortfolio({ profile, onSave }: CertPortfolioProps) {
   }
 
   return (
-    <div className="space-y-3 text-sm">
-      <div>
-        <p className="text-muted-foreground mb-2">자격증</p>
-        <div className="flex flex-wrap gap-2">
-          {profile.certifications.length > 0 ? (
-            profile.certifications.map((cert) => (
-              <span key={cert} className="rounded-full bg-emerald-950 border border-emerald-800 px-3 py-1 text-emerald-300">
-                {cert}
-              </span>
-            ))
-          ) : (
-            <p className="text-muted-foreground">자격증을 추가해보세요</p>
-          )}
-        </div>
-      </div>
-      <div>
-        <p className="text-muted-foreground mb-1">포트폴리오</p>
-        {profile.portfolioUrl ? (
-          <a
-            href={profile.portfolioUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-blue-400 hover:underline inline-flex items-center gap-1 truncate max-w-full"
-          >
-            <span className="truncate">{profile.portfolioUrl}</span>
-            <ExternalLink className="size-3 shrink-0" />
-          </a>
+    <div className="space-y-4 text-sm">
+      <div className="space-y-2">
+        <p className="text-muted-foreground">자격증</p>
+        {certs.length > 0 ? (
+          certs.map((cert, i) => <CertItemView key={i} item={cert} />)
         ) : (
-          <p className="text-muted-foreground">포트폴리오를 등록해보세요</p>
+          <p className="text-muted-foreground">자격증을 추가해보세요</p>
+        )}
+      </div>
+      <div className="space-y-2">
+        <p className="text-muted-foreground">어학</p>
+        {languages.length > 0 ? (
+          languages.map((lang, i) => <CertItemView key={i} item={lang} />)
+        ) : (
+          <p className="text-muted-foreground">어학 자격을 추가해보세요</p>
         )}
       </div>
       <Button variant="outline" size="sm" onClick={() => setEditing(true)} className="mb-2">

@@ -41,6 +41,7 @@ model User {
   portfolioUrl    String?
   resumeUrl       String?
   certifications  Json?
+  languages       Json?
   techStacks      Json?
   accounts       Account[]
   applications   Application[]

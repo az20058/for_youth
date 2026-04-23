@@ -1,5 +1,15 @@
 import { prisma } from '@/lib/db';
 import { getAuthenticatedUserId } from '@/lib/auth';
+import type { CertItem } from '@/lib/types';
+
+function normalizeCerts(raw: unknown): CertItem[] {
+  if (!Array.isArray(raw)) return [];
+  return raw.map((c: unknown) =>
+    typeof c === 'string'
+      ? { name: c, issuer: '', date: '', number: '' }
+      : (c as CertItem)
+  );
+}
 
 export async function GET() {
   const userId = await getAuthenticatedUserId();
@@ -12,7 +22,7 @@ export async function GET() {
     select: {
       id: true, name: true, email: true, image: true,
       bio: true, school: true, major: true, careerLevel: true,
-      portfolioUrl: true, resumeUrl: true, certifications: true, techStacks: true,
+      portfolioUrl: true, resumeUrl: true, certifications: true, languages: true, techStacks: true,
     },
   });
 
@@ -22,14 +32,15 @@ export async function GET() {
 
   return Response.json({
     ...user,
-    certifications: (user.certifications as string[]) ?? [],
+    certifications: normalizeCerts(user.certifications),
+    languages: normalizeCerts(user.languages),
     techStacks: (user.techStacks as string[]) ?? [],
   });
 }
 
 const ALLOWED_FIELDS = [
   'bio', 'school', 'major', 'careerLevel', 'portfolioUrl', 'resumeUrl',
-  'certifications', 'techStacks',
+  'certifications', 'languages', 'techStacks',
 ] as const;
 
 export async function PATCH(request: Request) {
@@ -57,13 +68,14 @@ export async function PATCH(request: Request) {
     select: {
       id: true, name: true, email: true, image: true,
       bio: true, school: true, major: true, careerLevel: true,
-      portfolioUrl: true, resumeUrl: true, certifications: true, techStacks: true,
+      portfolioUrl: true, resumeUrl: true, certifications: true, languages: true, techStacks: true,
     },
   });
 
   return Response.json({
     ...user,
-    certifications: (user.certifications as string[]) ?? [],
+    certifications: normalizeCerts(user.certifications),
+    languages: normalizeCerts(user.languages),
     techStacks: (user.techStacks as string[]) ?? [],
   });
 }

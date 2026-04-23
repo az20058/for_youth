@@ -48,6 +48,13 @@ export interface CoverLetterWithApplication {
   companyName: string;
 }
 
+export interface CertItem {
+  name: string;
+  issuer: string;
+  date: string;
+  number: string;
+}
+
 export interface UserProfile {
   id: string;
   name: string | null;
@@ -59,7 +66,8 @@ export interface UserProfile {
   careerLevel: string | null;
   portfolioUrl: string | null;
   resumeUrl: string | null;
-  certifications: string[];
+  certifications: CertItem[];
+  languages: CertItem[];
   techStacks: string[];
 }
 

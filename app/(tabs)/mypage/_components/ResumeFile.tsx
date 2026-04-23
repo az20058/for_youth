@@ -1,24 +1,26 @@
 'use client';
 
 import { useState } from 'react';
+import { ExternalLink } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { FileOrLinkInput } from './FileOrLinkInput';
 import type { UserProfile } from '@/lib/types';
 
 interface ResumeFileProps {
   profile: UserProfile;
-  onSave: (data: { resumeUrl: string | null }) => Promise<void>;
+  onSave: (data: { resumeUrl: string | null; portfolioUrl: string | null }) => Promise<void>;
 }
 
 export function ResumeFile({ profile, onSave }: ResumeFileProps) {
   const [editing, setEditing] = useState(false);
   const [resumeUrl, setResumeUrl] = useState<string | null>(profile.resumeUrl);
+  const [portfolioUrl, setPortfolioUrl] = useState<string | null>(profile.portfolioUrl);
   const [saving, setSaving] = useState(false);
 
   async function handleSave() {
     setSaving(true);
     try {
-      await onSave({ resumeUrl });
+      await onSave({ resumeUrl, portfolioUrl });
       setEditing(false);
     } finally {
       setSaving(false);
@@ -27,6 +29,7 @@ export function ResumeFile({ profile, onSave }: ResumeFileProps) {
 
   function handleCancel() {
     setResumeUrl(profile.resumeUrl);
+    setPortfolioUrl(profile.portfolioUrl);
     setEditing(false);
   }
 
@@ -36,6 +39,10 @@ export function ResumeFile({ profile, onSave }: ResumeFileProps) {
         <div>
           <label className="text-sm text-muted-foreground mb-2 block">이력서 (PDF 또는 링크)</label>
           <FileOrLinkInput value={resumeUrl} onChange={setResumeUrl} />
+        </div>
+        <div>
+          <label className="text-sm text-muted-foreground mb-2 block">포트폴리오 (PDF 또는 링크)</label>
+          <FileOrLinkInput value={portfolioUrl} onChange={setPortfolioUrl} />
         </div>
         <div className="flex gap-2 pb-2">
           <Button size="sm" onClick={handleSave} disabled={saving}>저장</Button>
@@ -60,6 +67,22 @@ export function ResumeFile({ profile, onSave }: ResumeFileProps) {
           </a>
         ) : (
           <p className="text-muted-foreground">이력서를 등록해보세요</p>
+        )}
+      </div>
+      <div>
+        <p className="text-muted-foreground mb-1">포트폴리오</p>
+        {profile.portfolioUrl ? (
+          <a
+            href={profile.portfolioUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-blue-400 hover:underline inline-flex items-center gap-1 truncate max-w-full"
+          >
+            <span className="truncate">{profile.portfolioUrl}</span>
+            <ExternalLink className="size-3 shrink-0" />
+          </a>
+        ) : (
+          <p className="text-muted-foreground">포트폴리오를 등록해보세요</p>
         )}
       </div>
       <Button variant="outline" size="sm" onClick={() => setEditing(true)} className="mb-2">
