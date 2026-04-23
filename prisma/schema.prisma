@@ -40,6 +40,8 @@ model User {
   careerLevel     String?
   portfolioUrl    String?
   resumeUrl       String?
+  education       Json?
+  careers         Json?
   certifications  Json?
   languages       Json?
   techStacks      Json?

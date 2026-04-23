@@ -20,7 +20,7 @@ import { ResumeFile } from './_components/ResumeFile';
 
 function getDefaultOpen(profile: UserProfile): string[] {
   const open: string[] = [];
-  const hasEducation = profile.school || profile.major || profile.careerLevel;
+  const hasEducation = !!profile.education || profile.careers.length > 0;
   const hasCert = profile.certifications.length > 0 || profile.languages.length > 0;
   const hasResume = !!profile.resumeUrl || !!profile.portfolioUrl;
   if (!hasEducation) open.push('education');
