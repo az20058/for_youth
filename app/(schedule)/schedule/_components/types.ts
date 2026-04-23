@@ -6,6 +6,7 @@ export interface ScheduleEvent {
   source: 'auto' | 'manual';
   memo?: string | null;
   status?: string;
+  completedAt?: string | null;
 }
 
 export const EVENT_TYPE_CONFIG: Record<

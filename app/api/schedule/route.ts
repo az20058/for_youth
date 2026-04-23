@@ -57,6 +57,7 @@ export async function GET(request: NextRequest) {
     type: event.type,
     memo: event.memo,
     source: 'manual' as const,
+    completedAt: event.completedAt?.toISOString() ?? null,
   }));
 
   return NextResponse.json({ events: [...deadlineEvents, ...manualEvents] });
