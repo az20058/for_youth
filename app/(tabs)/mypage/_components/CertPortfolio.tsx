@@ -1,8 +1,10 @@
 'use client';
 
 import { useState } from 'react';
+import { format, parseISO } from 'date-fns';
 import { Plus, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { DatePicker } from '@/components/ui/date-picker';
 import type { CertItem, UserProfile } from '@/lib/types';
 
 interface CertPortfolioProps {
@@ -44,11 +46,13 @@ function CertItemEditor({
           onChange={(e) => onChange({ ...item, issuer: e.target.value })}
           placeholder="발급기관"
         />
-        <input
-          className={inputCls}
-          value={item.date}
-          onChange={(e) => onChange({ ...item, date: e.target.value })}
+        <DatePicker
+          value={item.date ? parseISO(item.date) : undefined}
+          onChange={(date) =>
+            onChange({ ...item, date: date ? format(date, 'yyyy-MM-dd') : '' })
+          }
           placeholder="취득일"
+          className="h-8 text-sm px-2"
         />
         <input
           className={inputCls}
@@ -67,7 +71,7 @@ function CertItemView({ item }: { item: CertItem }) {
       <p className="font-medium text-sm">{item.name}</p>
       <div className="flex flex-wrap gap-3 text-xs text-muted-foreground">
         {item.issuer && <span>{item.issuer}</span>}
-        {item.date && <span>{item.date}</span>}
+        {item.date && <span>{format(parseISO(item.date), 'yyyy.MM.dd')}</span>}
         {item.number && <span>#{item.number}</span>}
       </div>
     </div>

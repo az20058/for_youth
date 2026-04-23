@@ -15,18 +15,15 @@ import { fetchProfile, updateProfile } from '@/lib/profileApi';
 import type { UserProfile } from '@/lib/types';
 import { ProfileHeader } from './_components/ProfileHeader';
 import { EducationCareer } from './_components/EducationCareer';
-import { TechStacks } from './_components/TechStacks';
 import { CertPortfolio } from './_components/CertPortfolio';
 import { ResumeFile } from './_components/ResumeFile';
 
 function getDefaultOpen(profile: UserProfile): string[] {
   const open: string[] = [];
   const hasEducation = profile.school || profile.major || profile.careerLevel;
-  const hasTech = profile.techStacks.length > 0;
   const hasCert = profile.certifications.length > 0 || profile.languages.length > 0;
   const hasResume = !!profile.resumeUrl || !!profile.portfolioUrl;
   if (!hasEducation) open.push('education');
-  if (!hasTech) open.push('tech');
   if (!hasCert) open.push('cert');
   if (!hasResume) open.push('resume');
   if (open.length === 0) open.push('education');
@@ -82,13 +79,7 @@ export default function MyPage() {
             <EducationCareer profile={profile} onSave={handleSave} />
           </AccordionContent>
         </AccordionItem>
-        <AccordionItem value="tech" className="rounded-xl bg-card border border-border px-5 border-b-0">
-          <AccordionTrigger className="hover:no-underline font-semibold">기술 스택</AccordionTrigger>
-          <AccordionContent>
-            <TechStacks profile={profile} onSave={handleSave} />
-          </AccordionContent>
-        </AccordionItem>
-        <AccordionItem value="cert" className="rounded-xl bg-card border border-border px-5 border-b-0">
+<AccordionItem value="cert" className="rounded-xl bg-card border border-border px-5 border-b-0">
           <AccordionTrigger className="hover:no-underline font-semibold">자격증 &amp; 어학</AccordionTrigger>
           <AccordionContent>
             <CertPortfolio profile={profile} onSave={handleSave} />
