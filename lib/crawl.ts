@@ -54,27 +54,36 @@ async function fetchCorpInfo(companyName: string): Promise<string | null> {
   }
 }
 
-/** DuckDuckGo에서 기업 관련 웹 검색 스니펫을 가져온다 */
+/** 네이버 웹검색 API로 기업 관련 정보를 가져온다 */
 async function fetchWebSearch(companyName: string): Promise<string | null> {
+  const clientId = process.env.NAVER_CLIENT_ID;
+  const clientSecret = process.env.NAVER_CLIENT_SECRET;
+  if (!clientId || !clientSecret) return null;
+
   try {
-    const query = `${companyName} 기업 회사 채용`;
+    const query = `${companyName} 기업 회사`;
     const res = await fetch(
-      `https://html.duckduckgo.com/html/?q=${encodeURIComponent(query)}`,
+      `https://openapi.naver.com/v1/search/webkr.json?query=${encodeURIComponent(query)}&display=5`,
       {
-        method: 'POST',
         headers: {
-          'User-Agent': BROWSER_UA,
-          'Content-Type': 'application/x-www-form-urlencoded',
+          'X-Naver-Client-Id': clientId,
+          'X-Naver-Client-Secret': clientSecret,
         },
-        body: `q=${encodeURIComponent(query)}`,
-        signal: timeoutSignal(8000),
+        signal: timeoutSignal(5000),
       },
     );
     if (!res.ok) return null;
-    const html = await res.text();
 
-    const snippets = [...html.matchAll(/<a class="result__snippet"[^>]*>([\s\S]*?)<\/a>/g)]
-      .map((m) => m[1].replace(/<[^>]+>/g, '').replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').trim())
+    const data = (await res.json()) as {
+      items?: { title: string; description: string }[];
+    };
+
+    const snippets = (data.items ?? [])
+      .map((item) => {
+        const title = item.title.replace(/<[^>]+>/g, '');
+        const desc = item.description.replace(/<[^>]+>/g, '');
+        return `${title}: ${desc}`;
+      })
       .filter(Boolean)
       .slice(0, 5);
 
