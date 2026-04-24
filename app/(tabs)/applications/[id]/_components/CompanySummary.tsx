@@ -13,25 +13,30 @@ interface CompanySummaryData {
   mainBusiness: string[];
   recentNews: string[];
   motivationHints: string[];
+  referenceSites: string[];
+  idealCandidate: string[];
   crawledAt: string;
 }
 
 export function CompanySummary({ applicationId }: { applicationId: string }) {
   const [data, setData] = useState<CompanySummaryData | null>(null);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   async function analyze() {
     setLoading(true);
-    setError(false);
+    setErrorMessage(null);
     try {
       const res = await fetch(`/api/applications/${applicationId}/company-summary`, {
         method: 'POST',
       });
-      if (!res.ok) throw new Error();
+      if (!res.ok) {
+        const body = await res.json().catch(() => null) as { message?: string } | null;
+        throw new Error(body?.message ?? '분석에 실패했습니다.');
+      }
       setData(await res.json() as CompanySummaryData);
-    } catch {
-      setError(true);
+    } catch (err) {
+      setErrorMessage(err instanceof Error ? err.message : '분석에 실패했습니다.');
     } finally {
       setLoading(false);
     }
@@ -56,7 +61,7 @@ export function CompanySummary({ applicationId }: { applicationId: string }) {
         )}
       </div>
 
-      {!data && !loading && !error && (
+      {!data && !loading && !errorMessage && (
         <Button onClick={analyze} variant="outline" className="w-full gap-2">
           <SparklesIcon className="size-4" />
           AI로 기업 분석하기
@@ -65,9 +70,9 @@ export function CompanySummary({ applicationId }: { applicationId: string }) {
 
       {loading && <FlameLoading message="기업 정보를 분석하는 중…" />}
 
-      {error && !loading && (
+      {errorMessage && !loading && (
         <div className="flex flex-col items-center gap-3 py-4">
-          <p className="text-sm text-muted-foreground">분석에 실패했습니다. 다시 시도해주세요.</p>
+          <p className="text-sm text-muted-foreground">{errorMessage}</p>
           <Button variant="outline" size="sm" onClick={analyze}>다시 시도</Button>
         </div>
       )}
@@ -102,6 +107,28 @@ export function CompanySummary({ applicationId }: { applicationId: string }) {
               ))}
             </ul>
           </div>
+          {data.idealCandidate.length > 0 && (
+            <div>
+              <p className="text-xs font-medium text-muted-foreground mb-2">🎯 인재상</p>
+              <ul className="flex flex-col gap-1.5">
+                {data.idealCandidate.map((c, i) => (
+                  <li key={i} className="text-sm text-foreground/80 before:content-['•'] before:mr-2 before:text-muted-foreground">{c}</li>
+                ))}
+              </ul>
+            </div>
+          )}
+          {data.referenceSites.length > 0 && (
+            <div>
+              <p className="text-xs font-medium text-muted-foreground mb-2">🔗 참고 사이트</p>
+              <ul className="flex flex-col gap-1.5">
+                {data.referenceSites.map((s, i) => (
+                  <li key={i} className="text-sm text-foreground/80 before:content-['•'] before:mr-2 before:text-muted-foreground">
+                    <a href={s} target="_blank" rel="noopener noreferrer" className="text-primary underline underline-offset-2 break-all">{s}</a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
         </div>
       )}
     </section>

@@ -38,12 +38,18 @@ export async function POST(
       mainBusiness: JSON.parse(existing.mainBusiness) as string[],
       recentNews: JSON.parse(existing.recentNews) as string[],
       motivationHints: JSON.parse(existing.motivationHints) as string[],
+      referenceSites: JSON.parse(existing.referenceSites) as string[],
+      idealCandidate: JSON.parse(existing.idealCandidate) as string[],
       crawledAt: existing.crawledAt.toISOString(),
     });
   }
 
   try {
     const crawlResult = await crawlCompanyInfo(companyName);
+    if (!crawlResult.namuWiki && crawlResult.newsHeadlines.length === 0) {
+      return Response.json({ message: `"${companyName}"에 대한 크롤링 데이터를 찾을 수 없습니다.` }, { status: 422 });
+    }
+
     const summary = await summarizeCompany(companyName, crawlResult);
 
     const saved = await prisma.companySummary.upsert({
@@ -54,12 +60,16 @@ export async function POST(
         mainBusiness: JSON.stringify(summary.mainBusiness),
         recentNews: JSON.stringify(summary.recentNews),
         motivationHints: JSON.stringify(summary.motivationHints),
+        referenceSites: JSON.stringify(summary.referenceSites),
+        idealCandidate: JSON.stringify(summary.idealCandidate),
       },
       update: {
         overview: summary.overview,
         mainBusiness: JSON.stringify(summary.mainBusiness),
         recentNews: JSON.stringify(summary.recentNews),
         motivationHints: JSON.stringify(summary.motivationHints),
+        referenceSites: JSON.stringify(summary.referenceSites),
+        idealCandidate: JSON.stringify(summary.idealCandidate),
         crawledAt: new Date(),
       },
     });
@@ -69,6 +79,8 @@ export async function POST(
       mainBusiness: summary.mainBusiness,
       recentNews: summary.recentNews,
       motivationHints: summary.motivationHints,
+      referenceSites: summary.referenceSites,
+      idealCandidate: summary.idealCandidate,
       crawledAt: saved.crawledAt.toISOString(),
     });
   } catch (err) {
