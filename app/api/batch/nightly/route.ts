@@ -81,15 +81,14 @@ export async function GET(req: NextRequest) {
         let parsed: QuizAnswers;
         try { parsed = JSON.parse(answers) as QuizAnswers; } catch { return []; }
         const hits = scoreAndFilterPrograms(newPolicies as unknown as Recommendation[], parsed, 2);
-        if (hits.length === 0) return [];
-        return [{
+        return hits.map((hit) => ({
           userId,
           type: 'POLICY_MATCH' as const,
-          title: `새 맞춤 정책 ${hits.length}건`,
-          message: '회원님께 맞는 신규 정책이 등록되었어요. 눌러서 확인해보세요.',
-          relatedId: hits[0]?.id ?? null,
-          dedupeKey: `policy-new:${userId}:${today}`,
-        }];
+          title: hit.name,
+          message: hit.agency ?? '회원님께 맞는 신규 정책이 등록되었어요.',
+          relatedId: hit.id ?? null,
+          dedupeKey: `policy-new:${userId}:${hit.id}:${today}`,
+        }));
       });
       if (rows.length > 0) {
         await prisma.notification.createMany({ data: rows, skipDuplicates: true });

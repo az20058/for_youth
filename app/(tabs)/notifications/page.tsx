@@ -54,7 +54,7 @@ export default function NotificationsPage() {
     }
     switch (notification.type) {
       case '신규 맞춤 정책':
-        router.push('/programs');
+        router.push(notification.relatedId ? `/programs?open=${notification.relatedId}` : '/programs');
         return;
       case '일정 알림':
         router.push('/schedule');
