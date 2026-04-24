@@ -2,6 +2,10 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
 import { getAuthenticatedUserId } from '@/lib/auth';
 
+const VALID_EVENT_TYPES = ['CODING_TEST', 'INTERVIEW', 'DOCUMENT', 'OTHER'] as const;
+const MAX_TITLE_LENGTH = 200;
+const MAX_MEMO_LENGTH = 2000;
+
 export async function GET(request: NextRequest) {
   const userId = await getAuthenticatedUserId();
   if (!userId) {
@@ -76,12 +80,40 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
   }
 
+  if (typeof title !== 'string' || title.length > MAX_TITLE_LENGTH) {
+    return NextResponse.json({ error: `제목은 ${MAX_TITLE_LENGTH}자 이하여야 합니다.` }, { status: 400 });
+  }
+
+  if (!VALID_EVENT_TYPES.includes(type)) {
+    return NextResponse.json({ error: '유효하지 않은 일정 유형입니다.' }, { status: 400 });
+  }
+
+  const parsedDate = new Date(date);
+  if (isNaN(parsedDate.getTime())) {
+    return NextResponse.json({ error: '유효하지 않은 날짜입니다.' }, { status: 400 });
+  }
+
+  if (memo && (typeof memo !== 'string' || memo.length > MAX_MEMO_LENGTH)) {
+    return NextResponse.json({ error: `메모는 ${MAX_MEMO_LENGTH}자 이하여야 합니다.` }, { status: 400 });
+  }
+
+  // applicationId가 제공된 경우 소유권 확인
+  if (applicationId) {
+    const app = await prisma.application.findFirst({
+      where: { id: applicationId, userId, deletedAt: null },
+      select: { id: true },
+    });
+    if (!app) {
+      return NextResponse.json({ error: '지원서를 찾을 수 없습니다.' }, { status: 404 });
+    }
+  }
+
   const event = await prisma.scheduleEvent.create({
     data: {
-      title,
-      date: new Date(date),
+      title: title.trim(),
+      date: parsedDate,
       type,
-      memo: memo || null,
+      memo: memo?.trim() || null,
       userId,
       applicationId: applicationId || null,
     },

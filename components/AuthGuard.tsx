@@ -11,7 +11,6 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     if (status === 'unauthenticated') {
-      alert('로그인이 필요합니다.');
       router.replace('/login');
     }
   }, [status, router]);

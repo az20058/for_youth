@@ -11,11 +11,25 @@ export async function POST(request: Request) {
     return Response.json({ message: '잘못된 요청입니다.' }, { status: 400 });
   }
 
+  if (typeof body.answers !== 'object' || !Array.isArray(body.recommendations)) {
+    return Response.json({ message: '잘못된 데이터 형식입니다.' }, { status: 400 });
+  }
+
+  if (body.recommendations.length > 200) {
+    return Response.json({ message: '추천 목록이 너무 많습니다.' }, { status: 400 });
+  }
+
+  const answersStr = JSON.stringify(body.answers);
+  const recommendationsStr = JSON.stringify(body.recommendations);
+  if (answersStr.length > 10_000 || recommendationsStr.length > 100_000) {
+    return Response.json({ message: '데이터 크기가 너무 큽니다.' }, { status: 400 });
+  }
+
   await prisma.userQuizResult.create({
     data: {
       userId,
-      answers: JSON.stringify(body.answers),
-      recommendations: JSON.stringify(body.recommendations),
+      answers: answersStr,
+      recommendations: recommendationsStr,
     },
   });
 

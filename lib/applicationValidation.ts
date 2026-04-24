@@ -36,6 +36,7 @@ export interface FormErrors {
   companySize?: string;
   status?: string;
   coverLetters?: string;
+  url?: string;
 }
 
 export function validateApplication(data: NewApplicationData): FormErrors {
@@ -66,9 +67,36 @@ export function validateApplication(data: NewApplicationData): FormErrors {
     errors.status = '상태를 선택해주세요.';
   }
 
+  if (data.companyName.length > 100) {
+    errors.companyName = '회사명은 100자 이하여야 합니다.';
+  }
+
+  if (data.careerLevel.length > 50) {
+    errors.careerLevel = '경력은 50자 이하여야 합니다.';
+  }
+
   const hasInvalidCoverLetter = data.coverLetters.some((cl) => !cl.question.trim());
   if (hasInvalidCoverLetter) {
     errors.coverLetters = '자기소개서 항목에 질문을 입력해주세요.';
+  }
+
+  if (data.coverLetters.length > 20) {
+    errors.coverLetters = '자기소개서는 최대 20개까지 추가할 수 있습니다.';
+  }
+
+  if (data.coverLetters.some((cl) => cl.question.length > 500 || cl.answer.length > 10_000)) {
+    errors.coverLetters = '자기소개서 질문은 500자, 답변은 10,000자 이하여야 합니다.';
+  }
+
+  if (data.url) {
+    try {
+      const parsed = new URL(data.url);
+      if (!['http:', 'https:'].includes(parsed.protocol)) {
+        errors.url = '유효한 URL을 입력해주세요. (http 또는 https)';
+      }
+    } catch {
+      errors.url = '유효한 URL을 입력해주세요.';
+    }
   }
 
   return errors;

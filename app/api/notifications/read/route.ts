@@ -15,8 +15,12 @@ export async function PATCH(request: Request) {
       data: { isRead: true },
     });
   } else if (Array.isArray(body.ids) && body.ids.length > 0) {
+    if (body.ids.length > 100) {
+      return Response.json({ message: '한 번에 최대 100개까지 처리할 수 있습니다.' }, { status: 400 });
+    }
+    const validIds = body.ids.filter((id: unknown) => typeof id === 'string' && id.length < 50);
     await prisma.notification.updateMany({
-      where: { id: { in: body.ids }, userId },
+      where: { id: { in: validIds }, userId },
       data: { isRead: true },
     });
   } else {

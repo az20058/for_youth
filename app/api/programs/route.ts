@@ -1,4 +1,4 @@
-import { fetchAllYouthPolicies } from '@/lib/youthApi';
+import { prisma } from '@/lib/db';
 import { getAuthenticatedUserId } from '@/lib/auth';
 
 export async function GET(req: Request) {
@@ -11,32 +11,51 @@ export async function GET(req: Request) {
   const page = Math.max(1, Number(searchParams.get('page') ?? '1'));
   const limit = Math.min(50, Math.max(1, Number(searchParams.get('limit') ?? '20')));
   const category = searchParams.get('category') ?? '전체';
-
   const region = searchParams.get('region') ?? '전체';
 
-  const all = await fetchAllYouthPolicies();
-  const filtered = all.filter((p) => {
-    const categoryMatch = category === '전체' || p.mainCategory === category;
-    const validCodes = (p.zipCodes || '')
-      .split(',')
-      .map((c) => c.trim())
-      .filter((c) => /^\d{5}$/.test(c));
-    const regionMatch =
-      region === '전체' ||
-      validCodes.length === 0 ||
-      validCodes.some((c) => c.startsWith(region));
-    return categoryMatch && regionMatch;
-  });
-  const sorted = [...filtered].sort((a, b) => (b.viewCount ?? 0) - (a.viewCount ?? 0));
+  // DB 레벨 필터링
+  const where: Record<string, unknown> = {};
+  if (category !== '전체') {
+    where.mainCategory = category;
+  }
+  if (region !== '전체') {
+    where.zipCodes = { contains: region };
+  }
 
-  const total = sorted.length;
+  const [items, total, allCategories] = await Promise.all([
+    prisma.youthPolicy.findMany({
+      where,
+      orderBy: { viewCount: 'desc' },
+      skip: (page - 1) * limit,
+      take: limit,
+    }),
+    prisma.youthPolicy.count({ where }),
+    prisma.youthPolicy.findMany({
+      select: { mainCategory: true },
+      distinct: ['mainCategory'],
+    }),
+  ]);
+
   const totalPages = Math.ceil(total / limit);
-  const items = sorted.slice((page - 1) * limit, page * limit);
+  const categories = ['전체', ...allCategories.map((c) => c.mainCategory)];
 
-  const categories = ['전체', ...Array.from(new Set(all.map((p) => p.mainCategory ?? '기타')))];
+  const mapped = items.map((p) => ({
+    id: p.plcyNo,
+    name: p.name,
+    agency: p.agency,
+    mainCategory: p.mainCategory,
+    category: p.category,
+    description: p.description,
+    matchReason: '',
+    supportContent: p.supportContent ?? '',
+    applicationUrl: p.applicationUrl ?? '',
+    viewCount: p.viewCount,
+    region: p.region ?? '',
+    zipCodes: p.zipCodes ?? '',
+  }));
 
   return Response.json(
-    { items, total, totalPages, page, limit, categories },
+    { items: mapped, total, totalPages, page, limit, categories },
     { headers: { 'Cache-Control': 'public, max-age=300, stale-while-revalidate=600' } },
   );
 }

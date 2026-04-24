@@ -11,10 +11,13 @@ export const maxDuration = 300;
 
 function isAuthorized(req: NextRequest): boolean {
   const secret = process.env.CRON_SECRET;
-  if (!secret) return false;
+  if (!secret) {
+    console.error('[batch/nightly] CRON_SECRET 환경변수가 설정되지 않았습니다.');
+    return false;
+  }
   const authHeader = req.headers.get('authorization') ?? '';
   const expected = `Bearer ${secret}`;
-  if (authHeader.length !== expected.length) return false;
+  if (Buffer.byteLength(authHeader) !== Buffer.byteLength(expected)) return false;
   return timingSafeEqual(Buffer.from(authHeader), Buffer.from(expected));
 }
 

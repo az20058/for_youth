@@ -10,7 +10,7 @@ export async function GET(request: Request) {
 
   const { searchParams } = new URL(request.url);
   const limit = Math.min(Number(searchParams.get('limit')) || 10, 50);
-  const offset = Number(searchParams.get('offset')) || 0;
+  const offset = Math.min(Math.max(Number(searchParams.get('offset')) || 0, 0), 10000);
 
   const notifications = await prisma.notification.findMany({
     where: { userId },

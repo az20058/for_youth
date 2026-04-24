@@ -2,12 +2,22 @@ import { NextRequest, NextResponse } from 'next/server';
 import { spellCheckByDAUM } from 'hanspell';
 import type { RawTypo } from '@/lib/coverLetter';
 import { calculateTypoPositions } from '@/lib/coverLetter';
+import { getAuthenticatedUserId } from '@/lib/auth';
 
 export async function POST(req: NextRequest) {
+  const userId = await getAuthenticatedUserId();
+  if (!userId) {
+    return NextResponse.json({ error: '인증이 필요합니다.' }, { status: 401 });
+  }
+
   const { text } = await req.json();
 
   if (!text || typeof text !== 'string') {
     return NextResponse.json({ error: 'text is required' }, { status: 400 });
+  }
+
+  if (text.length > 10_000) {
+    return NextResponse.json({ error: '텍스트는 10,000자 이하여야 합니다.' }, { status: 400 });
   }
 
   return new Promise<NextResponse>((resolve) => {

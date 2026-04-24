@@ -81,6 +81,7 @@ model Account {
   user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
+  @@index([userId])
 }
 
 model CoverLetter {
@@ -90,6 +91,8 @@ model CoverLetter {
   type          CoverLetterType?
   application   Application      @relation(fields: [applicationId], references: [id], onDelete: Cascade)
   applicationId String
+
+  @@index([applicationId])
 }
 
 enum ApplicationStatus {
