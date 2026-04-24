@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useMemo } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { ProgramCard } from '@/components/ui/program-card';
 import { Button } from '@/components/ui/button';
@@ -11,6 +12,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import { ExternalLink } from 'lucide-react';
 import { SIDO_REGIONS } from '@/lib/quiz';
 import type { Recommendation } from '@/lib/quiz';
 
@@ -25,6 +34,9 @@ export function ProgramsList({ initialPolicies, initialCategories }: Props) {
   const [page, setPage] = useState(1);
   const [activeCategory, setActiveCategory] = useState('전체');
   const [activeRegion, setActiveRegion] = useState('전체');
+  const searchParams = useSearchParams();
+  const openId = searchParams.get('open');
+  const openPolicy = openId ? initialPolicies.find(p => p.id === openId) ?? null : null;
 
   const availableRegions = useMemo(() => {
     const categoryFiltered =
@@ -149,6 +161,35 @@ export function ProgramsList({ initialPolicies, initialCategories }: Props) {
             다음
           </Button>
         </div>
+      )}
+
+      {openPolicy && (
+        <Dialog defaultOpen>
+          <DialogContent className="flex flex-col max-h-[80vh]">
+            <DialogHeader>
+              <DialogTitle>{openPolicy.name}</DialogTitle>
+              <DialogDescription>{openPolicy.agency}</DialogDescription>
+            </DialogHeader>
+            <div className="overflow-y-auto flex-1 min-h-0">
+              {(openPolicy.supportContent || openPolicy.description) && (
+                <p className="text-sm leading-relaxed whitespace-pre-line">
+                  {openPolicy.supportContent || openPolicy.description}
+                </p>
+              )}
+            </div>
+            {openPolicy.applicationUrl && (
+              <a
+                href={openPolicy.applicationUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1 text-sm text-primary hover:opacity-80 transition-opacity"
+              >
+                신청하기
+                <ExternalLink className="size-4" />
+              </a>
+            )}
+          </DialogContent>
+        </Dialog>
       )}
     </div>
   );

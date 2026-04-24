@@ -1,10 +1,11 @@
-import { useRef, useState, useEffect } from 'react';
+import { useRef, useState, useEffect, useCallback } from 'react';
 import { View, Animated, StyleSheet, Platform, BackHandler } from 'react-native';
 import { WebView } from 'react-native-webview';
 import type { WebViewNavigation } from 'react-native-webview';
 import { SubTabBar } from './SubTabBar';
 import { useIsFocused } from './useIsFocused';
 import { getDirection } from './tabDirection';
+import { subscribePendingNav } from '../hooks/notificationNav';
 
 const BASE_URL = 'https://for-youth.site';
 
@@ -33,9 +34,45 @@ export function SubTabScreen({ tabs, defaultIndex = 0 }: SubTabScreenProps) {
   const [activeIndex, setActiveIndex] = useState(defaultIndex);
   const [canGoBack, setCanGoBack] = useState(false);
   const isFocused = useIsFocused();
+  const isFocusedRef = useRef(isFocused);
+  isFocusedRef.current = isFocused;
+  const pendingNavRef = useRef<string | null>(null);
   const translateX = useRef(new Animated.Value(0)).current;
   const opacity = useRef(new Animated.Value(1)).current;
   const prevFocused = useRef(isFocused);
+
+  const applyWebNav = useCallback((webUrl: string) => {
+    const urlPath = webUrl.split('?')[0];
+    const tabIndex = tabs.findIndex(t => t.path === urlPath);
+    if (tabIndex === -1) return;
+    setActiveIndex(tabIndex);
+    setTimeout(() => {
+      webViewRefs.current[tabIndex]?.injectJavaScript(
+        `window.location.href = '${BASE_URL}${webUrl}'; true;`
+      );
+    }, 150);
+  }, [tabs]);
+
+  useEffect(() => {
+    return subscribePendingNav((nav) => {
+      if (!nav) return;
+      const urlPath = nav.webUrl.split('?')[0];
+      if (tabs.findIndex(t => t.path === urlPath) === -1) return;
+      if (isFocusedRef.current) {
+        applyWebNav(nav.webUrl);
+      } else {
+        pendingNavRef.current = nav.webUrl;
+      }
+    });
+  }, [tabs, applyWebNav]);
+
+  useEffect(() => {
+    if (isFocused && pendingNavRef.current) {
+      const webUrl = pendingNavRef.current;
+      pendingNavRef.current = null;
+      applyWebNav(webUrl);
+    }
+  }, [isFocused, applyWebNav]);
 
   useEffect(() => {
     if (Platform.OS === 'android') {

@@ -87,7 +87,7 @@ export async function GET(req: NextRequest) {
           type: 'POLICY_MATCH' as const,
           title: `새 맞춤 정책 ${hits.length}건`,
           message: '회원님께 맞는 신규 정책이 등록되었어요. 눌러서 확인해보세요.',
-          relatedId: null,
+          relatedId: hits[0]?.id ?? null,
           dedupeKey: `policy-new:${userId}:${today}`,
         }];
       });

@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { Stack, router } from 'expo-router';
 import * as Notifications from 'expo-notifications';
+import { setPendingNav } from '../hooks/notificationNav';
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -11,17 +12,22 @@ Notifications.setNotificationHandler({
   }),
 });
 
-function getTabRoute(type: string): string {
-  switch (type) {
-    case 'SCHEDULE': return '/schedule';
-    case 'DEADLINE': return '/applications';
-    default: return '/';
-  }
-}
-
 function handleNotificationResponse(response: Notifications.NotificationResponse) {
-  const data = response.notification.request.content.data as { type?: string };
-  router.navigate(getTabRoute(data?.type ?? ''));
+  const data = response.notification.request.content.data as { type?: string; relatedId?: string | null };
+  const type = data?.type ?? '';
+  const relatedId = data?.relatedId;
+
+  if (type === 'POLICY_MATCH') {
+    const webUrl = relatedId ? `/programs?open=${relatedId}` : '/programs';
+    setPendingNav({ webUrl });
+    router.navigate('/');
+  } else if (type === 'SCHEDULE') {
+    router.navigate('/schedule');
+  } else if (type === 'DEADLINE') {
+    router.navigate('/applications');
+  } else {
+    router.navigate('/');
+  }
 }
 
 export default function RootLayout() {
