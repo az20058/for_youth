@@ -38,7 +38,6 @@ export async function summarizeCompany(
   "mainBusiness": ["핵심 사업 영역 1", "핵심 사업 영역 2"],
   "recentNews": ["최근 이슈 1", "최근 이슈 2"],
   "motivationHints": ["지원 동기 포인트 1", "지원 동기 포인트 2"],
-  "referenceSites": ["참고할 만한 공식 사이트 URL 1", "참고 사이트 URL 2"],
   "idealCandidate": ["이 기업이 원하는 인재상 1", "인재상 2"]
 }`,
   ].filter(Boolean).join('\n\n');
@@ -63,7 +62,7 @@ export async function summarizeCompany(
     mainBusiness: parsed.mainBusiness as string[],
     recentNews: (parsed.recentNews as string[]) ?? [],
     motivationHints: (parsed.motivationHints as string[]) ?? [],
-    referenceSites: (parsed.referenceSites as string[]) ?? [],
+    referenceSites: crawlResult.sourceUrls,
     idealCandidate: (parsed.idealCandidate as string[]) ?? [],
   };
 }

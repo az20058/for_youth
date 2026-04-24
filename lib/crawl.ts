@@ -2,6 +2,7 @@ export interface CrawlResult {
   corpInfo: string | null;
   webSnippets: string | null;
   newsHeadlines: string[];
+  sourceUrls: string[];
 }
 
 function timeoutSignal(ms: number): AbortSignal | undefined {
@@ -55,11 +56,16 @@ async function fetchCorpInfo(companyName: string): Promise<string | null> {
   }
 }
 
+interface WebSearchResult {
+  snippets: string | null;
+  urls: string[];
+}
+
 /** 네이버 웹검색 API로 기업 관련 정보를 가져온다 */
-async function fetchWebSearch(companyName: string): Promise<string | null> {
+async function fetchWebSearch(companyName: string): Promise<WebSearchResult> {
   const clientId = process.env.NAVER_CLIENT_ID;
   const clientSecret = process.env.NAVER_CLIENT_SECRET;
-  if (!clientId || !clientSecret) return null;
+  if (!clientId || !clientSecret) return { snippets: null, urls: [] };
 
   try {
     const query = `${companyName} 기업 회사`;
@@ -73,13 +79,14 @@ async function fetchWebSearch(companyName: string): Promise<string | null> {
         signal: timeoutSignal(5000),
       },
     );
-    if (!res.ok) return null;
+    if (!res.ok) return { snippets: null, urls: [] };
 
     const data = (await res.json()) as {
-      items?: { title: string; description: string }[];
+      items?: { title: string; description: string; link: string }[];
     };
 
-    const snippets = (data.items ?? [])
+    const items = data.items ?? [];
+    const snippets = items
       .map((item) => {
         const title = item.title.replace(/<[^>]+>/g, '');
         const desc = item.description.replace(/<[^>]+>/g, '');
@@ -88,17 +95,27 @@ async function fetchWebSearch(companyName: string): Promise<string | null> {
       .filter(Boolean)
       .slice(0, 5);
 
-    return snippets.length > 0 ? snippets.join('\n') : null;
+    const urls = items.map((item) => item.link).filter(Boolean).slice(0, 5);
+
+    return {
+      snippets: snippets.length > 0 ? snippets.join('\n') : null,
+      urls,
+    };
   } catch {
-    return null;
+    return { snippets: null, urls: [] };
   }
 }
 
+interface NewsResult {
+  headlines: string[];
+  urls: string[];
+}
+
 /** 네이버 뉴스 검색 API */
-async function fetchNaverNews(companyName: string): Promise<string[]> {
+async function fetchNaverNews(companyName: string): Promise<NewsResult> {
   const clientId = process.env.NAVER_CLIENT_ID;
   const clientSecret = process.env.NAVER_CLIENT_SECRET;
-  if (!clientId || !clientSecret) return [];
+  if (!clientId || !clientSecret) return { headlines: [], urls: [] };
 
   try {
     const res = await fetch(
@@ -111,17 +128,24 @@ async function fetchNaverNews(companyName: string): Promise<string[]> {
         signal: timeoutSignal(5000),
       },
     );
-    if (!res.ok) return [];
+    if (!res.ok) return { headlines: [], urls: [] };
 
     const data = (await res.json()) as {
-      items?: { title: string }[];
+      items?: { title: string; originallink: string; link: string }[];
     };
 
-    return (data.items ?? [])
-      .map((item) => item.title.replace(/<[^>]+>/g, '').replace(/&quot;/g, '"').replace(/&amp;/g, '&'))
-      .slice(0, 10);
+    const items = data.items ?? [];
+    return {
+      headlines: items
+        .map((item) => item.title.replace(/<[^>]+>/g, '').replace(/&quot;/g, '"').replace(/&amp;/g, '&'))
+        .slice(0, 10),
+      urls: items
+        .map((item) => item.originallink || item.link)
+        .filter(Boolean)
+        .slice(0, 3),
+    };
   } catch {
-    return [];
+    return { headlines: [], urls: [] };
   }
 }
 
@@ -155,23 +179,30 @@ async function fetchGoogleNews(companyName: string): Promise<string[]> {
 }
 
 export async function crawlCompanyInfo(companyName: string): Promise<CrawlResult> {
-  const [corpInfo, webSnippets, naverNews, googleNews] = await Promise.all([
+  const [corpInfo, webSearch, naverNews, googleNews] = await Promise.all([
     fetchCorpInfo(companyName),
     fetchWebSearch(companyName),
     fetchNaverNews(companyName),
     fetchGoogleNews(companyName),
   ]);
 
-
   // 네이버 + 구글 뉴스 합치고 중복 제거
   const seen = new Set<string>();
   const newsHeadlines: string[] = [];
-  for (const title of [...naverNews, ...googleNews]) {
+  for (const title of [...naverNews.headlines, ...googleNews]) {
     if (!seen.has(title)) {
       seen.add(title);
       newsHeadlines.push(title);
     }
   }
 
-  return { corpInfo, webSnippets, newsHeadlines: newsHeadlines.slice(0, 15) };
+  // 출처 URL 수집 (웹검색 + 뉴스)
+  const sourceUrls = [...webSearch.urls, ...naverNews.urls];
+
+  return {
+    corpInfo,
+    webSnippets: webSearch.snippets,
+    newsHeadlines: newsHeadlines.slice(0, 15),
+    sourceUrls,
+  };
 }
