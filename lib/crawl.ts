@@ -17,10 +17,10 @@ async function fetchCorpInfo(companyName: string): Promise<string | null> {
 
   try {
     const url =
-      `https://apis.data.go.kr/1160100/service/GetCorpBasicInfoService/getCorpOutline` +
+      `https://apis.data.go.kr/1160100/service/GetCorpBasicInfoService_V2/getCorpOutline_V2` +
       `?serviceKey=${encodeURIComponent(apiKey)}` +
       `&corpNm=${encodeURIComponent(companyName)}` +
-      `&numOfRows=1&pageNo=1&resultType=json`;
+      `&numOfRows=5&pageNo=1&resultType=json`;
 
     const res = await fetch(url, { signal: timeoutSignal(5000) });
     if (!res.ok) return null;
@@ -37,15 +37,16 @@ async function fetchCorpInfo(companyName: string): Promise<string | null> {
     const items = data?.response?.body?.items?.item;
     if (!items || items.length === 0) return null;
 
-    const corp = items[0];
+    // 정확히 일치하는 기업명 우선, 없으면 첫 번째 결과
+    const corp = items.find((i) => i.corpNm === companyName) ?? items[0];
     const lines = [
       corp.corpNm && `기업명: ${corp.corpNm}`,
       corp.enpRprFnm && `대표자: ${corp.enpRprFnm}`,
-      corp.indutyNm && `업종: ${corp.indutyNm}`,
+      corp.enpMainBizNm && `업종: ${corp.enpMainBizNm}`,
       corp.enpBsadr && `주소: ${corp.enpBsadr}`,
       corp.enpHmpgUrl && `홈페이지: ${corp.enpHmpgUrl}`,
       corp.enpEstbDt && `설립일: ${corp.enpEstbDt}`,
-      corp.enpEmpeCnt && `직원수: ${corp.enpEmpeCnt}명`,
+      corp.enpEmpeCnt && corp.enpEmpeCnt !== '0' && `직원수: ${corp.enpEmpeCnt}명`,
     ].filter(Boolean);
 
     return lines.length > 0 ? lines.join('\n') : null;
