@@ -10,6 +10,11 @@ export async function fetchApplications(): Promise<Application[]> {
   return data.map((app) => ({ ...app, deadline: app.deadline ? new Date(app.deadline) : null }));
 }
 
+export async function deleteApplication(id: string): Promise<void> {
+  const res = await fetch(`/api/applications/${id}`, { method: 'DELETE' });
+  if (!res.ok) throw new Error('지원서 삭제에 실패했습니다.');
+}
+
 export async function postApplication(data: NewApplicationData): Promise<Application> {
   const res = await fetch('/api/applications', {
     method: 'POST',

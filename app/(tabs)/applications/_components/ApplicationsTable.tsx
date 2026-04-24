@@ -4,7 +4,7 @@ import { useState, useRef, useEffect, useMemo } from 'react';
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
 import { format } from 'date-fns';
-import { ExternalLinkIcon, PlusIcon, CheckIcon, XIcon, ChevronRightIcon } from 'lucide-react';
+import { ExternalLinkIcon, PlusIcon, CheckIcon, XIcon, ChevronRightIcon, Trash2Icon } from 'lucide-react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import {
   useReactTable,
@@ -29,6 +29,14 @@ import {
   DrawerFooter,
   DrawerClose,
 } from '@/components/ui/drawer';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+  DialogClose,
+} from '@/components/ui/dialog';
 import { FlameLoading } from '@/components/ui/flame-loading';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -43,7 +51,7 @@ import { cn } from '@/lib/utils';
 import { calculateDDay, formatDDay } from '@/lib/dday';
 import { statusBadgeClass } from '@/lib/statusBadge';
 import type { Application, ApplicationStatus } from '@/lib/types';
-import { fetchApplications, postApplication, type ApplicationDTO } from '@/lib/api';
+import { fetchApplications, postApplication, deleteApplication, type ApplicationDTO } from '@/lib/api';
 import {
   validateApplication,
   COMPANY_SIZES,
@@ -161,6 +169,7 @@ export function ApplicationsTable({ initialData }: Props) {
   const [isAddingRow, setIsAddingRow] = useState(false);
   const [newRow, setNewRow] = useState<NewRowState>(INITIAL_NEW_ROW);
   const [errors, setErrors] = useState<FormErrors>({});
+  const [deletingId, setDeletingId] = useState<string | null>(null);
   const firstInputRef = useRef<HTMLInputElement>(null);
 
   const { data: applications = [], isLoading, isError } = useQuery({
@@ -170,6 +179,18 @@ export function ApplicationsTable({ initialData }: Props) {
       ...app,
       deadline: app.deadline ? new Date(app.deadline) : null,
     })),
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: deleteApplication,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['applications'] });
+      setDeletingId(null);
+      toast.success('지원서가 삭제되었습니다.');
+    },
+    onError: () => {
+      toast.error('지원서 삭제에 실패했습니다.');
+    },
   });
 
   const mutation = useMutation({
@@ -310,6 +331,15 @@ export function ApplicationsTable({ initialData }: Props) {
                 <Badge className={cn('whitespace-nowrap text-xs shrink-0', statusBadgeClass(app.status))}>
                   {app.status}
                 </Badge>
+                <Button
+                  size="icon"
+                  variant="ghost"
+                  className="size-7 shrink-0 text-muted-foreground hover:text-destructive"
+                  aria-label="삭제"
+                  onClick={(e) => { e.stopPropagation(); setDeletingId(app.id); }}
+                >
+                  <Trash2Icon className="size-4" />
+                </Button>
                 <ChevronRightIcon className="size-4 text-muted-foreground shrink-0" />
               </div>
             );
@@ -343,12 +373,13 @@ export function ApplicationsTable({ initialData }: Props) {
                       </TableHead>
                     );
                   })}
+                  <TableHead className="w-10" />
                 </TableRow>
               ))}
             </TableHeader>
             <TableBody>
               {isAddingRow && (
-                <TableRow className="bg-muted/20 hover:bg-muted/20">
+                <TableRow className="bg-muted/20 hover:bg-muted/20 group">
                   <TableCell>
                     <input
                       ref={firstInputRef}
@@ -419,27 +450,28 @@ export function ApplicationsTable({ initialData }: Props) {
                       </Button>
                     </div>
                   </TableCell>
+                  <TableCell />
                 </TableRow>
               )}
               {isLoading ? (
                 <TableRow>
-                  <TableCell colSpan={columns.length}><FlameLoading /></TableCell>
+                  <TableCell colSpan={columns.length + 1}><FlameLoading /></TableCell>
                 </TableRow>
               ) : isError ? (
                 <TableRow>
-                  <TableCell colSpan={columns.length} className="text-center text-muted-foreground py-12">
+                  <TableCell colSpan={columns.length + 1} className="text-center text-muted-foreground py-12">
                     데이터를 불러오지 못했습니다.
                   </TableCell>
                 </TableRow>
               ) : table.getRowModel().rows.length === 0 && !isAddingRow ? (
                 <TableRow>
-                  <TableCell colSpan={columns.length} className="text-center text-muted-foreground py-12">
+                  <TableCell colSpan={columns.length + 1} className="text-center text-muted-foreground py-12">
                     지원서가 없습니다.
                   </TableCell>
                 </TableRow>
               ) : (
                 table.getRowModel().rows.map((row) => (
-                  <TableRow key={row.id} className="cursor-pointer" onClick={() => router.push(`/applications/${row.original.id}`)}>
+                  <TableRow key={row.id} className="cursor-pointer group" onClick={() => router.push(`/applications/${row.original.id}`)}>
                     {row.getVisibleCells().map((cell) => {
                       const meta = cell.column.columnDef.meta as { className?: string } | undefined;
                       return (
@@ -448,6 +480,17 @@ export function ApplicationsTable({ initialData }: Props) {
                         </TableCell>
                       );
                     })}
+                    <TableCell className="w-10 text-right" onClick={(e) => e.stopPropagation()}>
+                      <Button
+                        size="icon"
+                        variant="ghost"
+                        className="size-7 opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-destructive"
+                        aria-label="삭제"
+                        onClick={() => setDeletingId(row.original.id)}
+                      >
+                        <Trash2Icon className="size-3.5" />
+                      </Button>
+                    </TableCell>
                   </TableRow>
                 ))
               )}
@@ -465,6 +508,28 @@ export function ApplicationsTable({ initialData }: Props) {
           )}
         </div>
       </div>
+
+      {/* 삭제 확인 다이얼로그 */}
+      <Dialog open={deletingId !== null} onOpenChange={(open) => { if (!open) setDeletingId(null); }}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader>
+            <DialogTitle>지원서 삭제</DialogTitle>
+          </DialogHeader>
+          <p className="text-sm text-muted-foreground">이 지원서를 삭제하면 복구할 수 없습니다. 계속하시겠습니까?</p>
+          <DialogFooter className="gap-2 sm:gap-0">
+            <DialogClose asChild>
+              <Button variant="outline">취소</Button>
+            </DialogClose>
+            <Button
+              variant="destructive"
+              disabled={deleteMutation.isPending}
+              onClick={() => deletingId && deleteMutation.mutate(deletingId)}
+            >
+              삭제
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       {/* 모바일 새 지원서 Drawer */}
       <Drawer open={isDrawerOpen} onOpenChange={setIsDrawerOpen}>
