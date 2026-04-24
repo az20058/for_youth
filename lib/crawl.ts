@@ -128,14 +128,25 @@ async function fetchNaverNews(companyName: string): Promise<string[]> {
 async function fetchGoogleNews(companyName: string): Promise<string[]> {
   try {
     const res = await fetch(
-      `https://news.google.com/rss/search?q=${encodeURIComponent(companyName)}&hl=ko&gl=KR`,
-      { headers: { 'User-Agent': BROWSER_UA }, signal: timeoutSignal(8000) },
+      `https://news.google.com/rss/search?q=${encodeURIComponent(companyName)}&hl=ko&gl=KR&ceid=KR:ko`,
+      {
+        headers: {
+          'User-Agent': BROWSER_UA,
+          'Cookie': 'CONSENT=PENDING+987',
+        },
+        signal: timeoutSignal(8000),
+      },
     );
     if (!res.ok) return [];
     const xml = await res.text();
-    return [...xml.matchAll(/<title>\s*<!\[CDATA\[(.*?)\]\]>\s*<\/title>/g)]
-      .map((m) => m[1])
-      .filter((t) => !t.includes('Google 뉴스'))
+
+    // CDATA 형식과 일반 title 형식 모두 지원
+    const cdataMatches = [...xml.matchAll(/<title>\s*<!\[CDATA\[(.*?)\]\]>\s*<\/title>/g)].map((m) => m[1]);
+    const plainMatches = [...xml.matchAll(/<title>([^<]+)<\/title>/g)].map((m) => m[1]);
+    const all = cdataMatches.length > 0 ? cdataMatches : plainMatches;
+
+    return all
+      .filter((t) => !t.includes('Google 뉴스') && !t.includes('Google News'))
       .slice(0, 10);
   } catch {
     return [];
@@ -149,6 +160,7 @@ export async function crawlCompanyInfo(companyName: string): Promise<CrawlResult
     fetchNaverNews(companyName),
     fetchGoogleNews(companyName),
   ]);
+
 
   // 네이버 + 구글 뉴스 합치고 중복 제거
   const seen = new Set<string>();
