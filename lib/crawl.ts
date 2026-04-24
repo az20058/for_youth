@@ -84,7 +84,39 @@ async function fetchWebSearch(companyName: string): Promise<string | null> {
   }
 }
 
-export async function fetchGoogleNews(companyName: string): Promise<string[]> {
+/** 네이버 뉴스 검색 API */
+async function fetchNaverNews(companyName: string): Promise<string[]> {
+  const clientId = process.env.NAVER_CLIENT_ID;
+  const clientSecret = process.env.NAVER_CLIENT_SECRET;
+  if (!clientId || !clientSecret) return [];
+
+  try {
+    const res = await fetch(
+      `https://openapi.naver.com/v1/search/news.json?query=${encodeURIComponent(companyName)}&display=10&sort=date`,
+      {
+        headers: {
+          'X-Naver-Client-Id': clientId,
+          'X-Naver-Client-Secret': clientSecret,
+        },
+        signal: timeoutSignal(5000),
+      },
+    );
+    if (!res.ok) return [];
+
+    const data = (await res.json()) as {
+      items?: { title: string }[];
+    };
+
+    return (data.items ?? [])
+      .map((item) => item.title.replace(/<[^>]+>/g, '').replace(/&quot;/g, '"').replace(/&amp;/g, '&'))
+      .slice(0, 10);
+  } catch {
+    return [];
+  }
+}
+
+/** Google News RSS */
+async function fetchGoogleNews(companyName: string): Promise<string[]> {
   try {
     const res = await fetch(
       `https://news.google.com/rss/search?q=${encodeURIComponent(companyName)}&hl=ko&gl=KR`,
@@ -102,10 +134,22 @@ export async function fetchGoogleNews(companyName: string): Promise<string[]> {
 }
 
 export async function crawlCompanyInfo(companyName: string): Promise<CrawlResult> {
-  const [corpInfo, webSnippets, newsHeadlines] = await Promise.all([
+  const [corpInfo, webSnippets, naverNews, googleNews] = await Promise.all([
     fetchCorpInfo(companyName),
     fetchWebSearch(companyName),
+    fetchNaverNews(companyName),
     fetchGoogleNews(companyName),
   ]);
-  return { corpInfo, webSnippets, newsHeadlines };
+
+  // 네이버 + 구글 뉴스 합치고 중복 제거
+  const seen = new Set<string>();
+  const newsHeadlines: string[] = [];
+  for (const title of [...naverNews, ...googleNews]) {
+    if (!seen.has(title)) {
+      seen.add(title);
+      newsHeadlines.push(title);
+    }
+  }
+
+  return { corpInfo, webSnippets, newsHeadlines: newsHeadlines.slice(0, 15) };
 }
