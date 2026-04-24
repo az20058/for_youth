@@ -10,17 +10,26 @@ function timeoutSignal(ms: number): AbortSignal | undefined {
 const BROWSER_UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36';
 
 export async function fetchNamuWiki(companyName: string): Promise<string | null> {
-  try {
-    const res = await fetch(
-      `https://namu.wiki/raw/${encodeURIComponent(companyName)}`,
-      { headers: { 'User-Agent': BROWSER_UA }, signal: timeoutSignal(8000) },
-    );
-    if (!res.ok) return null;
-    const text = await res.text();
-    return text.slice(0, 3000);
-  } catch {
-    return null;
+  // 기업 동음이의어 페이지 우선 시도, 없으면 일반 페이지
+  const candidates = [
+    `${companyName} (기업)`,
+    companyName,
+  ];
+
+  for (const name of candidates) {
+    try {
+      const res = await fetch(
+        `https://namu.wiki/raw/${encodeURIComponent(name)}`,
+        { headers: { 'User-Agent': BROWSER_UA }, signal: timeoutSignal(8000) },
+      );
+      if (!res.ok) continue;
+      const text = await res.text();
+      return text.slice(0, 3000);
+    } catch {
+      continue;
+    }
   }
+  return null;
 }
 
 export async function fetchGoogleNews(companyName: string): Promise<string[]> {
