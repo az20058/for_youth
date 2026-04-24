@@ -22,11 +22,17 @@ export async function summarizeCompany(
       ? `[최근 뉴스]\n${crawlResult.newsHeadlines.join('\n')}`
       : '';
 
+  const hasCrawlData = !!(namuSection || newsSection);
+
+  const instruction = hasCrawlData
+    ? `위 내용을 바탕으로 취업 준비생이 지원 동기를 작성할 수 있도록 아래 항목을 JSON 형식으로 한국어로 답해주세요.`
+    : `당신이 알고 있는 정보를 바탕으로 취업 준비생이 지원 동기를 작성할 수 있도록 아래 항목을 JSON 형식으로 한국어로 답해주세요. 정보가 부족하면 일반적인 내용으로 작성하세요.`;
+
   const prompt = [
-    `다음은 ${companyName}에 대한 정보입니다.`,
+    hasCrawlData ? `다음은 ${companyName}에 대한 정보입니다.` : `"${companyName}"이라는 기업에 대해 분석해주세요.`,
     namuSection,
     newsSection,
-    `위 내용을 바탕으로 취업 준비생이 지원 동기를 작성할 수 있도록 아래 항목을 JSON 형식으로 한국어로 답해주세요. 반드시 아래 형식의 JSON만 출력하세요:
+    `${instruction} 반드시 아래 형식의 JSON만 출력하세요:
 {
   "overview": "기업 개요 (2-3문장)",
   "mainBusiness": ["핵심 사업 영역 1", "핵심 사업 영역 2"],
