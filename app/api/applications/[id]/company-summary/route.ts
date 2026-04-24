@@ -46,7 +46,7 @@ export async function POST(
 
   try {
     const crawlResult = await crawlCompanyInfo(companyName);
-    if (!crawlResult.namuWiki && crawlResult.newsHeadlines.length === 0) {
+    if (!crawlResult.corpInfo && !crawlResult.webSnippets && crawlResult.newsHeadlines.length === 0) {
       return Response.json({ message: `"${companyName}"에 대한 크롤링 데이터를 찾을 수 없습니다.` }, { status: 422 });
     }
 

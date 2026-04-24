@@ -16,8 +16,11 @@ export async function summarizeCompany(
 ): Promise<CompanySummaryData> {
   const client = new Anthropic();
 
-  const namuSection = crawlResult.namuWiki
-    ? `[나무위키 원문]\n${crawlResult.namuWiki}`
+  const corpSection = crawlResult.corpInfo
+    ? `[기업 기본정보 (금융위원회)]\n${crawlResult.corpInfo}`
+    : '';
+  const webSection = crawlResult.webSnippets
+    ? `[웹 검색 결과]\n${crawlResult.webSnippets}`
     : '';
   const newsSection =
     crawlResult.newsHeadlines.length > 0
@@ -26,7 +29,8 @@ export async function summarizeCompany(
 
   const prompt = [
     `"${companyName}"은(는) 사용자가 취업을 지원한 기업의 이름입니다. 아래 정보 중 이 기업과 관련 없는 내용(동명의 다른 제품, 인물, 게임 등)은 무시하세요.`,
-    namuSection,
+    corpSection,
+    webSection,
     newsSection,
     `위 내용 중 "${companyName}" 기업에 해당하는 정보만을 바탕으로 취업 준비생이 지원 동기를 작성할 수 있도록 아래 항목을 JSON 형식으로 한국어로 답해주세요. 반드시 아래 형식의 JSON만 출력하세요:
 {

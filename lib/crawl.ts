@@ -1,5 +1,6 @@
 export interface CrawlResult {
-  namuWiki: string | null;
+  corpInfo: string | null;
+  webSnippets: string | null;
   newsHeadlines: string[];
 }
 
@@ -9,27 +10,78 @@ function timeoutSignal(ms: number): AbortSignal | undefined {
 
 const BROWSER_UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36';
 
-export async function fetchNamuWiki(companyName: string): Promise<string | null> {
-  // 기업 동음이의어 페이지 우선 시도, 없으면 일반 페이지
-  const candidates = [
-    `${companyName} (기업)`,
-    companyName,
-  ];
+/** 금융위원회 기업기본정보 API에서 기업 데이터를 가져온다 */
+async function fetchCorpInfo(companyName: string): Promise<string | null> {
+  const apiKey = process.env.DATA_GO_KR_API_KEY;
+  if (!apiKey) return null;
 
-  for (const name of candidates) {
-    try {
-      const res = await fetch(
-        `https://namu.wiki/raw/${encodeURIComponent(name)}`,
-        { headers: { 'User-Agent': BROWSER_UA }, signal: timeoutSignal(8000) },
-      );
-      if (!res.ok) continue;
-      const text = await res.text();
-      return text.slice(0, 3000);
-    } catch {
-      continue;
-    }
+  try {
+    const url =
+      `https://apis.data.go.kr/1160100/service/GetCorpBasicInfoService/getCorpOutline` +
+      `?serviceKey=${encodeURIComponent(apiKey)}` +
+      `&corpNm=${encodeURIComponent(companyName)}` +
+      `&numOfRows=1&pageNo=1&resultType=json`;
+
+    const res = await fetch(url, { signal: timeoutSignal(5000) });
+    if (!res.ok) return null;
+
+    const data = (await res.json()) as {
+      response?: {
+        body?: {
+          totalCount?: number;
+          items?: { item?: Record<string, string>[] };
+        };
+      };
+    };
+
+    const items = data?.response?.body?.items?.item;
+    if (!items || items.length === 0) return null;
+
+    const corp = items[0];
+    const lines = [
+      corp.corpNm && `기업명: ${corp.corpNm}`,
+      corp.enpRprFnm && `대표자: ${corp.enpRprFnm}`,
+      corp.indutyNm && `업종: ${corp.indutyNm}`,
+      corp.enpBsadr && `주소: ${corp.enpBsadr}`,
+      corp.enpHmpgUrl && `홈페이지: ${corp.enpHmpgUrl}`,
+      corp.enpEstbDt && `설립일: ${corp.enpEstbDt}`,
+      corp.enpEmpeCnt && `직원수: ${corp.enpEmpeCnt}명`,
+    ].filter(Boolean);
+
+    return lines.length > 0 ? lines.join('\n') : null;
+  } catch {
+    return null;
   }
-  return null;
+}
+
+/** DuckDuckGo에서 기업 관련 웹 검색 스니펫을 가져온다 */
+async function fetchWebSearch(companyName: string): Promise<string | null> {
+  try {
+    const query = `${companyName} 기업 회사 채용`;
+    const res = await fetch(
+      `https://html.duckduckgo.com/html/?q=${encodeURIComponent(query)}`,
+      {
+        method: 'POST',
+        headers: {
+          'User-Agent': BROWSER_UA,
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: `q=${encodeURIComponent(query)}`,
+        signal: timeoutSignal(8000),
+      },
+    );
+    if (!res.ok) return null;
+    const html = await res.text();
+
+    const snippets = [...html.matchAll(/<a class="result__snippet"[^>]*>([\s\S]*?)<\/a>/g)]
+      .map((m) => m[1].replace(/<[^>]+>/g, '').replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').trim())
+      .filter(Boolean)
+      .slice(0, 5);
+
+    return snippets.length > 0 ? snippets.join('\n') : null;
+  } catch {
+    return null;
+  }
 }
 
 export async function fetchGoogleNews(companyName: string): Promise<string[]> {
@@ -50,9 +102,10 @@ export async function fetchGoogleNews(companyName: string): Promise<string[]> {
 }
 
 export async function crawlCompanyInfo(companyName: string): Promise<CrawlResult> {
-  const [namuWiki, newsHeadlines] = await Promise.all([
-    fetchNamuWiki(companyName),
+  const [corpInfo, webSnippets, newsHeadlines] = await Promise.all([
+    fetchCorpInfo(companyName),
+    fetchWebSearch(companyName),
     fetchGoogleNews(companyName),
   ]);
-  return { namuWiki, newsHeadlines };
+  return { corpInfo, webSnippets, newsHeadlines };
 }
