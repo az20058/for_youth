@@ -6,7 +6,12 @@ import { summarizeCompany } from '@/lib/companySummary';
 const CACHE_DURATION_MS = 24 * 60 * 60 * 1000;
 
 function normalizeCompanyName(name: string): string {
-  return name.trim();
+  return name
+    .trim()
+    .replace(/^주식회사\s*|\s*주식회사$/g, '')
+    .replace(/^\(주\)\s*|\s*\(주\)$/g, '')
+    .replace(/,?\s*(Inc\.?|Corp\.?|Ltd\.?|LLC|Co\.?,?\s*Ltd\.?)$/i, '')
+    .trim();
 }
 
 export async function POST(
