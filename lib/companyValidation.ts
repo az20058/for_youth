@@ -58,7 +58,7 @@ async function checkWithAI(companyName: string): Promise<boolean> {
  */
 export async function validateCompanyName(companyName: string): Promise<boolean> {
   const apiResult = await checkCorpApi(companyName);
-  if (apiResult !== null) return apiResult;
+  if (apiResult === true) return true;
 
   return checkWithAI(companyName);
 }
