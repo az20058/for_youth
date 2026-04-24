@@ -2,7 +2,6 @@ import { prisma } from '@/lib/db';
 import { getAuthenticatedUserId } from '@/lib/auth';
 import { crawlCompanyInfo } from '@/lib/crawl';
 import { summarizeCompany } from '@/lib/companySummary';
-import { validateCompanyName } from '@/lib/companyValidation';
 
 const CACHE_DURATION_MS = 24 * 60 * 60 * 1000;
 
@@ -44,11 +43,6 @@ export async function POST(
   }
 
   try {
-    const isValid = await validateCompanyName(companyName);
-    if (!isValid) {
-      return Response.json({ message: '유효한 기업명이 아닙니다.' }, { status: 422 });
-    }
-
     const crawlResult = await crawlCompanyInfo(companyName);
     const summary = await summarizeCompany(companyName, crawlResult);
 
