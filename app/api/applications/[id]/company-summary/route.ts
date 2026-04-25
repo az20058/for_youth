@@ -14,6 +14,37 @@ function normalizeCompanyName(name: string): string {
     .trim();
 }
 
+export async function GET(
+  _req: Request,
+  { params }: { params: Promise<{ id: string }> },
+) {
+  const userId = await getAuthenticatedUserId();
+  if (!userId) return Response.json({ message: '인증이 필요합니다.' }, { status: 401 });
+
+  const { id } = await params;
+
+  const application = await prisma.application.findFirst({
+    where: { id, userId, deletedAt: null },
+    select: { companyName: true },
+  });
+  if (!application) return Response.json({ message: '지원서를 찾을 수 없습니다.' }, { status: 404 });
+
+  const companyName = normalizeCompanyName(application.companyName);
+
+  const existing = await prisma.companySummary.findUnique({ where: { companyName } });
+  if (!existing) return Response.json({ message: '캐시 없음' }, { status: 404 });
+
+  return Response.json({
+    overview: existing.overview,
+    mainBusiness: JSON.parse(existing.mainBusiness) as string[],
+    recentNews: JSON.parse(existing.recentNews) as string[],
+    motivationHints: JSON.parse(existing.motivationHints) as string[],
+    referenceSites: JSON.parse(existing.referenceSites) as string[],
+    idealCandidate: JSON.parse(existing.idealCandidate) as string[],
+    crawledAt: existing.crawledAt.toISOString(),
+  });
+}
+
 export async function POST(
   _req: Request,
   { params }: { params: Promise<{ id: string }> },
