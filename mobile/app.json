@@ -37,7 +37,9 @@
           "icon": "./assets/icon.png",
           "color": "#ffffff"
         }
-      ]
+      ],
+      "expo-secure-store",
+      "expo-sqlite"
     ],
     "extra": {
       "router": {},

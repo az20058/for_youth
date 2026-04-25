@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { Stack, router } from 'expo-router';
 import * as Notifications from 'expo-notifications';
 import { setPendingNav } from '../hooks/notificationNav';
+import { AuthGate } from '../components/AuthGate';
 import { COLORS } from '../constants/colors';
 
 Notifications.setNotificationHandler({
@@ -42,8 +43,11 @@ export default function RootLayout() {
   }, []);
 
   return (
-    <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: COLORS.background } }}>
-      <Stack.Screen name="(tabs)" />
-    </Stack>
+    <AuthGate>
+      <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: COLORS.background } }}>
+        <Stack.Screen name="(tabs)" />
+        <Stack.Screen name="editor" options={{ presentation: 'modal' }} />
+      </Stack>
+    </AuthGate>
   );
 }

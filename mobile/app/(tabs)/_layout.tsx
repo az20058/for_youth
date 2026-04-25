@@ -1,5 +1,5 @@
 import { Tabs } from 'expo-router';
-import { Home, Briefcase, Calendar, User } from 'lucide-react-native';
+import { Home, Briefcase, Calendar, Bell, User } from 'lucide-react-native';
 import { View, Text, StyleSheet } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import { onTabChange } from '../../components/tabDirection';
@@ -88,6 +88,13 @@ export default function TabsLayout() {
         options={{
           title: '일정',
           tabBarIcon: ({ color }) => <Calendar size={20} color={color} />,
+        }}
+      />
+      <Tabs.Screen
+        name="notifications"
+        options={{
+          title: '알림',
+          tabBarIcon: ({ color }) => <Bell size={20} color={color} />,
         }}
       />
       <Tabs.Screen

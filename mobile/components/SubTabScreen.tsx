@@ -2,6 +2,7 @@ import { useRef, useState, useEffect, useCallback } from 'react';
 import { View, Animated, StyleSheet, Platform, BackHandler, ActivityIndicator, Text, Pressable, type NativeSyntheticEvent } from 'react-native';
 import { WebView } from 'react-native-webview';
 import type { WebViewNavigation } from 'react-native-webview';
+import { router } from 'expo-router';
 import { SubTabBar } from './SubTabBar';
 import { useIsFocused } from './useIsFocused';
 import { subscribePendingNav } from '../hooks/notificationNav';
@@ -124,6 +125,23 @@ export function SubTabScreen({ tabs, defaultIndex = 0 }: SubTabScreenProps) {
     }
   };
 
+  const handleWebViewMessage = (index: number) => (event: { nativeEvent: { data: string } }) => {
+    try {
+      const data = JSON.parse(event.nativeEvent.data);
+      if (data.action === 'openEditor' && data.applicationId) {
+        router.push({
+          pathname: '/editor',
+          params: {
+            applicationId: data.applicationId,
+            coverLetters: JSON.stringify(data.coverLetters || []),
+          },
+        });
+      }
+    } catch {
+      // ignore invalid messages
+    }
+  };
+
   const handleRetry = (index: number) => () => {
     setErrorTabs(prev => {
       const next = new Set(prev);
@@ -164,6 +182,7 @@ export function SubTabScreen({ tabs, defaultIndex = 0 }: SubTabScreenProps) {
                 onLoadEnd={handleLoadEnd(index)}
                 onError={handleError(index)}
                 onHttpError={handleHttpError(index)}
+                onMessage={handleWebViewMessage(index)}
                 injectedJavaScript={HIDE_WEB_CHROME_JS}
                 userAgent={USER_AGENT}
                 javaScriptEnabled
