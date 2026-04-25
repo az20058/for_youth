@@ -1,6 +1,7 @@
-import { useRef, useEffect, useState, useMemo } from 'react';
+import { useRef, useEffect, useState, useMemo, memo, useCallback } from 'react';
 import { View, Text, Pressable, Animated, StyleSheet, LayoutChangeEvent } from 'react-native';
 import * as Haptics from 'expo-haptics';
+import { COLORS } from '../constants/colors';
 
 interface Tab {
   label: string;
@@ -13,19 +14,19 @@ interface SubTabBarProps {
   onTabPress: (index: number) => void;
 }
 
-export function SubTabBar({ tabs, activeIndex, onTabPress }: SubTabBarProps) {
-  const animValue = useMemo(() => new Animated.Value(0), []);
+export const SubTabBar = memo(function SubTabBar({ tabs, activeIndex, onTabPress }: SubTabBarProps) {
+  const animValue = useRef(new Animated.Value(0)).current;
   const [tabWidths, setTabWidths] = useState<number[]>([]);
   const isFirstRender = useRef(true);
 
-  const handleLayout = (index: number) => (e: LayoutChangeEvent) => {
+  const handleLayout = useCallback((index: number) => (e: LayoutChangeEvent) => {
     const width = e.nativeEvent.layout.width;
     setTabWidths((prev) => {
       const next = [...prev];
       next[index] = width;
       return next;
     });
-  };
+  }, []);
 
   useEffect(() => {
     if (tabWidths.length < tabs.length) return;
@@ -43,11 +44,11 @@ export function SubTabBar({ tabs, activeIndex, onTabPress }: SubTabBarProps) {
     }
   }, [activeIndex, tabWidths, animValue, tabs.length]);
 
-  const handlePress = (index: number) => {
+  const handlePress = useCallback((index: number) => {
     if (index === activeIndex) return;
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     onTabPress(index);
-  };
+  }, [activeIndex, onTabPress]);
 
   const indicatorWidth = tabWidths[activeIndex] ?? 0;
 
@@ -75,13 +76,13 @@ export function SubTabBar({ tabs, activeIndex, onTabPress }: SubTabBarProps) {
       />
     </View>
   );
-}
+});
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#1C1C1E',
+    backgroundColor: COLORS.background,
     borderBottomWidth: 1,
-    borderBottomColor: 'rgba(255,255,255,0.1)',
+    borderBottomColor: COLORS.border,
   },
   tabRow: {
     flexDirection: 'row',
@@ -97,15 +98,15 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
   activeLabel: {
-    color: '#FFFFFF',
+    color: COLORS.textPrimary,
   },
   inactiveLabel: {
-    color: '#9C9C9C',
+    color: COLORS.textSecondary,
   },
   indicator: {
     position: 'absolute',
     bottom: 0,
     height: 2,
-    backgroundColor: '#FE6E6E',
+    backgroundColor: COLORS.primary,
   },
 });

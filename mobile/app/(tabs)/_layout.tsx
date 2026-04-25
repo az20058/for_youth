@@ -3,6 +3,7 @@ import { Home, Briefcase, Calendar, User } from 'lucide-react-native';
 import { View, Text, StyleSheet } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import { onTabChange } from '../../components/tabDirection';
+import { COLORS } from '../../constants/colors';
 
 function HeaderTitle() {
   return (
@@ -23,7 +24,7 @@ const headerStyles = StyleSheet.create({
     fontSize: 28,
   },
   title: {
-    color: '#FFFFFF',
+    color: COLORS.textPrimary,
     fontSize: 18,
     fontWeight: '700',
     letterSpacing: 1,
@@ -34,11 +35,11 @@ export default function TabsLayout() {
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: '#FE6E6E',
-        tabBarInactiveTintColor: '#9C9C9C',
+        tabBarActiveTintColor: COLORS.primary,
+        tabBarInactiveTintColor: COLORS.textSecondary,
         tabBarStyle: {
-          backgroundColor: '#1C1C1E',
-          borderTopColor: 'rgba(255,255,255,0.1)',
+          backgroundColor: COLORS.background,
+          borderTopColor: COLORS.border,
           borderTopWidth: 1,
           paddingTop: 6,
           paddingBottom: 6,
@@ -52,14 +53,14 @@ export default function TabsLayout() {
           fontWeight: '500',
         },
         headerStyle: {
-          backgroundColor: '#1C1C1E',
+          backgroundColor: COLORS.background,
           shadowColor: 'transparent',
           elevation: 0,
           borderBottomWidth: 0,
         },
         headerTitleAlign: 'left',
         headerTitle: () => <HeaderTitle />,
-        sceneStyle: { backgroundColor: '#1C1C1E' },
+        sceneStyle: { backgroundColor: COLORS.background },
       }}
       screenListeners={{
         tabPress: (e) => {

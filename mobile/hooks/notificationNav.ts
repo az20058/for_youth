@@ -10,6 +10,10 @@ export function setPendingNav(nav: PendingNav) {
 
 export function subscribePendingNav(fn: (nav: PendingNav) => void) {
   _listeners.add(fn);
-  if (_pending) fn(_pending);
+  if (_pending) {
+    const nav = _pending;
+    _pending = null;
+    fn(nav);
+  }
   return () => { _listeners.delete(fn); };
 }

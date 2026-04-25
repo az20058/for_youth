@@ -1,23 +1,14 @@
 import { useRef, useState, useEffect, useCallback } from 'react';
-import { View, Animated, StyleSheet, Platform, BackHandler } from 'react-native';
+import { View, Animated, StyleSheet, Platform, BackHandler, ActivityIndicator, Text, Pressable, type NativeSyntheticEvent } from 'react-native';
 import { WebView } from 'react-native-webview';
 import type { WebViewNavigation } from 'react-native-webview';
 import { SubTabBar } from './SubTabBar';
 import { useIsFocused } from './useIsFocused';
-import { getDirection } from './tabDirection';
 import { subscribePendingNav } from '../hooks/notificationNav';
-
-const BASE_URL = 'https://for-youth.site';
-
-const INJECTED_JS = `
-  (function() {
-    var style = document.createElement('style');
-    style.textContent = '[data-web-header] { display: none !important; } [data-web-footer] { display: none !important; } * { -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; } input, textarea, [contenteditable] { -webkit-user-select: text; user-select: text; }';
-    document.head.appendChild(style);
-    var meta = document.querySelector('meta[name=viewport]');
-    if (meta) meta.setAttribute('content', meta.getAttribute('content') + ', maximum-scale=1.0, user-scalable=no');
-  })();
-`;
+import { useTabTransition } from '../hooks/useTabTransition';
+import { BASE_URL, USER_AGENT } from '../constants/config';
+import { HIDE_WEB_CHROME_JS } from '../constants/webview';
+import { COLORS } from '../constants/colors';
 
 interface Tab {
   label: string;
@@ -33,19 +24,21 @@ export function SubTabScreen({ tabs, defaultIndex = 0 }: SubTabScreenProps) {
   const webViewRefs = useRef<(WebView | null)[]>([]);
   const [activeIndex, setActiveIndex] = useState(defaultIndex);
   const [canGoBack, setCanGoBack] = useState(false);
+  const [loadedTabs, setLoadedTabs] = useState<Set<number>>(() => new Set([defaultIndex]));
+  const [loadingTabs, setLoadingTabs] = useState<Set<number>>(() => new Set([defaultIndex]));
+  const [errorTabs, setErrorTabs] = useState<Set<number>>(new Set());
   const isFocused = useIsFocused();
   const isFocusedRef = useRef(isFocused);
   isFocusedRef.current = isFocused;
   const pendingNavRef = useRef<string | null>(null);
-  const translateX = useRef(new Animated.Value(0)).current;
-  const opacity = useRef(new Animated.Value(1)).current;
-  const prevFocused = useRef(isFocused);
+  const { translateX, opacity } = useTabTransition(isFocused);
 
   const applyWebNav = useCallback((webUrl: string) => {
     const urlPath = webUrl.split('?')[0];
     const tabIndex = tabs.findIndex(t => t.path === urlPath);
     if (tabIndex === -1) return;
     setActiveIndex(tabIndex);
+    setLoadedTabs(prev => new Set(prev).add(tabIndex));
     setTimeout(() => {
       webViewRefs.current[tabIndex]?.injectJavaScript(
         `window.location.href = '${BASE_URL}${webUrl}'; true;`
@@ -88,30 +81,6 @@ export function SubTabScreen({ tabs, defaultIndex = 0 }: SubTabScreenProps) {
     }
   }, [canGoBack, activeIndex]);
 
-  useEffect(() => {
-    if (isFocused && !prevFocused.current) {
-      const dir = getDirection();
-      if (dir) {
-        const startX = dir === 'right' ? 16 : -16;
-        translateX.setValue(startX);
-        opacity.setValue(0.6);
-        Animated.parallel([
-          Animated.timing(translateX, {
-            toValue: 0,
-            duration: 150,
-            useNativeDriver: true,
-          }),
-          Animated.timing(opacity, {
-            toValue: 1,
-            duration: 150,
-            useNativeDriver: true,
-          }),
-        ]).start();
-      }
-    }
-    prevFocused.current = isFocused;
-  }, [isFocused, translateX, opacity]);
-
   const handleNavigationStateChange = (index: number) => (navState: WebViewNavigation) => {
     if (index === activeIndex) {
       setCanGoBack(navState.canGoBack);
@@ -120,6 +89,48 @@ export function SubTabScreen({ tabs, defaultIndex = 0 }: SubTabScreenProps) {
 
   const handleTabPress = (index: number) => {
     setActiveIndex(index);
+    setLoadedTabs(prev => new Set(prev).add(index));
+    setErrorTabs(prev => {
+      const next = new Set(prev);
+      next.delete(index);
+      return next;
+    });
+  };
+
+  const handleLoadStart = (index: number) => () => {
+    setLoadingTabs(prev => new Set(prev).add(index));
+  };
+
+  const handleLoadEnd = (index: number) => () => {
+    setLoadingTabs(prev => {
+      const next = new Set(prev);
+      next.delete(index);
+      return next;
+    });
+  };
+
+  const handleError = (index: number) => (_e: NativeSyntheticEvent<unknown>) => {
+    setErrorTabs(prev => new Set(prev).add(index));
+    setLoadingTabs(prev => {
+      const next = new Set(prev);
+      next.delete(index);
+      return next;
+    });
+  };
+
+  const handleHttpError = (index: number) => (e: NativeSyntheticEvent<{ statusCode: number }>) => {
+    if (e.nativeEvent.statusCode >= 500) {
+      setErrorTabs(prev => new Set(prev).add(index));
+    }
+  };
+
+  const handleRetry = (index: number) => () => {
+    setErrorTabs(prev => {
+      const next = new Set(prev);
+      next.delete(index);
+      return next;
+    });
+    webViewRefs.current[index]?.reload();
   };
 
   return (
@@ -131,28 +142,50 @@ export function SubTabScreen({ tabs, defaultIndex = 0 }: SubTabScreenProps) {
     >
       <SubTabBar tabs={tabs} activeIndex={activeIndex} onTabPress={handleTabPress} />
       <View style={styles.webviewContainer}>
-        {tabs.map((tab, index) => (
-          <View
-            key={tab.path}
-            style={[
-              styles.webviewLayer,
-              index !== activeIndex && styles.hidden,
-            ]}
-          >
-            <WebView
-              ref={(ref) => { webViewRefs.current[index] = ref; }}
-              source={{ uri: `${BASE_URL}${tab.path}` }}
-              style={[styles.webview, { backgroundColor: '#1C1C1E' }]}
-              onNavigationStateChange={handleNavigationStateChange(index)}
-              injectedJavaScript={INJECTED_JS}
-              userAgent="ForYouthApp"
-              javaScriptEnabled
-              domStorageEnabled
+        {tabs.map((tab, index) => {
+          const isActive = index === activeIndex;
+          const isLoaded = loadedTabs.has(index);
+          const isLoading = loadingTabs.has(index);
+          const hasError = errorTabs.has(index);
 
-              allowsBackForwardNavigationGestures
-            />
-          </View>
-        ))}
+          if (!isLoaded) return null;
+
+          return (
+            <View
+              key={tab.path}
+              style={[styles.webviewLayer, !isActive && styles.hidden]}
+            >
+              <WebView
+                ref={(ref) => { webViewRefs.current[index] = ref; }}
+                source={{ uri: `${BASE_URL}${tab.path}` }}
+                style={styles.webview}
+                onNavigationStateChange={handleNavigationStateChange(index)}
+                onLoadStart={handleLoadStart(index)}
+                onLoadEnd={handleLoadEnd(index)}
+                onError={handleError(index)}
+                onHttpError={handleHttpError(index)}
+                injectedJavaScript={HIDE_WEB_CHROME_JS}
+                userAgent={USER_AGENT}
+                javaScriptEnabled
+                domStorageEnabled
+                allowsBackForwardNavigationGestures
+              />
+              {isLoading && (
+                <View style={styles.overlay}>
+                  <ActivityIndicator size="large" color={COLORS.primary} />
+                </View>
+              )}
+              {hasError && (
+                <View style={styles.overlay}>
+                  <Text style={styles.errorText}>페이지를 불러올 수 없습니다</Text>
+                  <Pressable style={styles.retryButton} onPress={handleRetry(index)}>
+                    <Text style={styles.retryText}>다시 시도</Text>
+                  </Pressable>
+                </View>
+              )}
+            </View>
+          );
+        })}
       </View>
     </Animated.View>
   );
@@ -161,7 +194,7 @@ export function SubTabScreen({ tabs, defaultIndex = 0 }: SubTabScreenProps) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#1C1C1E',
+    backgroundColor: COLORS.background,
   },
   webviewContainer: {
     flex: 1,
@@ -175,5 +208,28 @@ const styles = StyleSheet.create({
   },
   webview: {
     flex: 1,
+    backgroundColor: COLORS.background,
+  },
+  overlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: COLORS.background,
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: 16,
+  },
+  errorText: {
+    color: COLORS.textSecondary,
+    fontSize: 15,
+  },
+  retryButton: {
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderRadius: 8,
+    backgroundColor: COLORS.primary,
+  },
+  retryText: {
+    color: COLORS.textPrimary,
+    fontSize: 14,
+    fontWeight: '600',
   },
 });
