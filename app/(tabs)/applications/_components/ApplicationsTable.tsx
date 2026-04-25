@@ -164,7 +164,7 @@ interface Props {
 export function ApplicationsTable({ initialData }: Props) {
   const router = useRouter();
   const queryClient = useQueryClient();
-  const [activeChip, setActiveChip] = useState<FilterChip>('전체');
+  const [activeChip, setActiveChip] = useState<FilterChip>('진행중');
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [isAddingRow, setIsAddingRow] = useState(false);
   const [newRow, setNewRow] = useState<NewRowState>(INITIAL_NEW_ROW);
