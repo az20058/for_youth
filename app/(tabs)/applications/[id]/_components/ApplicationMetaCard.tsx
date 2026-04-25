@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from 'react'
+import { useQueryClient } from '@tanstack/react-query'
 import * as SelectPrimitive from "@radix-ui/react-select"
 import { BriefcaseIcon, BuildingIcon, ChevronDownIcon, CircleDotIcon, ExternalLinkIcon, PencilIcon } from 'lucide-react'
 import { cn } from '@/lib/utils'
@@ -35,6 +36,7 @@ export function ApplicationMetaCard({
   initialDeadline,
   initialUrl,
 }: ApplicationMetaCardProps) {
+  const queryClient = useQueryClient()
   const [status, setStatus] = useState(initialStatus)
   const [deadline, setDeadline] = useState<Date | null>(initialDeadline)
   const [url, setUrl] = useState(initialUrl ?? '')
@@ -56,6 +58,7 @@ export function ApplicationMetaCard({
     setStatus(next)
     try {
       await patch({ status: next })
+      queryClient.invalidateQueries({ queryKey: ['applications'] })
     } catch {
       setStatus(prev)
       toast.error('상태 저장에 실패했습니다.')
@@ -68,6 +71,7 @@ export function ApplicationMetaCard({
     setDeadline(next)
     try {
       await patch({ deadline: next ? next.toISOString().split('T')[0] : null })
+      queryClient.invalidateQueries({ queryKey: ['applications'] })
     } catch {
       setDeadline(prev)
       toast.error('마감일 저장에 실패했습니다.')
@@ -81,6 +85,7 @@ export function ApplicationMetaCard({
     setEditingUrl(false)
     try {
       await patch({ url: trimmed || null })
+      queryClient.invalidateQueries({ queryKey: ['applications'] })
     } catch {
       setUrl(prev)
       setUrlInput(prev)
