@@ -6,9 +6,9 @@
 
 **이직과 취업을 준비하는 청년을 위한 올인원 플랫폼**
 
-정부 지원 정책 탐색 · 맞춤 추천 · 지원서·일정 관리 · AI 기업 분석 · 푸시 알림
+정부 지원 정책 탐색 · 맞춤 추천 · 지원서·일정 관리 · AI 기업 분석(다중 소스 크롤링) · 푸시 알림
 
-[![Next.js](https://img.shields.io/badge/Next.js-16-black?logo=next.js)](https://nextjs.org/)
+[![Next.js](https://img.shields.io/badge/Next.js-16.2-black?logo=next.js)](https://nextjs.org/)
 [![React](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=white)](https://react.dev/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![Prisma](https://img.shields.io/badge/Prisma-7-2D3748?logo=prisma&logoColor=white)](https://www.prisma.io/)
@@ -46,8 +46,8 @@
 
 - **정책 맞춤 추천** — 몇 가지 질문에 답하면 1,400여 개 청년 정책 중 나에게 딱 맞는 프로그램을 스코어링해 Top-N으로 추천합니다.
 - **지원서 전 주기 관리** — 회사·직무·자소서·마감일·채용 상태를 한 곳에서. 마감일은 자동으로 캘린더에 꽂히고, D-3 / D-1에 푸시 알림이 옵니다.
-- **AI 기업 분석** — Anthropic Claude로 회사 개요·최근 뉴스·지원 동기 힌트를 자동 요약합니다.
-- **모바일 네이티브 앱** — Expo + WebView로 iOS/Android 앱을 구성, Expo Push로 푸시를 백그라운드에서도 받아볼 수 있습니다.
+- **AI 기업 분석** — Anthropic Claude + 네이버 웹검색/뉴스 API + 금융위원회 기업 정보 API를 조합해 회사 개요·최근 뉴스·인재상·지원 동기 힌트를 자동 생성합니다.
+- **모바일 네이티브 앱** — Expo 기반 iOS/Android 앱. 네이티브 캘린더·자소서 에디터·오프라인 알림(SQLite)을 지원하며, Expo Push로 백그라운드 푸시 알림을 받을 수 있습니다.
 - **배치 잡 자동화** — 온통청년 Open API를 밤마다 동기화하고, 아침엔 마감 임박 건을 골라 알림을 발송합니다.
 
 ## 🧩 Features
@@ -60,10 +60,10 @@
 | **일정 캘린더** | 수동 일정 + 지원서 마감일 자동 이벤트 병합, 월 단위 조회 |
 | **알림 시스템** | 신규 정책 매칭 / 마감 D-3·D-1 / 상태 변경 · 중복 방지 `dedupeKey` |
 | **마이페이지** | 학력·경력·자격증·어학·기술스택, 연·월 단위 취득일 입력 UX |
-| **AI 요약** | Claude 기반 기업 개요·주요 사업·최근 뉴스·지원동기 힌트 자동 생성 |
+| **AI 기업 분석** | Claude + 네이버 검색 + 금융위원회 API 크롤링 → 기업 개요·뉴스·인재상·지원동기 힌트·참고 URL 자동 생성 |
 | **맞춤법 검사** | 자소서 작성 중 `hanspell` 기반 한국어 맞춤법 검사 |
 | **인증** | NextAuth v5 + Prisma Adapter · Google / Kakao OAuth |
-| **모바일** | Expo Router · WebView 브리지 · Expo Notifications 푸시 토큰 연동 |
+| **모바일** | Expo Router · 5탭 구조 · 네이티브 캘린더·자소서 에디터 · 오프라인 알림(SQLite) · Expo Push |
 
 ## 🛠 Tech Stack
 
@@ -82,12 +82,14 @@
 ![Neon](https://img.shields.io/badge/Neon_Postgres-00E699?logo=postgresql&logoColor=000)
 ![NextAuth](https://img.shields.io/badge/NextAuth_v5-000?logo=auth0&logoColor=fff)
 ![Anthropic](https://img.shields.io/badge/Anthropic_Claude-CC9B7A?logo=anthropic&logoColor=000)
+![Naver API](https://img.shields.io/badge/Naver_Search_API-03C75A?logo=naver&logoColor=fff)
 ![Vercel Blob](https://img.shields.io/badge/Vercel_Blob-000?logo=vercel&logoColor=fff)
 
 ### Mobile
 ![Expo](https://img.shields.io/badge/Expo_54-000020?logo=expo&logoColor=fff)
 ![React Native](https://img.shields.io/badge/React_Native-61DAFB?logo=react&logoColor=000)
 ![Expo Router](https://img.shields.io/badge/Expo_Router-000?logo=expo)
+![Expo SQLite](https://img.shields.io/badge/Expo_SQLite-000020?logo=sqlite&logoColor=fff)
 
 ### Quality & Tooling
 ![Jest](https://img.shields.io/badge/Jest-C21325?logo=jest&logoColor=fff)
@@ -114,8 +116,9 @@
                     └──────────────────────┘
 
 ┌────────────────────────┐
-│  Expo App (iOS/Android)│──▶  WebView + __PUSH_TOKEN__
-│  expo-notifications    │     bridge 주입
+│  Expo App (iOS/Android)│──▶  WebView + Native Screens
+│  expo-notifications    │     캘린더 · 에디터 · 알림(SQLite)
+│  expo-sqlite           │     + Push Token bridge
 └────────────────────────┘
 ```
 
@@ -134,7 +137,7 @@ my-app/
 │  └─ icons/               # 브랜드 아이콘
 ├─ lib/                    # 도메인 로직 (api, stores, utils, validation)
 ├─ prisma/                 # 스키마 & 마이그레이션
-├─ mobile/                 # Expo React Native 앱
+├─ mobile/                 # Expo React Native 앱 (네이티브 캘린더·에디터·알림)
 ├─ e2e/                    # Playwright 테스트
 ├─ __tests__/              # Jest 단위 테스트
 └─ docs/                   # API 스펙, 가이드, 스크린샷
@@ -149,6 +152,7 @@ my-app/
 - `YouthPolicy` — 온통청년 Open API에서 동기화한 1,482개 정책
 - `Notification` — `dedupeKey`로 중복 방지 · 4가지 타입
 - `PushToken` — Expo 푸시 토큰
+- `CompanySummary` — AI 기업 분석 캐시 (크롤링 결과 + Claude 요약)
 
 ## 🚀 Getting Started
 
@@ -211,6 +215,7 @@ npm run db:studio         # Prisma Studio
 - `POST /api/quiz/result` — 퀴즈 결과 저장 & 추천
 - `GET /api/programs` — 정책 목록 (페이지네이션)
 - `POST /api/recommend` — 룰 기반 정책 추천
+- `GET /api/applications/:id/company-summary` — AI 기업 분석 (Claude + 크롤링)
 - `POST /api/speller` — 한국어 맞춤법 검사
 - `GET /api/batch/nightly` · `morning` — 크론용 배치 (CRON_SECRET bearer)
 
