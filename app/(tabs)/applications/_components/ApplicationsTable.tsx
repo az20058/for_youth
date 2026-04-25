@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect, useMemo } from 'react';
 import { toast } from 'sonner';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { format } from 'date-fns';
 import { ExternalLinkIcon, PlusIcon, CheckIcon, XIcon, ChevronRightIcon, Trash2Icon } from 'lucide-react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -163,8 +163,20 @@ interface Props {
 
 export function ApplicationsTable({ initialData }: Props) {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const queryClient = useQueryClient();
-  const [activeChip, setActiveChip] = useState<FilterChip>('진행중');
+
+  const chipParam = searchParams.get('filter') as FilterChip | null;
+  const validChips: FilterChip[] = ['전체', '진행중', '합격', '탈락'];
+  const initialChip = chipParam && validChips.includes(chipParam) ? chipParam : '진행중';
+  const [activeChip, setActiveChip] = useState<FilterChip>(initialChip);
+
+  function handleChipChange(chip: FilterChip) {
+    setActiveChip(chip);
+    const params = new URLSearchParams(searchParams.toString());
+    params.set('filter', chip);
+    router.replace(`?${params.toString()}`, { scroll: false });
+  }
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [isAddingRow, setIsAddingRow] = useState(false);
   const [newRow, setNewRow] = useState<NewRowState>(INITIAL_NEW_ROW);
@@ -270,7 +282,7 @@ export function ApplicationsTable({ initialData }: Props) {
           <button
             key={chip}
             type="button"
-            onClick={() => setActiveChip(chip)}
+            onClick={() => handleChipChange(chip)}
             className={cn(
               'inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-sm font-medium transition-colors',
               activeChip === chip
