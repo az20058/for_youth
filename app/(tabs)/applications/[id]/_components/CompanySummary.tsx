@@ -29,6 +29,7 @@ export function CompanySummary({ applicationId }: { applicationId: string }) {
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [cacheChecked, setCacheChecked] = useState(false);
+  const [accordionValue, setAccordionValue] = useState<string | undefined>(undefined);
 
   useEffect(() => {
     async function checkCache() {
@@ -58,6 +59,7 @@ export function CompanySummary({ applicationId }: { applicationId: string }) {
         throw new Error(body?.message ?? '분석에 실패했습니다.');
       }
       setData(await res.json() as CompanySummaryData);
+      setAccordionValue('company-summary');
     } catch (err) {
       setErrorMessage(err instanceof Error ? err.message : '분석에 실패했습니다.');
     } finally {
@@ -120,7 +122,7 @@ export function CompanySummary({ applicationId }: { applicationId: string }) {
 
   // 데이터 있음: 아코디언
   return (
-    <Accordion type="single" collapsible>
+    <Accordion type="single" collapsible value={accordionValue} onValueChange={setAccordionValue}>
       <AccordionItem value="company-summary" className="rounded-2xl bg-card ring-1 ring-foreground/10 border-b-0">
         <AccordionTrigger className="px-5 sm:px-6 py-4 hover:no-underline">
           <div className="flex items-center gap-1.5">
