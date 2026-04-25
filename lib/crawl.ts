@@ -38,8 +38,9 @@ async function fetchCorpInfo(companyName: string): Promise<string | null> {
     const items = data?.response?.body?.items?.item;
     if (!items || items.length === 0) return null;
 
-    // 정확히 일치하는 기업명 우선, 없으면 첫 번째 결과
-    const corp = items.find((i) => i.corpNm === companyName) ?? items[0];
+    // 정확히 일치하는 기업명만 사용 (유사 기업 혼동 방지)
+    const corp = items.find((i) => i.corpNm === companyName);
+    if (!corp) return null;
     const lines = [
       corp.corpNm && `기업명: ${corp.corpNm}`,
       corp.enpRprFnm && `대표자: ${corp.enpRprFnm}`,
@@ -68,9 +69,9 @@ async function fetchWebSearch(companyName: string): Promise<WebSearchResult> {
   if (!clientId || !clientSecret) return { snippets: null, urls: [] };
 
   try {
-    const query = `${companyName} 기업 회사`;
+    const query = `"${companyName}"`;
     const res = await fetch(
-      `https://openapi.naver.com/v1/search/webkr.json?query=${encodeURIComponent(query)}&display=5`,
+      `https://openapi.naver.com/v1/search/webkr.json?query=${encodeURIComponent(query)}&display=10`,
       {
         headers: {
           'X-Naver-Client-Id': clientId,
@@ -86,7 +87,13 @@ async function fetchWebSearch(companyName: string): Promise<WebSearchResult> {
     };
 
     const items = data.items ?? [];
-    const snippets = items
+    // 회사명이 제목이나 설명에 포함된 결과만 사용 (유사 기업 혼동 방지)
+    const filtered = items.filter((item) => {
+      const title = item.title.replace(/<[^>]+>/g, '');
+      const desc = item.description.replace(/<[^>]+>/g, '');
+      return title.includes(companyName) || desc.includes(companyName);
+    });
+    const snippets = filtered
       .map((item) => {
         const title = item.title.replace(/<[^>]+>/g, '');
         const desc = item.description.replace(/<[^>]+>/g, '');
@@ -95,7 +102,7 @@ async function fetchWebSearch(companyName: string): Promise<WebSearchResult> {
       .filter(Boolean)
       .slice(0, 5);
 
-    const urls = items.map((item) => item.link).filter(Boolean).slice(0, 5);
+    const urls = filtered.map((item) => item.link).filter(Boolean).slice(0, 5);
 
     return {
       snippets: snippets.length > 0 ? snippets.join('\n') : null,
@@ -119,7 +126,7 @@ async function fetchNaverNews(companyName: string): Promise<NewsResult> {
 
   try {
     const res = await fetch(
-      `https://openapi.naver.com/v1/search/news.json?query=${encodeURIComponent(companyName)}&display=10&sort=date`,
+      `https://openapi.naver.com/v1/search/news.json?query=${encodeURIComponent(`"${companyName}"`)}&display=10&sort=date`,
       {
         headers: {
           'X-Naver-Client-Id': clientId,
@@ -135,11 +142,16 @@ async function fetchNaverNews(companyName: string): Promise<NewsResult> {
     };
 
     const items = data.items ?? [];
+    // 회사명이 제목에 포함된 뉴스만 사용 (유사 기업 혼동 방지)
+    const filtered = items.filter((item) => {
+      const title = item.title.replace(/<[^>]+>/g, '');
+      return title.includes(companyName);
+    });
     return {
-      headlines: items
+      headlines: filtered
         .map((item) => item.title.replace(/<[^>]+>/g, '').replace(/&quot;/g, '"').replace(/&amp;/g, '&'))
         .slice(0, 10),
-      urls: items
+      urls: filtered
         .map((item) => item.originallink || item.link)
         .filter(Boolean)
         .slice(0, 3),
@@ -172,6 +184,7 @@ async function fetchGoogleNews(companyName: string): Promise<string[]> {
 
     return all
       .filter((t) => !t.includes('Google 뉴스') && !t.includes('Google News'))
+      .filter((t) => t.includes(companyName))
       .slice(0, 10);
   } catch {
     return [];
