@@ -49,16 +49,35 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: SSH and rollout
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Copy prisma files to EC2
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          source: "prisma,prisma.config.ts"
+          target: "/home/ubuntu/ember"
+
+      - name: Run migrations and deploy
         uses: appleboy/ssh-action@v1.2.0
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_SSH_KEY }}
-          envs: DOCKERHUB_USERNAME
           script: |
             set -e
             cd /home/ubuntu/ember
+
+            docker run --rm \
+              --env-file .env.production \
+              -v /home/ubuntu/ember/prisma:/app/prisma \
+              -v /home/ubuntu/ember/prisma.config.ts:/app/prisma.config.ts \
+              node:20-slim \
+              sh -c "cd /app && npm install prisma dotenv --no-save --quiet 2>/dev/null && npx prisma migrate deploy"
+
             export DOCKERHUB_USERNAME=${{ secrets.DOCKERHUB_USERNAME }}
             docker compose pull
             docker compose up -d
