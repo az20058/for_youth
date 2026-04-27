@@ -13,6 +13,10 @@ const securityHeaders = [
 ];
 
 const nextConfig: NextConfig = {
+  output: 'standalone',
+  outputFileTracingIncludes: {
+    '/**/*': ['./lib/generated/prisma/**/*'],
+  },
   transpilePackages: ['until-async', 'rettime', 'type-fest', 'tough-cookie'],
   async headers() {
     return [
