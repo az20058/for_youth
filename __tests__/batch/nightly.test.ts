@@ -85,7 +85,8 @@ describe('/api/batch/nightly matching', () => {
     expect(call.data[0]).toMatchObject({
       userId: 'u1',
       type: 'POLICY_MATCH',
-      dedupeKey: expect.stringMatching(/^policy-new:u1:\d{4}-\d{2}-\d{2}$/),
+      dedupeKey: expect.stringMatching(/^policy-new:u1:P1:\d{4}-\d{2}-\d{2}$/),
+      relatedId: 'P1',
     });
   });
 });

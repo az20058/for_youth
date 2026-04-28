@@ -74,6 +74,20 @@ export async function GET(req: NextRequest) {
       const newPolicies = await prisma.youthPolicy.findMany({
         where: { plcyNo: { in: newIds } },
       });
+      const newRecs: Recommendation[] = newPolicies.map((p) => ({
+        id: p.plcyNo,
+        name: p.name,
+        agency: p.agency,
+        mainCategory: p.mainCategory,
+        category: p.category,
+        description: p.description,
+        matchReason: '',
+        supportContent: p.supportContent ?? '',
+        applicationUrl: p.applicationUrl ?? '',
+        viewCount: p.viewCount,
+        region: p.region ?? '',
+        zipCodes: p.zipCodes ?? '',
+      }));
       const usersWithQuiz = await prisma.$queryRaw<Array<{ userId: string; answers: string }>>`
         SELECT DISTINCT ON ("userId") "userId", "answers"
         FROM "UserQuizResult"
@@ -83,7 +97,7 @@ export async function GET(req: NextRequest) {
       const rows = usersWithQuiz.flatMap(({ userId, answers }) => {
         let parsed: QuizAnswers;
         try { parsed = JSON.parse(answers) as QuizAnswers; } catch { return []; }
-        const hits = scoreAndFilterPrograms(newPolicies as unknown as Recommendation[], parsed, 2);
+        const hits = scoreAndFilterPrograms(newRecs, parsed, 2);
         return hits.map((hit) => ({
           userId,
           type: 'POLICY_MATCH' as const,
