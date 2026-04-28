@@ -136,6 +136,7 @@ export async function fetchFromYouthApi(): Promise<Recommendation[]> {
 export async function fetchAllYouthPolicies(): Promise<Recommendation[]> {
   try {
     const policies = await prisma.youthPolicy.findMany();
+    console.log('[fetchAllYouthPolicies] count:', policies.length);
     return policies.map(mapDbPolicy);
   } catch (e) {
     console.error('[fetchAllYouthPolicies]', e);

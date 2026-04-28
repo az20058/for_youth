@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { fetchAllYouthPolicies } from "@/lib/youthApi";
 import { ProgramsList } from "./_components/ProgramsList";
 
-export const revalidate = 3600;
+export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
   title: "정책 둘러보기",
