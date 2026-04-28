@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { useQueryClient } from '@tanstack/react-query'
 import * as SelectPrimitive from "@radix-ui/react-select"
 import { BriefcaseIcon, BuildingIcon, ChevronDownIcon, CircleDotIcon, ExternalLinkIcon, PencilIcon } from 'lucide-react'
@@ -36,6 +37,7 @@ export function ApplicationMetaCard({
   initialDeadline,
   initialUrl,
 }: ApplicationMetaCardProps) {
+  const router = useRouter()
   const queryClient = useQueryClient()
   const [status, setStatus] = useState(initialStatus)
   const [deadline, setDeadline] = useState<Date | null>(initialDeadline)
@@ -58,6 +60,7 @@ export function ApplicationMetaCard({
     setStatus(next)
     try {
       await patch({ status: next })
+      router.refresh()
       queryClient.invalidateQueries({ queryKey: ['applications'] })
     } catch {
       setStatus(prev)
@@ -71,6 +74,7 @@ export function ApplicationMetaCard({
     setDeadline(next)
     try {
       await patch({ deadline: next ? next.toISOString().split('T')[0] : null })
+      router.refresh()
       queryClient.invalidateQueries({ queryKey: ['applications'] })
     } catch {
       setDeadline(prev)
@@ -85,6 +89,7 @@ export function ApplicationMetaCard({
     setEditingUrl(false)
     try {
       await patch({ url: trimmed || null })
+      router.refresh()
       queryClient.invalidateQueries({ queryKey: ['applications'] })
     } catch {
       setUrl(prev)
