@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { revalidateTag } from 'next/cache';
+import { revalidatePath } from 'next/cache';
 import { timingSafeEqual } from 'crypto';
 import { prisma } from '@/lib/db';
 import { fetchFromYouthApi } from '@/lib/youthApi';
@@ -67,7 +67,7 @@ export async function GET(req: NextRequest) {
         },
       }).catch(() => null),
     ));
-    revalidateTag('youth-policies', 'max');
+    revalidatePath('/programs');
 
     let matched = 0;
     if (newIds.length > 0) {

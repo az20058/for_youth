@@ -132,16 +132,13 @@ export async function fetchFromYouthApi(): Promise<Recommendation[]> {
   }
 }
 
-/** DB에서 정책을 조회합니다. DB가 비어있으면 API에서 직접 가져옵니다. */
+/** DB에서 정책을 조회합니다. */
 export async function fetchAllYouthPolicies(): Promise<Recommendation[]> {
   try {
-    const count = await prisma.youthPolicy.count();
-    if (count > 0) {
-      const policies = await prisma.youthPolicy.findMany();
-      return policies.map(mapDbPolicy);
-    }
-  } catch {
-    // DB 오류 시 API fallback
+    const policies = await prisma.youthPolicy.findMany();
+    return policies.map(mapDbPolicy);
+  } catch (e) {
+    console.error('[fetchAllYouthPolicies]', e);
+    return [];
   }
-  return fetchFromYouthApi();
 }

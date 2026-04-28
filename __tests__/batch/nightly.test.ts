@@ -16,7 +16,7 @@ jest.mock('@/lib/db', () => ({
     $queryRaw: jest.fn(),
   },
 }));
-jest.mock('next/cache', () => ({ revalidateTag: jest.fn() }));
+jest.mock('next/cache', () => ({ revalidatePath: jest.fn() }));
 
 import { NextRequest } from 'next/server';
 
