@@ -22,7 +22,12 @@ ENV NEXT_TELEMETRY_DISABLED=1
 
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
-RUN npm run build
+
+# DATABASE_URL은 빌드 시 ISR prerender용으로만 필요. BuildKit secret으로 주입해
+# 이미지 레이어에 남지 않도록 한다.
+RUN --mount=type=secret,id=database_url \
+    DATABASE_URL="$(cat /run/secrets/database_url 2>/dev/null || echo '')" \
+    npm run build
 
 # ===== Stage 3: runner =====
 FROM node:20-slim AS runner
