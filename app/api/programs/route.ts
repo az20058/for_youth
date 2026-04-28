@@ -1,12 +1,6 @@
 import { prisma } from '@/lib/db';
-import { getAuthenticatedUserId } from '@/lib/auth';
 
 export async function GET(req: Request) {
-  const userId = await getAuthenticatedUserId();
-  if (!userId) {
-    return Response.json({ message: '인증이 필요합니다.' }, { status: 401 });
-  }
-
   const { searchParams } = new URL(req.url);
   const page = Math.max(1, Number(searchParams.get('page') ?? '1'));
   const limit = Math.min(50, Math.max(1, Number(searchParams.get('limit') ?? '20')));
