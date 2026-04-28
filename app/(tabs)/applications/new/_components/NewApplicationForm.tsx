@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { format } from 'date-fns';
 import { useRouter } from 'next/navigation';
+import { useQueryClient } from '@tanstack/react-query';
 import { PlusIcon, Trash2Icon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { DatePicker } from '@/components/ui/date-picker';
@@ -48,6 +49,7 @@ const inputClass =
 
 export function NewApplicationForm() {
   const router = useRouter();
+  const queryClient = useQueryClient();
   const [form, setForm] = useState<FormState>(INITIAL_FORM);
   const [errors, setErrors] = useState<FormErrors>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -67,6 +69,7 @@ export function NewApplicationForm() {
     setIsSubmitting(true);
     try {
       await createApplication(data);
+      queryClient.invalidateQueries({ queryKey: ['applications'] });
       router.push('/applications');
     } finally {
       setIsSubmitting(false);
