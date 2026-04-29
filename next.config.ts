@@ -26,6 +26,16 @@ const nextConfig: NextConfig = {
       },
     ];
   },
+  async redirects() {
+    return [
+      {
+        source: '/:path*',
+        has: [{ type: 'host', value: 'www.for-youth.site' }],
+        destination: 'https://for-youth.site/:path*',
+        permanent: true,
+      },
+    ];
+  },
   images: {
     remotePatterns: [
       {
