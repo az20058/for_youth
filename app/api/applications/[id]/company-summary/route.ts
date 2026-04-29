@@ -2,6 +2,8 @@ import { prisma } from '@/lib/db';
 import { getAuthenticatedUserId } from '@/lib/auth';
 import { crawlCompanyInfo } from '@/lib/crawl';
 import { summarizeCompany } from '@/lib/companySummary';
+import type { Source } from '@/lib/crawl';
+import type { CitedItem } from '@/lib/companySummary';
 
 const CACHE_DURATION_MS = 24 * 60 * 60 * 1000;
 
@@ -12,6 +14,53 @@ function normalizeCompanyName(name: string): string {
     .replace(/^\(주\)\s*|\s*\(주\)$/g, '')
     .replace(/,?\s*(Inc\.?|Corp\.?|Ltd\.?|LLC|Co\.?,?\s*Ltd\.?)$/i, '')
     .trim();
+}
+
+function parseV1Response(existing: {
+  overview: string;
+  mainBusiness: string;
+  recentNews: string;
+  motivationHints: string;
+  referenceSites: string;
+  idealCandidate: string;
+  crawledAt: Date;
+  schemaVersion: number;
+}) {
+  return {
+    overview: existing.overview,
+    mainBusiness: JSON.parse(existing.mainBusiness) as string[],
+    recentNews: JSON.parse(existing.recentNews) as string[],
+    motivationHints: JSON.parse(existing.motivationHints) as string[],
+    referenceSites: JSON.parse(existing.referenceSites) as string[],
+    idealCandidate: JSON.parse(existing.idealCandidate) as string[],
+    sources: [] as Source[],
+    schemaVersion: 1 as const,
+    crawledAt: existing.crawledAt.toISOString(),
+  };
+}
+
+function parseV2Response(existing: {
+  overview: string;
+  mainBusiness: string;
+  recentNews: string;
+  motivationHints: string;
+  referenceSites: string;
+  idealCandidate: string;
+  sources: string;
+  crawledAt: Date;
+  schemaVersion: number;
+}) {
+  return {
+    overview: JSON.parse(existing.overview) as CitedItem,
+    mainBusiness: JSON.parse(existing.mainBusiness) as CitedItem[],
+    recentNews: JSON.parse(existing.recentNews) as CitedItem[],
+    motivationHints: JSON.parse(existing.motivationHints) as CitedItem[],
+    referenceSites: JSON.parse(existing.referenceSites) as string[],
+    idealCandidate: JSON.parse(existing.idealCandidate) as CitedItem[],
+    sources: JSON.parse(existing.sources) as Source[],
+    schemaVersion: 2 as const,
+    crawledAt: existing.crawledAt.toISOString(),
+  };
 }
 
 export async function GET(
@@ -34,15 +83,15 @@ export async function GET(
   const existing = await prisma.companySummary.findUnique({ where: { companyName } });
   if (!existing) return Response.json({ message: '캐시 없음' }, { status: 404 });
 
-  return Response.json({
-    overview: existing.overview,
-    mainBusiness: JSON.parse(existing.mainBusiness) as string[],
-    recentNews: JSON.parse(existing.recentNews) as string[],
-    motivationHints: JSON.parse(existing.motivationHints) as string[],
-    referenceSites: JSON.parse(existing.referenceSites) as string[],
-    idealCandidate: JSON.parse(existing.idealCandidate) as string[],
-    crawledAt: existing.crawledAt.toISOString(),
-  });
+  if (existing.schemaVersion >= 2) {
+    try {
+      return Response.json(parseV2Response(existing));
+    } catch (err) {
+      console.error('[company-summary] v2 parse failed, falling back to v1', err);
+      return Response.json(parseV1Response(existing));
+    }
+  }
+  return Response.json(parseV1Response(existing));
 }
 
 export async function POST(
@@ -62,17 +111,19 @@ export async function POST(
 
   const companyName = normalizeCompanyName(application.companyName);
 
+  // 24h 캐시: v2 캐시가 유효하면 그대로 반환
   const existing = await prisma.companySummary.findUnique({ where: { companyName } });
-  if (existing && Date.now() - existing.crawledAt.getTime() < CACHE_DURATION_MS) {
-    return Response.json({
-      overview: existing.overview,
-      mainBusiness: JSON.parse(existing.mainBusiness) as string[],
-      recentNews: JSON.parse(existing.recentNews) as string[],
-      motivationHints: JSON.parse(existing.motivationHints) as string[],
-      referenceSites: JSON.parse(existing.referenceSites) as string[],
-      idealCandidate: JSON.parse(existing.idealCandidate) as string[],
-      crawledAt: existing.crawledAt.toISOString(),
-    });
+  if (
+    existing &&
+    existing.schemaVersion >= 2 &&
+    Date.now() - existing.crawledAt.getTime() < CACHE_DURATION_MS
+  ) {
+    try {
+      return Response.json(parseV2Response(existing));
+    } catch (err) {
+      console.error('[company-summary] v2 cache parse failed, re-analyzing', err);
+      // fall through to re-analyze
+    }
   }
 
   try {
@@ -87,20 +138,23 @@ export async function POST(
       where: { companyName },
       create: {
         companyName,
-        overview: summary.overview,
+        overview: JSON.stringify(summary.overview),
         mainBusiness: JSON.stringify(summary.mainBusiness),
         recentNews: JSON.stringify(summary.recentNews),
         motivationHints: JSON.stringify(summary.motivationHints),
-        referenceSites: JSON.stringify(summary.referenceSites),
+        referenceSites: '[]',
         idealCandidate: JSON.stringify(summary.idealCandidate),
+        sources: JSON.stringify(summary.sources),
+        schemaVersion: 2,
       },
       update: {
-        overview: summary.overview,
+        overview: JSON.stringify(summary.overview),
         mainBusiness: JSON.stringify(summary.mainBusiness),
         recentNews: JSON.stringify(summary.recentNews),
         motivationHints: JSON.stringify(summary.motivationHints),
-        referenceSites: JSON.stringify(summary.referenceSites),
         idealCandidate: JSON.stringify(summary.idealCandidate),
+        sources: JSON.stringify(summary.sources),
+        schemaVersion: 2,
         crawledAt: new Date(),
       },
     });
@@ -110,8 +164,10 @@ export async function POST(
       mainBusiness: summary.mainBusiness,
       recentNews: summary.recentNews,
       motivationHints: summary.motivationHints,
-      referenceSites: summary.referenceSites,
+      referenceSites: [] as string[],
       idealCandidate: summary.idealCandidate,
+      sources: summary.sources,
+      schemaVersion: 2 as const,
       crawledAt: saved.crawledAt.toISOString(),
     });
   } catch (err) {

@@ -156,8 +156,10 @@ model CompanySummary {
   mainBusiness    String   @db.Text
   recentNews      String   @db.Text
   motivationHints String   @db.Text
-  referenceSites  String   @default("[]") @db.Text
+  referenceSites  String   @default("[]") @db.Text  // deprecated: v2부터 미사용, sources로 대체
   idealCandidate  String   @default("[]") @db.Text
+  sources         String   @default("[]") @db.Text  // Source[] JSON (v2+)
+  schemaVersion   Int      @default(1)              // 1=구버전, 2=인용 포함
   crawledAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 }

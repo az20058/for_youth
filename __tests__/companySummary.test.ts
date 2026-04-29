@@ -2,6 +2,7 @@
  * @jest-environment node
  */
 import { summarizeCompany } from '@/lib/companySummary';
+import type { CrawlResult } from '@/lib/crawl';
 import Anthropic from '@anthropic-ai/sdk';
 
 jest.mock('@anthropic-ai/sdk');
@@ -12,67 +13,75 @@ beforeEach(() => {
   MockedAnthropic.mockClear();
 });
 
-describe('summarizeCompany', () => {
-  const crawlResult = {
-    namuWiki: '카카오는 대한민국의 IT 기업입니다.',
-    newsHeadlines: ['카카오 AI 투자 확대', '카카오뱅크 흑자'],
-  };
+const crawlResult: CrawlResult = {
+  corpInfo: '기업명: 카카오\n업종: IT',
+  webSnippets: '카카오는 IT 기업입니다',
+  newsHeadlines: ['카카오 AI 투자 확대'],
+  sources: [
+    { id: 'S1', type: 'corp-info', title: '금융위원회 기업기본정보', domain: 'data.go.kr', url: null },
+    { id: 'S2', type: 'naver-news', title: '카카오 AI 투자 확대', domain: 'news.example.com', url: 'https://news.example.com/a' },
+  ],
+  sourceUrls: [],
+};
 
-  it('Claude 응답에서 JSON을 파싱하여 반환한다', async () => {
-    const mockCreate = jest.fn().mockResolvedValueOnce({
-      content: [{
-        type: 'text',
-        text: JSON.stringify({
-          overview: '카카오는 국내 최대 모바일 플랫폼 기업입니다.',
-          mainBusiness: ['카카오톡', '카카오페이'],
-          recentNews: ['AI 서비스 강화'],
-          motivationHints: ['모바일 혁신 선도'],
-        }),
-      }],
-    });
-    MockedAnthropic.mockImplementation(() => ({
-      messages: { create: mockCreate },
-    }) as unknown as Anthropic);
+function mockClaudeText(text: string) {
+  const mockCreate = jest.fn().mockResolvedValueOnce({ content: [{ type: 'text', text }] });
+  MockedAnthropic.mockImplementation(() => ({ messages: { create: mockCreate } }) as unknown as Anthropic);
+  return mockCreate;
+}
+
+describe('summarizeCompany', () => {
+  it('Claude 응답의 CitedItem JSON을 파싱해 v2 구조로 반환한다', async () => {
+    mockClaudeText(JSON.stringify({
+      overview: { text: '카카오는 IT 플랫폼입니다.', sourceIds: ['S1', 'S2'] },
+      mainBusiness: [{ text: '카카오톡', sourceIds: ['S1'] }],
+      recentNews: [{ text: 'AI 투자', sourceIds: ['S2'] }],
+      motivationHints: [{ text: '혁신 선도', sourceIds: ['S2'] }],
+      idealCandidate: [{ text: '도전적인 인재', sourceIds: ['S2'] }],
+    }));
 
     const result = await summarizeCompany('카카오', crawlResult);
 
-    expect(result.overview).toBe('카카오는 국내 최대 모바일 플랫폼 기업입니다.');
-    expect(result.mainBusiness).toEqual(['카카오톡', '카카오페이']);
-    expect(result.recentNews).toEqual(['AI 서비스 강화']);
-    expect(result.motivationHints).toEqual(['모바일 혁신 선도']);
+    expect(result.schemaVersion).toBe(2);
+    expect(result.overview).toEqual({ text: '카카오는 IT 플랫폼입니다.', sourceIds: ['S1', 'S2'] });
+    expect(result.mainBusiness).toEqual([{ text: '카카오톡', sourceIds: ['S1'] }]);
+    expect(result.sources).toHaveLength(2);
+  });
+
+  it('존재하지 않는 sourceId는 환각 방어로 제거한다', async () => {
+    mockClaudeText(JSON.stringify({
+      overview: { text: '...', sourceIds: ['S1', 'S99', 'fake'] },
+      mainBusiness: [{ text: '...', sourceIds: ['S2', 'S77'] }],
+      recentNews: [],
+      motivationHints: [],
+      idealCandidate: [],
+    }));
+
+    const result = await summarizeCompany('카카오', crawlResult);
+
+    expect(result.overview.sourceIds).toEqual(['S1']);
+    expect(result.mainBusiness[0].sourceIds).toEqual(['S2']);
   });
 
   it('응답에 JSON이 없으면 에러를 던진다', async () => {
-    const mockCreate = jest.fn().mockResolvedValueOnce({
-      content: [{ type: 'text', text: '죄송합니다, 정보를 찾을 수 없습니다.' }],
-    });
-    MockedAnthropic.mockImplementation(() => ({
-      messages: { create: mockCreate },
-    }) as unknown as Anthropic);
-
+    mockClaudeText('죄송합니다, 정보를 찾을 수 없습니다.');
     await expect(summarizeCompany('카카오', crawlResult)).rejects.toThrow('AI 응답 파싱 실패');
   });
 
-  it('namuWiki가 null이어도 뉴스만으로 요약 요청한다', async () => {
-    const mockCreate = jest.fn().mockResolvedValueOnce({
-      content: [{
-        type: 'text',
-        text: JSON.stringify({
-          overview: '요약',
-          mainBusiness: ['사업'],
-          recentNews: ['이슈'],
-          motivationHints: ['포인트'],
-        }),
-      }],
-    });
-    MockedAnthropic.mockImplementation(() => ({
-      messages: { create: mockCreate },
-    }) as unknown as Anthropic);
+  it('프롬프트에 소스 ID 목록을 포함한다', async () => {
+    const mockCreate = mockClaudeText(JSON.stringify({
+      overview: { text: '요약', sourceIds: ['S1'] },
+      mainBusiness: [{ text: '사업', sourceIds: ['S1'] }],
+      recentNews: [],
+      motivationHints: [],
+      idealCandidate: [],
+    }));
 
-    await summarizeCompany('카카오', { namuWiki: null, newsHeadlines: ['뉴스'] });
+    await summarizeCompany('카카오', crawlResult);
 
     const prompt = mockCreate.mock.calls[0][0].messages[0].content as string;
-    expect(prompt).not.toContain('[나무위키 원문]');
-    expect(prompt).toContain('[최근 뉴스]');
+    expect(prompt).toContain('S1');
+    expect(prompt).toContain('S2');
+    expect(prompt).toContain('sourceIds');
   });
 });
