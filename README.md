@@ -30,8 +30,8 @@
       <sub><b>Home</b> — 브랜드 Hero & 퀴즈 CTA</sub>
     </td>
     <td align="center" width="33%">
-      <img src="docs/screenshots/programs-detail.png" alt="정책 둘러보기" width="260" /><br/>
-      <sub><b>Programs</b> — 1,482개 정부 정책 탐색</sub>
+      <img src="docs/screenshots/programs.png" alt="정책 둘러보기" width="260" /><br/>
+      <sub><b>Programs</b> — 1,400여 개 정부 정책 탐색</sub>
     </td>
     <td align="center" width="33%">
       <img src="docs/screenshots/login.png" alt="OAuth 로그인" width="260" /><br/>
@@ -79,11 +79,18 @@
 
 ### Backend & Data
 ![Prisma](https://img.shields.io/badge/Prisma_7-2D3748?logo=prisma&logoColor=fff)
-![Neon](https://img.shields.io/badge/Neon_Postgres-00E699?logo=postgresql&logoColor=000)
+![AWS RDS](https://img.shields.io/badge/AWS_RDS_Postgres-527FFF?logo=amazonrds&logoColor=fff)
 ![NextAuth](https://img.shields.io/badge/NextAuth_v5-000?logo=auth0&logoColor=fff)
 ![Anthropic](https://img.shields.io/badge/Anthropic_Claude-CC9B7A?logo=anthropic&logoColor=000)
 ![Naver API](https://img.shields.io/badge/Naver_Search_API-03C75A?logo=naver&logoColor=fff)
 ![Vercel Blob](https://img.shields.io/badge/Vercel_Blob-000?logo=vercel&logoColor=fff)
+
+### Infrastructure & DevOps
+![Docker](https://img.shields.io/badge/Docker-2496ED?logo=docker&logoColor=fff)
+![AWS EC2](https://img.shields.io/badge/AWS_EC2-FF9900?logo=amazonec2&logoColor=fff)
+![Nginx](https://img.shields.io/badge/nginx--proxy-009639?logo=nginx&logoColor=fff)
+![Let's Encrypt](https://img.shields.io/badge/Let's_Encrypt-003A70?logo=letsencrypt&logoColor=fff)
+![GitHub Actions](https://img.shields.io/badge/GitHub_Actions-2088FF?logo=githubactions&logoColor=fff)
 
 ### Mobile
 ![Expo](https://img.shields.io/badge/Expo_54-000020?logo=expo&logoColor=fff)
@@ -100,27 +107,9 @@
 
 ## 🏗 Architecture
 
-```
-┌─────────────┐     ┌──────────────┐     ┌──────────────┐
-│  Next.js    │───▶│  Route       │───▶│  Prisma /   │
-│  App Router │     │  Handlers    │     │  Neon PG     │
-└─────┬───────┘     └──────┬───────┘     └──────────────┘
-      │                    │
-      │ React Query        │ Batch jobs (nightly/morning)
-      │ Zustand            │
-      ▼                    ▼
-┌─────────────┐     ┌──────────────────────┐
-│  shadcn/ui  │     │  온통청년 Open API    │
-│  Radix      │     │  Anthropic Claude    │
-└─────────────┘     │  Expo Push Service   │
-                    └──────────────────────┘
-
-┌────────────────────────┐
-│  Expo App (iOS/Android)│──▶  WebView + Native Screens
-│  expo-notifications    │     캘린더 · 에디터 · 알림(SQLite)
-│  expo-sqlite           │     + Push Token bridge
-└────────────────────────┘
-```
+<div align="center">
+  <img src="docs/screenshots/architecture.svg" alt="Ember 시스템 아키텍처 다이어그램" width="100%" />
+</div>
 
 ### 디렉토리
 ```
@@ -145,22 +134,22 @@ my-app/
 
 ## 🗄 Data Model (핵심)
 
-- `User` — OAuth 프로필 + 이력서 JSON(학력·경력·자격증·어학·스택)
+- `User` — OAuth 프로필 + 학교/전공/경력/포트폴리오/이력서 + 이력서 JSON(학력·경력·자격증·어학·스택)
 - `Application` — 지원서 · 8단계 상태 · 소프트 삭제 · 자소서 1:N
 - `CoverLetter` — 자소서 유형 9종 (지원동기 · 성장과정 · 직무역량 · ...)
-- `ScheduleEvent` — 코딩테스트/면접/서류 마감 일정
-- `YouthPolicy` — 온통청년 Open API에서 동기화한 1,482개 정책
-- `Notification` — `dedupeKey`로 중복 방지 · 4가지 타입
+- `ScheduleEvent` — 코딩테스트/면접/서류 마감 일정 · `completedAt` 완료 처리
+- `YouthPolicy` — 온통청년 Open API에서 동기화한 1,400여 개 정책
+- `Notification` — `dedupeKey`로 중복 방지 · 4가지 타입 (DEADLINE · SCHEDULE · STATUS_CHANGE · POLICY_MATCH)
 - `PushToken` — Expo 푸시 토큰
-- `CompanySummary` — AI 기업 분석 캐시 (크롤링 결과 + Claude 요약)
+- `CompanySummary` — AI 기업 분석 캐시 (개요 · 주력사업 · 최근뉴스 · 인재상 · 지원동기 힌트 · 참고 URL)
 
 ## 🚀 Getting Started
 
 ### 사전 요구사항
 - Node.js 20+
-- PostgreSQL (Neon 추천)
+- PostgreSQL (로컬 또는 AWS RDS)
 - Google / Kakao OAuth Client
-- (선택) Anthropic API Key, 온통청년 API Key
+- (선택) Anthropic API Key, 네이버 검색/뉴스 API Key, 온통청년 API Key
 
 ### 실행
 ```bash
@@ -195,6 +184,22 @@ npx playwright test       # E2E
 npm run storybook         # Storybook
 npm run db:studio         # Prisma Studio
 ```
+
+## 🚢 Deployment
+
+`master` 브랜치 푸시 시 GitHub Actions가 다음 파이프라인을 실행합니다.
+
+1. **Build & Push** — Docker Buildx로 이미지를 빌드해 Docker Hub에 `:latest` / `:<sha>` 태그로 푸시
+2. **RDS 보안 그룹 자동 개방** — 빌드 시 ISR prerender를 위해 GitHub 러너 IP를 RDS SG에 임시 허용 → 작업 종료 시 자동 회수
+3. **Migrate** — EC2에서 `prisma migrate deploy`로 마이그레이션 적용
+4. **Compose Up** — EC2에서 `docker compose pull && up -d`로 무중단 갱신
+
+서버 측 구성:
+- **nginx-proxy + acme-companion**: 컨테이너 라벨(`VIRTUAL_HOST`, `LETSENCRYPT_HOST`) 기반 자동 라우팅·TLS 갱신
+- **AWS EC2**: 단일 인스턴스에 Docker Compose로 앱·프록시·ACME 컨테이너 구동
+- **AWS RDS PostgreSQL**: 자체 서명 인증서 허용(`rejectUnauthorized=false`)으로 SSL 연결
+
+자세한 워크플로우는 [`.github/workflows/deploy.yml`](.github/workflows/deploy.yml), 컴포즈 구성은 [`docker-compose.yml`](docker-compose.yml) 참고.
 
 ## 🧪 Testing Strategy
 

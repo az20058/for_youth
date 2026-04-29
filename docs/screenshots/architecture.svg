@@ -1,0 +1,271 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 880" font-family="Pretendard, 'Apple SD Gothic Neo', sans-serif">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#475569"/>
+    </marker>
+    <marker id="arrowDash" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#94a3b8"/>
+    </marker>
+    <linearGradient id="gradClient" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#dbeafe"/><stop offset="1" stop-color="#bfdbfe"/>
+    </linearGradient>
+    <linearGradient id="gradEdge" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#fef3c7"/><stop offset="1" stop-color="#fde68a"/>
+    </linearGradient>
+    <linearGradient id="gradApp" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#dcfce7"/><stop offset="1" stop-color="#bbf7d0"/>
+    </linearGradient>
+    <linearGradient id="gradSvc" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ede9fe"/><stop offset="1" stop-color="#ddd6fe"/>
+    </linearGradient>
+    <linearGradient id="gradData" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#fee2e2"/><stop offset="1" stop-color="#fecaca"/>
+    </linearGradient>
+    <linearGradient id="gradCI" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#e2e8f0"/><stop offset="1" stop-color="#cbd5e1"/>
+    </linearGradient>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="#0f172a" flood-opacity="0.12"/>
+    </filter>
+    <style>
+      .layer-title { font-size: 13px; font-weight: 700; fill: #475569; letter-spacing: 1px; }
+      .box-title { font-size: 14px; font-weight: 700; fill: #0f172a; }
+      .box-sub   { font-size: 11px; fill: #334155; }
+      .small     { font-size: 10px; fill: #475569; }
+      .arrow-label { font-size: 10px; fill: #475569; }
+      .title-main { font-size: 22px; font-weight: 800; fill: #0f172a; }
+      .title-sub  { font-size: 12px; fill: #64748b; }
+    </style>
+  </defs>
+
+  <!-- Title -->
+  <text x="40" y="46" class="title-main">my-app · System Architecture</text>
+  <text x="40" y="66" class="title-sub">Next.js 16 (App Router) · React 19 · Prisma 7 · NextAuth v5 · Docker on EC2</text>
+
+  <!-- ========== Layer: CLIENT ========== -->
+  <text x="40" y="100" class="layer-title">CLIENT</text>
+  <line x1="40" y1="106" x2="1240" y2="106" stroke="#e2e8f0"/>
+
+  <g filter="url(#shadow)">
+    <rect x="80"  y="120" width="220" height="80" rx="10" fill="url(#gradClient)" stroke="#60a5fa"/>
+    <text x="190" y="146" text-anchor="middle" class="box-title">Web Browser</text>
+    <text x="190" y="166" text-anchor="middle" class="box-sub">React 19 · TanStack Query</text>
+    <text x="190" y="184" text-anchor="middle" class="small">shadcn/ui · Tailwind · Zustand</text>
+  </g>
+  <g filter="url(#shadow)">
+    <rect x="340" y="120" width="220" height="80" rx="10" fill="url(#gradClient)" stroke="#60a5fa"/>
+    <text x="450" y="146" text-anchor="middle" class="box-title">PWA / Mobile Web</text>
+    <text x="450" y="166" text-anchor="middle" class="box-sub">useIsApp · usePushTokenRegister</text>
+    <text x="450" y="184" text-anchor="middle" class="small">Pretendard · next-themes</text>
+  </g>
+  <g filter="url(#shadow)">
+    <rect x="600" y="120" width="220" height="80" rx="10" fill="url(#gradClient)" stroke="#60a5fa"/>
+    <text x="710" y="146" text-anchor="middle" class="box-title">Expo App (WebView)</text>
+    <text x="710" y="166" text-anchor="middle" class="box-sub">Push Token 등록</text>
+    <text x="710" y="184" text-anchor="middle" class="small">deep-link → WebView</text>
+  </g>
+
+  <!-- ========== Layer: EDGE ========== -->
+  <text x="40" y="240" class="layer-title">EDGE / INGRESS</text>
+  <line x1="40" y1="246" x2="1240" y2="246" stroke="#e2e8f0"/>
+
+  <g filter="url(#shadow)">
+    <rect x="340" y="260" width="220" height="70" rx="10" fill="url(#gradEdge)" stroke="#f59e0b"/>
+    <text x="450" y="286" text-anchor="middle" class="box-title">nginx-proxy</text>
+    <text x="450" y="306" text-anchor="middle" class="box-sub">VIRTUAL_HOST · 80/443</text>
+    <text x="450" y="322" text-anchor="middle" class="small">for-youth.site</text>
+  </g>
+  <g filter="url(#shadow)">
+    <rect x="600" y="260" width="220" height="70" rx="10" fill="url(#gradEdge)" stroke="#f59e0b"/>
+    <text x="710" y="286" text-anchor="middle" class="box-title">acme-companion</text>
+    <text x="710" y="306" text-anchor="middle" class="box-sub">Let's Encrypt 자동 발급</text>
+    <text x="710" y="322" text-anchor="middle" class="small">TLS 인증서 갱신</text>
+  </g>
+
+  <!-- ========== Layer: APPLICATION ========== -->
+  <text x="40" y="370" class="layer-title">APPLICATION  ·  Next.js (App Router) on Docker</text>
+  <line x1="40" y1="376" x2="1240" y2="376" stroke="#e2e8f0"/>
+
+  <g filter="url(#shadow)">
+    <rect x="60" y="390" width="1160" height="170" rx="12" fill="#f0fdf4" stroke="#86efac" stroke-dasharray="4 4"/>
+  </g>
+
+  <!-- Middleware -->
+  <g filter="url(#shadow)">
+    <rect x="80" y="410" width="220" height="60" rx="8" fill="url(#gradApp)" stroke="#22c55e"/>
+    <text x="190" y="434" text-anchor="middle" class="box-title">Middleware</text>
+    <text x="190" y="454" text-anchor="middle" class="small">NextAuth · 라우트 가드</text>
+  </g>
+  <!-- Pages -->
+  <g filter="url(#shadow)">
+    <rect x="80" y="480" width="220" height="60" rx="8" fill="url(#gradApp)" stroke="#22c55e"/>
+    <text x="190" y="504" text-anchor="middle" class="box-title">Pages (RSC)</text>
+    <text x="190" y="524" text-anchor="middle" class="small">(home) · (tabs) · (schedule) · login · quiz</text>
+  </g>
+
+  <!-- API Routes column -->
+  <g filter="url(#shadow)">
+    <rect x="320" y="410" width="430" height="130" rx="8" fill="url(#gradApp)" stroke="#22c55e"/>
+    <text x="535" y="432" text-anchor="middle" class="box-title">API Routes  /api/*</text>
+    <text x="340" y="456" class="small">• auth/[...nextauth]   • applications/[id]</text>
+    <text x="340" y="472" class="small">• applications/[id]/company-summary</text>
+    <text x="340" y="488" class="small">• programs   • recommend   • schedule</text>
+    <text x="340" y="504" class="small">• notifications · notifications/read · unread-count</text>
+    <text x="340" y="520" class="small">• quiz/result   • speller   • user/profile · user/upload</text>
+    <text x="340" y="536" class="small">• push-tokens   • health   • batch/morning · batch/nightly</text>
+  </g>
+
+  <!-- lib / utilities -->
+  <g filter="url(#shadow)">
+    <rect x="770" y="410" width="220" height="60" rx="8" fill="url(#gradApp)" stroke="#22c55e"/>
+    <text x="880" y="434" text-anchor="middle" class="box-title">lib/  서버 유틸</text>
+    <text x="880" y="454" text-anchor="middle" class="small">auth · db · crawl · companySummary</text>
+  </g>
+  <!-- Server Actions / hooks -->
+  <g filter="url(#shadow)">
+    <rect x="770" y="480" width="220" height="60" rx="8" fill="url(#gradApp)" stroke="#22c55e"/>
+    <text x="880" y="504" text-anchor="middle" class="box-title">Server Actions</text>
+    <text x="880" y="524" text-anchor="middle" class="small">applications · scheduleCompletion</text>
+  </g>
+
+  <!-- Cron / batch -->
+  <g filter="url(#shadow)">
+    <rect x="1010" y="410" width="200" height="130" rx="8" fill="#fef9c3" stroke="#eab308"/>
+    <text x="1110" y="434" text-anchor="middle" class="box-title">Batch / Cron</text>
+    <text x="1110" y="454" text-anchor="middle" class="small">GitHub Actions schedule</text>
+    <text x="1110" y="472" text-anchor="middle" class="small">→ /api/batch/morning</text>
+    <text x="1110" y="488" text-anchor="middle" class="small">→ /api/batch/nightly</text>
+    <text x="1110" y="510" text-anchor="middle" class="small">정책 매칭 알림 / 마감 D-day</text>
+    <text x="1110" y="526" text-anchor="middle" class="small">크롤 · 추천 갱신</text>
+  </g>
+
+  <!-- ========== Layer: SERVICES ========== -->
+  <text x="40" y="600" class="layer-title">EXTERNAL SERVICES</text>
+  <line x1="40" y1="606" x2="1240" y2="606" stroke="#e2e8f0"/>
+
+  <g filter="url(#shadow)">
+    <rect x="60"   y="620" width="180" height="76" rx="10" fill="url(#gradSvc)" stroke="#8b5cf6"/>
+    <text x="150" y="644" text-anchor="middle" class="box-title">NextAuth v5</text>
+    <text x="150" y="662" text-anchor="middle" class="small">Google OAuth</text>
+    <text x="150" y="678" text-anchor="middle" class="small">Prisma Adapter</text>
+  </g>
+  <g filter="url(#shadow)">
+    <rect x="260"  y="620" width="180" height="76" rx="10" fill="url(#gradSvc)" stroke="#8b5cf6"/>
+    <text x="350" y="644" text-anchor="middle" class="box-title">Anthropic Claude</text>
+    <text x="350" y="662" text-anchor="middle" class="small">@anthropic-ai/sdk</text>
+    <text x="350" y="678" text-anchor="middle" class="small">기업 요약 / 추천</text>
+  </g>
+  <g filter="url(#shadow)">
+    <rect x="460"  y="620" width="180" height="76" rx="10" fill="url(#gradSvc)" stroke="#8b5cf6"/>
+    <text x="550" y="644" text-anchor="middle" class="box-title">Vercel Blob</text>
+    <text x="550" y="662" text-anchor="middle" class="small">@vercel/blob</text>
+    <text x="550" y="678" text-anchor="middle" class="small">프로필 이미지 업로드</text>
+  </g>
+  <g filter="url(#shadow)">
+    <rect x="660"  y="620" width="180" height="76" rx="10" fill="url(#gradSvc)" stroke="#8b5cf6"/>
+    <text x="750" y="644" text-anchor="middle" class="box-title">Hanspell</text>
+    <text x="750" y="662" text-anchor="middle" class="small">맞춤법 검사</text>
+    <text x="750" y="678" text-anchor="middle" class="small">/api/speller</text>
+  </g>
+  <g filter="url(#shadow)">
+    <rect x="860"  y="620" width="180" height="76" rx="10" fill="url(#gradSvc)" stroke="#8b5cf6"/>
+    <text x="950" y="644" text-anchor="middle" class="box-title">Youth Policy API</text>
+    <text x="950" y="662" text-anchor="middle" class="small">청년정책 크롤</text>
+    <text x="950" y="678" text-anchor="middle" class="small">lib/crawl · youthApi</text>
+  </g>
+  <g filter="url(#shadow)">
+    <rect x="1060" y="620" width="160" height="76" rx="10" fill="url(#gradSvc)" stroke="#8b5cf6"/>
+    <text x="1140" y="644" text-anchor="middle" class="box-title">Expo Push</text>
+    <text x="1140" y="662" text-anchor="middle" class="small">expoPush.ts</text>
+    <text x="1140" y="678" text-anchor="middle" class="small">알림 발송</text>
+  </g>
+
+  <!-- ========== Layer: DATA ========== -->
+  <text x="40" y="730" class="layer-title">DATA</text>
+  <line x1="40" y1="736" x2="1240" y2="736" stroke="#e2e8f0"/>
+
+  <g filter="url(#shadow)">
+    <rect x="340" y="750" width="260" height="80" rx="10" fill="url(#gradData)" stroke="#ef4444"/>
+    <text x="470" y="776" text-anchor="middle" class="box-title">Prisma 7 (ORM)</text>
+    <text x="470" y="796" text-anchor="middle" class="box-sub">@prisma/adapter-pg</text>
+    <text x="470" y="814" text-anchor="middle" class="small">User · Application · CoverLetter · Notification …</text>
+  </g>
+  <g filter="url(#shadow)">
+    <rect x="660" y="750" width="260" height="80" rx="10" fill="url(#gradData)" stroke="#ef4444"/>
+    <text x="790" y="776" text-anchor="middle" class="box-title">PostgreSQL (AWS RDS)</text>
+    <text x="790" y="796" text-anchor="middle" class="box-sub">DATABASE_URL</text>
+    <text x="790" y="814" text-anchor="middle" class="small">Security Group: GH runner IP 자동 등록·해제</text>
+  </g>
+
+  <!-- ========== Sidebar: CI/CD ========== -->
+  <g filter="url(#shadow)">
+    <rect x="1000" y="100" width="240" height="180" rx="10" fill="url(#gradCI)" stroke="#64748b" stroke-dasharray="3 3"/>
+    <text x="1120" y="124" text-anchor="middle" class="box-title">CI / CD</text>
+    <text x="1120" y="146" text-anchor="middle" class="small">GitHub Actions</text>
+    <text x="1120" y="164" text-anchor="middle" class="small">└─ build (DATABASE_URL 주입)</text>
+    <text x="1120" y="180" text-anchor="middle" class="small">└─ Docker Hub push</text>
+    <text x="1120" y="198" text-anchor="middle" class="small">└─ EC2 SSH deploy</text>
+    <text x="1120" y="216" text-anchor="middle" class="small">└─ docker compose pull/up</text>
+    <text x="1120" y="240" text-anchor="middle" class="small">RDS SG: 빌드 시 GH IP 등록</text>
+    <text x="1120" y="256" text-anchor="middle" class="small">완료 후 자동 해제</text>
+    <text x="1120" y="272" text-anchor="middle" class="small">healthcheck: /api/health</text>
+  </g>
+
+  <!-- ====== ARROWS ====== -->
+  <!-- Client -> Edge -->
+  <path d="M190,200 L190,230 L450,230 L450,260" stroke="#475569" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+  <path d="M450,200 L450,260" stroke="#475569" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+  <path d="M710,200 L710,230 L450,230 L450,260" stroke="#475569" stroke-width="1.5" fill="none" marker-end="url(#arrow)" stroke-dasharray="0"/>
+  <text x="470" y="226" class="arrow-label">HTTPS</text>
+
+  <!-- Edge -> App -->
+  <path d="M450,330 L450,360 L190,360 L190,410" stroke="#475569" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+  <path d="M450,330 L450,410" stroke="#475569" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+  <path d="M710,330 L710,360 L880,360 L880,410" stroke="#475569" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+  <text x="455" y="356" class="arrow-label">:3000 (proxy net)</text>
+
+  <!-- App internal: Pages <-> API -->
+  <path d="M300,510 L320,510" stroke="#475569" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+  <path d="M750,475 L770,475" stroke="#475569" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+  <path d="M750,510 L770,510" stroke="#475569" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+
+  <!-- App -> Services -->
+  <path d="M150,560 L150,620" stroke="#94a3b8" stroke-width="1.2" fill="none" marker-end="url(#arrowDash)" stroke-dasharray="4 3"/>
+  <path d="M350,560 L350,620" stroke="#94a3b8" stroke-width="1.2" fill="none" marker-end="url(#arrowDash)" stroke-dasharray="4 3"/>
+  <path d="M550,560 L550,620" stroke="#94a3b8" stroke-width="1.2" fill="none" marker-end="url(#arrowDash)" stroke-dasharray="4 3"/>
+  <path d="M750,560 L750,620" stroke="#94a3b8" stroke-width="1.2" fill="none" marker-end="url(#arrowDash)" stroke-dasharray="4 3"/>
+  <path d="M950,560 L950,620" stroke="#94a3b8" stroke-width="1.2" fill="none" marker-end="url(#arrowDash)" stroke-dasharray="4 3"/>
+  <path d="M1140,560 L1140,620" stroke="#94a3b8" stroke-width="1.2" fill="none" marker-end="url(#arrowDash)" stroke-dasharray="4 3"/>
+
+  <!-- App -> Prisma -> Postgres -->
+  <path d="M535,560 L535,720 L470,720 L470,750" stroke="#475569" stroke-width="1.6" fill="none" marker-end="url(#arrow)"/>
+  <path d="M600,790 L660,790" stroke="#475569" stroke-width="1.6" fill="none" marker-end="url(#arrow)"/>
+  <text x="615" y="784" class="arrow-label">SQL / pg</text>
+
+  <!-- CI/CD -> EC2 (App container) -->
+  <path d="M1120,280 L1120,360 L1110,360 L1110,410" stroke="#94a3b8" stroke-width="1.2" fill="none" marker-end="url(#arrowDash)" stroke-dasharray="4 3"/>
+  <text x="1130" y="356" class="arrow-label">deploy</text>
+
+  <!-- Cron loop -->
+  <path d="M1110,540 L1110,575 L535,575 L535,560" stroke="#94a3b8" stroke-width="1.2" fill="none" marker-end="url(#arrowDash)" stroke-dasharray="4 3"/>
+
+  <!-- Legend -->
+  <g transform="translate(40,840)">
+    <rect x="0" y="0" width="14" height="10" fill="url(#gradClient)" stroke="#60a5fa"/>
+    <text x="20" y="9" class="small">Client</text>
+    <rect x="80" y="0" width="14" height="10" fill="url(#gradEdge)" stroke="#f59e0b"/>
+    <text x="100" y="9" class="small">Edge / TLS</text>
+    <rect x="180" y="0" width="14" height="10" fill="url(#gradApp)" stroke="#22c55e"/>
+    <text x="200" y="9" class="small">Next.js App</text>
+    <rect x="290" y="0" width="14" height="10" fill="url(#gradSvc)" stroke="#8b5cf6"/>
+    <text x="310" y="9" class="small">External Service</text>
+    <rect x="430" y="0" width="14" height="10" fill="url(#gradData)" stroke="#ef4444"/>
+    <text x="450" y="9" class="small">Database</text>
+    <rect x="520" y="0" width="14" height="10" fill="url(#gradCI)" stroke="#64748b"/>
+    <text x="540" y="9" class="small">CI/CD · Infra</text>
+    <line x1="640" y1="5" x2="670" y2="5" stroke="#475569" stroke-width="1.5" marker-end="url(#arrow)"/>
+    <text x="676" y="9" class="small">동기 호출</text>
+    <line x1="740" y1="5" x2="770" y2="5" stroke="#94a3b8" stroke-width="1.2" stroke-dasharray="4 3" marker-end="url(#arrowDash)"/>
+    <text x="776" y="9" class="small">비동기 / 외부 / 배포</text>
+  </g>
+</svg>
