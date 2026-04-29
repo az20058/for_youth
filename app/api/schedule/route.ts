@@ -32,6 +32,7 @@ export async function GET(request: NextRequest) {
         userId,
         deletedAt: null,
         deadline: { gte: startDate, lte: endDate },
+        status: 'PENDING',
       },
       select: {
         id: true,
