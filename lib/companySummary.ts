@@ -150,3 +150,116 @@ overview는 2-3문장으로 작성하세요.`,
     schemaVersion: 2,
   };
 }
+
+// ── 사용자 맞춤 지원동기 ────────────────────────────────────────
+
+export interface UserContext {
+  major: string | null;
+  careerLevel: string | null;
+  techStacks: string[];
+  careers: { company?: string; position?: string; role?: string; isCurrent?: boolean }[];
+}
+
+/** 프로필이 충분히 채워져 있어 맞춤화가 의미 있는지 판단 */
+export function hasUsableContext(ctx: UserContext): boolean {
+  const hasMajor = Boolean(ctx.major && ctx.major.trim());
+  const hasStacks = ctx.techStacks.length > 0;
+  const hasCareers = ctx.careers.length > 0;
+  return hasMajor || hasStacks || hasCareers;
+}
+
+const PERSONALIZE_TOOL: Anthropic.Tool = {
+  name: 'submit_personalized_motivation',
+  description: '사용자의 프로필을 회사의 특성과 연결한 맞춤 지원동기 포인트를 제출한다.',
+  input_schema: {
+    type: 'object',
+    required: ['motivationHints'],
+    properties: {
+      motivationHints: { type: 'array', items: CITED_ITEM_SCHEMA },
+    },
+  },
+};
+
+function buildUserProfileSection(ctx: UserContext): string {
+  const lines: string[] = [];
+  if (ctx.major?.trim()) lines.push(`전공: ${ctx.major.trim()}`);
+  if (ctx.careerLevel?.trim()) lines.push(`경력 구분: ${ctx.careerLevel.trim()}`);
+  if (ctx.techStacks.length > 0) lines.push(`기술 스택: ${ctx.techStacks.join(', ')}`);
+  if (ctx.careers.length > 0) {
+    const careerLines = ctx.careers
+      .map((c) => {
+        const parts = [c.company, c.position, c.role].filter((p) => p && p.trim());
+        if (parts.length === 0) return null;
+        const status = c.isCurrent ? ' (재직 중)' : '';
+        return `- ${parts.join(' / ')}${status}`;
+      })
+      .filter((l): l is string => l !== null);
+    if (careerLines.length > 0) lines.push(`경력:\n${careerLines.join('\n')}`);
+  }
+  return lines.join('\n');
+}
+
+function buildSummaryDigest(summary: CompanySummaryData): string {
+  const parts: string[] = [];
+  parts.push(`개요: ${summary.overview.text}`);
+  if (summary.mainBusiness.length > 0) {
+    parts.push(`핵심 사업: ${summary.mainBusiness.map((b) => b.text).join(', ')}`);
+  }
+  if (summary.idealCandidate.length > 0) {
+    parts.push(`인재상: ${summary.idealCandidate.map((c) => c.text).join(', ')}`);
+  }
+  if (summary.recentNews.length > 0) {
+    parts.push(`최근 이슈: ${summary.recentNews.map((n) => n.text).join(', ')}`);
+  }
+  return parts.join('\n');
+}
+
+export async function personalizeMotivation(
+  companyName: string,
+  commonSummary: CompanySummaryData,
+  userContext: UserContext,
+): Promise<CitedItem[]> {
+  const client = new Anthropic();
+  const validIds = new Set(commonSummary.sources.map((s) => s.id));
+
+  const sourceListLines = commonSummary.sources.map((s) => `${buildSourceLabel(s)}: "${s.title}"`);
+  const profileSection = buildUserProfileSection(userContext);
+  const summaryDigest = buildSummaryDigest(commonSummary);
+
+  const prompt = [
+    `"${companyName}"에 지원하는 취업 준비생의 프로필과 회사 분석을 보고, 이 사람이 자기소개서 지원 동기에 쓸 수 있는 맞춤 포인트 3개를 작성하세요.`,
+    `[지원자 프로필]\n${profileSection}`,
+    `[회사 분석 요약]\n${summaryDigest}`,
+    `[소스 목록]\n${sourceListLines.join('\n')}`,
+    `각 포인트는 지원자의 구체적인 강점(전공·기술·경력)과 회사의 특성(사업·인재상·최근 이슈)을 직접 연결해야 합니다.
+일반론(예: "성장 가능성", "도전 정신")은 금지. 반드시 지원자의 프로필 항목과 회사의 특성을 짝지어 서술하세요.
+각 항목 끝의 sourceIds는 그 포인트의 회사 측 근거가 된 소스만 포함합니다. 지원자 프로필에는 sourceId를 부여하지 않습니다.
+sourceIds가 빈 배열이면 안 되며, 적절한 소스가 없으면 항목을 만들지 마세요.
+${PERSONALIZE_TOOL.name} 도구로 결과를 제출하세요.`,
+  ].filter(Boolean).join('\n\n');
+
+  const message = await client.messages.create({
+    model: 'claude-haiku-4-5',
+    max_tokens: 768,
+    tools: [PERSONALIZE_TOOL],
+    tool_choice: { type: 'tool', name: PERSONALIZE_TOOL.name },
+    messages: [{ role: 'user', content: prompt }],
+  });
+
+  const toolUseBlock = message.content.find((b) => b.type === 'tool_use');
+  if (!toolUseBlock || toolUseBlock.type !== 'tool_use') {
+    throw new Error('맞춤 지원동기 응답 파싱 실패');
+  }
+
+  const parsed = toolUseBlock.input as Record<string, unknown>;
+  const raw = Array.isArray(parsed.motivationHints) ? parsed.motivationHints : [];
+
+  return raw.map((item) => {
+    const r = item as { text?: unknown; sourceIds?: unknown };
+    const ids = Array.isArray(r.sourceIds) ? (r.sourceIds as string[]) : [];
+    return {
+      text: typeof r.text === 'string' ? r.text : '',
+      sourceIds: filterSourceIds(ids, validIds),
+    };
+  });
+}

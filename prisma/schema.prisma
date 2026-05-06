@@ -51,6 +51,7 @@ model User {
   quizResults    UserQuizResult[]
   notifications  Notification[]
   pushTokens     PushToken[]
+  companyMotivations UserCompanyMotivation[]
   createdAt      DateTime         @default(now())
   updatedAt     DateTime         @updatedAt
 }
@@ -162,6 +163,17 @@ model CompanySummary {
   schemaVersion   Int      @default(1)              // 1=구버전, 2=인용 포함
   crawledAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
+}
+
+model UserCompanyMotivation {
+  userId          String
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  companyName     String
+  motivationHints String   @db.Text  // CitedItem[] JSON, 사용자 프로필 기반 맞춤 지원동기
+  generatedAt     DateTime @default(now())
+
+  @@id([userId, companyName])
+  @@index([userId])
 }
 
 model YouthPolicy {
