@@ -44,12 +44,16 @@ export function NotificationBell() {
     if (!notification.isRead) {
       readMutation.mutate([notification.id]);
     }
+    if (notification.type === '일정 알림') {
+      router.push('/schedule');
+      return;
+    }
+    if (notification.type === '신규 맞춤 정책') {
+      router.push(notification.relatedId ? `/programs?open=${notification.relatedId}` : '/programs');
+      return;
+    }
     if (notification.relatedId) {
-      if (notification.type === '일정 알림') {
-        router.push('/schedule');
-      } else {
-        router.push(`/applications/${notification.relatedId}`);
-      }
+      router.push(`/applications/${notification.relatedId}`);
     }
   }
 
