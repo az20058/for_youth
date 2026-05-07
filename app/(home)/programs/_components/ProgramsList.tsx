@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { ProgramCard } from '@/components/ui/program-card';
 import { Button } from '@/components/ui/button';
@@ -35,8 +35,18 @@ export function ProgramsList({ initialPolicies, initialCategories }: Props) {
   const [activeCategory, setActiveCategory] = useState('전체');
   const [activeRegion, setActiveRegion] = useState('전체');
   const searchParams = useSearchParams();
+  const router = useRouter();
+  const pathname = usePathname();
   const openId = searchParams.get('open');
   const openPolicy = openId ? initialPolicies.find(p => p.id === openId) ?? null : null;
+
+  function handleOpenChange(open: boolean) {
+    if (open) return;
+    const params = new URLSearchParams(searchParams.toString());
+    params.delete('open');
+    const qs = params.toString();
+    router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
+  }
 
   const availableRegions = useMemo(() => {
     const categoryFiltered =
@@ -164,7 +174,7 @@ export function ProgramsList({ initialPolicies, initialCategories }: Props) {
       )}
 
       {openPolicy && (
-        <Dialog defaultOpen>
+        <Dialog open onOpenChange={handleOpenChange}>
           <DialogContent className="flex flex-col max-h-[80vh]">
             <DialogHeader>
               <DialogTitle>{openPolicy.name}</DialogTitle>
