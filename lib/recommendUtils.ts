@@ -5,6 +5,33 @@ const SIDO_CODE_TO_NAME: Record<string, string> = Object.fromEntries(
   SIDO_REGIONS.map((r) => [r.code, r.name]),
 );
 
+/**
+ * 정책이 사용자 거주 지역(시도/시군구)에 해당하는지 판정.
+ * - zipCodes 비어있음 → 전국 정책 → 통과
+ * - 사용자 시도 prefix 일치 zip 없음 → 다른 시도 정책 → 제외
+ * - zipCodes에 사용자 sigunguCode 포함 → 통과 (시군구·도 단위 모두 포함)
+ * - 같은 시도지만 다른 시군구 zip만 있음 → 제외
+ */
+export function policyMatchesUserRegion(
+  policy: { zipCodes?: string | null },
+  userSidoCode: string | undefined,
+  userSigunguCode: string | undefined,
+): boolean {
+  const zips = (policy.zipCodes ?? '')
+    .split(',')
+    .map((c) => c.trim())
+    .filter((c) => /^\d{5}$/.test(c));
+
+  if (zips.length === 0) return true;
+  if (!userSidoCode) return false;
+
+  const sameSidoZips = zips.filter((z) => z.startsWith(userSidoCode));
+  if (sameSidoZips.length === 0) return false;
+
+  if (!userSigunguCode) return true;
+  return sameSidoZips.includes(userSigunguCode);
+}
+
 // need 값 → 대분류 키워드 매핑
 const NEED_TO_CATEGORIES: Record<string, string[]> = {
   employment: ['일자리', '교육'],
@@ -155,12 +182,14 @@ export function scoreAndFilterPrograms(
   const needs = (answers.need as string[] | undefined) ?? [];
   const userRegion = answers.region as string | undefined;
   const userSigungu = answers.sigungu as string | undefined;
+  const userSigunguCode = answers.sigunguCode as string | undefined;
   const status = answers.status as string | undefined;
   const income = answers.income as string | undefined;
 
   if (!needs.length && !userRegion && !status && !income) return [];
 
   return programs
+    .filter((p) => policyMatchesUserRegion(p, userRegion, userSigunguCode))
     .map((p) => {
       let score = 0;
       const searchText = `${p.name} ${p.mainCategory} ${p.category} ${p.description}`.toLowerCase();

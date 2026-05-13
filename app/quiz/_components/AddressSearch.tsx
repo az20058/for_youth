@@ -8,16 +8,17 @@ import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 
 interface Props {
   selectedAddress?: string;
-  onSelect: (sidoCode: string, sigungu: string) => void;
+  onSelect: (sidoCode: string, sigunguCode: string, sigungu: string) => void;
 }
 
 export function AddressSearch({ selectedAddress, onSelect }: Props) {
   const [open, setOpen] = useState(false);
 
   function handleComplete(data: Address) {
-    const sidoCode = data.zonecode.slice(0, 2);
+    const sigunguCode = data.sigunguCode;
+    const sidoCode = sigunguCode.slice(0, 2);
     const sigungu = data.sigungu || data.sido;
-    onSelect(sidoCode, sigungu);
+    onSelect(sidoCode, sigunguCode, sigungu);
     setOpen(false);
   }
 

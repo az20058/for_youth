@@ -253,8 +253,9 @@ export function QuizFlow() {
             return (
               <AddressSearch
                 selectedAddress={sigungu ? `${sidoName} ${sigungu}`.trim() : undefined}
-                onSelect={(code, gu) => {
+                onSelect={(code, sgCode, gu) => {
                   setAnswer(currentQuestion.id, code);
+                  setAnswer('sigunguCode', sgCode);
                   setAnswer('sigungu', gu);
                 }}
               />
